@@ -1,0 +1,27 @@
+<div class="container center position-fixed">
+    <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</div>
+<div class="container center overflow-auto pt-2">
+    <form novalidate [formGroup]="login" (ngSubmit)="onSubmit()">
+        <h1>Iniciar sesión</h1>
+        <label for="email">
+            <i class="bi bi-envelope-fill"></i>
+            <input class="form-control" (keyup)="checkvalid($event)" type="email" minlength="5" maxlength="50" name="email" id="email" formControlName="email" placeholder="Correo electrónico" required>
+        </label>
+        <label for="password">
+            <i class="bi bi-lock-fill"></i>
+            <input class="form-control" (keyup)="checkvalid($event)" type="password" name="password" id="password" formControlName="password" placeholder="Contraseña" required>
+        </label>
+        <p *ngIf="error" class="error" id="error">{{errorMessage}}</p>
+        <div *ngIf="loading" class="spinner-border" role="status">
+        </div>
+        <input class="btn" type="submit" value="Acceder" [disabled]="!login.valid">
+        <hr width="130%" size="5">
+        <a class="btn mt-0" [routerLink]='["/registry"]'> Registrarse </a>
+    </form>
+</div>    
+

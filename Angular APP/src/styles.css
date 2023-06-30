@@ -1,0 +1,34 @@
+@import "~bootstrap/dist/css/bootstrap.css";
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans&display=swap');
+@import "~bootstrap-icons/font/bootstrap-icons.css";
+:root{
+    --default-blue: #164596d5;
+    --default-white: #f3f3f3;
+    --default-dark-blue: #164496;
+    --default-light-blue:#6982C0;
+}
+
+*{
+    font-family: 'Work Sans', sans-serif;
+
+
+}
+
+html{
+    min-height: 100%;
+}
+
+body{
+    min-height: 97vh;
+    margin: 0;
+}
+
+app-root{
+    min-height: 100vh;
+    display: block;
+}
+
+app-login{
+    min-height: 100vh;
+    display: block;
+}
