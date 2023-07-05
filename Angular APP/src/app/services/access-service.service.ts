@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable, catchError, map, of, retry, throwError } from 'rxjs';
+import { Users } from '../models/users.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,10 @@ export class AccessService {
   
   baseUrl="http://localhost:8000/api/"
 
+  user:Users
+
   constructor(private http: HttpClient,private cookieService: CookieService) {
+    this.user=new Users(-1,"","","",[],"")
    }
 
   getToken():string{
@@ -42,8 +46,12 @@ export class AccessService {
     return this.http.post<any>(this.baseUrl+"users",{ "email":email, "password":password, "repassword":repassword, "name":name })
   }
 
-  logout(): void {
-    this.cookieService.deleteAll();
+  logout(): Observable<any> {
+    
+    let token=this.getToken()
+    const headers = new HttpHeaders().set('authorization', `Bearer ${token}`);
+    this.deleteToken();
+    return this.http.get<any>(this.baseUrl+"logout",{ headers: headers })
   }
 
   isLoggedIn(): Observable<boolean> {
@@ -51,7 +59,9 @@ export class AccessService {
       let token=this.getToken()
       const headers = new HttpHeaders().set('authorization', `Bearer ${token}`);
       return this.http.get<any>(this.baseUrl + 'me', { headers: headers }).pipe(
-        map((response) => true),
+        map((response) => {
+          this.user=response.data
+          return true}),
         catchError((error) => {
           console.error('Error al realizar la solicitud:', error);
           return of(false);  

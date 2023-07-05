@@ -1,1 +1,91 @@
-<p>home works!</p>
+
+<modal-createPanel *ngIf="panels.length==0" (dataEvent)="reloadPanels()"></modal-createPanel>
+<div *ngIf="panels.length==0" class="container nopanel">
+    <h1 *ngIf="user.name != '' ">Bienvenido {{user.name}} <button (click)="closeSes()">Cerrar sesión</button></h1>
+    <button data-bs-toggle="modal" data-bs-target="#createPanel">Crea un panel</button>
+    <p>o <br> espera a que alguien te añada al suyo </p>
+    <div class="spinner-border" role="status"></div>
+    <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</div>
+
+
+
+<app-user-icon *ngIf="panels.length>0" [user]="user"></app-user-icon>
+<div *ngIf="panels.length>0" class="container p-0">
+    <app-navigation [panels]="panels" *ngIf="panels.length>0"> </app-navigation>
+    
+    <div class="main-box">
+        <div class="filter">
+            <div>
+                <p>País</p>
+                <select>
+                    <option value="España">España</option>
+                </select>
+            </div>
+            
+        </div>
+        <div class="multichartBox">
+            <div class="chartBox" id="chartdev">
+                <h1>Dispositivos</h1>
+                <apx-chart
+                  [series]="devchartOptions['series']"
+                  [chart]="devchartOptions['chart']"
+                  [labels]="devchartOptions['labels']"
+                  [responsive]="devchartOptions['responsive']"
+                  [colors]="devchartOptions['colors']"
+                  [fill]="devchartOptions['fill']"
+                  [stroke]="devchartOptions['stroke']"
+                  [dataLabels]="devchartOptions['dataLabels']"
+                  [legend]="devchartOptions['legend']"
+                ></apx-chart>
+            </div>
+
+            <div class="chartBox" id="chartcountryzones">
+                <h1>Zonas de riego por país</h1>
+                <apx-chart
+                [title]="zonechartOptions['title']"
+                  [series]="zonechartOptions['series']"
+                  [chart]="zonechartOptions['chart']"
+                  [labels]="zonechartOptions['labels']"
+                  [responsive]="zonechartOptions['responsive']"
+                  [fill]="devchartOptions['fill']"
+                  [stroke]="devchartOptions['stroke']"
+                  [dataLabels]="devchartOptions['dataLabels']"
+                  [legend]="devchartOptions['legend']"
+                ></apx-chart>
+            </div>
+        </div>
+        <div class="chartBox adpatedchart">
+            <h1>Lista de dispositivos</h1>
+            <table class="table table-striped table-responsive">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Zona de riego</th>
+                        <th>País</th>
+                        <th>Última actualización de datos</th>
+                      </tr>
+                </thead>
+                <tbody>
+                    <tr class="noDevice" *ngIf="devices.length==0">
+                        <td colspan="4">No hay dispositivos</td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+        <app-advisor></app-advisor>
+    </div>
+</div>

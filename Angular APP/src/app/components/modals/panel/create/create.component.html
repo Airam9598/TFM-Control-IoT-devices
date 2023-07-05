@@ -1,0 +1,20 @@
+<div class="modal fade" id="createPanel" tabindex="-1" aria-labelledby="createPanel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Crear Panel</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" id="close" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form novalidate [formGroup]="panelform" (ngSubmit)="createPanel()">
+                <label for="name">
+                    <input class="form-control" (keyup)="checkvalid($event)" type="text" minlength="5" maxlength="50" name="name" id="name" formControlName="name" placeholder="Nombre" required>
+                </label>
+                <p *ngIf="error" class="error" id="error">{{errorMessage}}</p>
+                <input class="btn" type="submit" value="Crear" [disabled]="!panelform.valid">
+            </form>
+        </div>
+      </div>
+    </div>
+   
+</div>

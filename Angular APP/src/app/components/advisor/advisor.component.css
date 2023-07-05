@@ -1,0 +1,49 @@
+.adviseBox{
+    border: solid #E48D0A 2px;
+    margin-right: 22px;
+    border-radius: 10px;
+    height: calc(100vh - 120px);
+    margin-top: 70px;
+    width: 225px;
+    position: fixed;
+    right: -12px;
+    top: 10px;
+    overflow: auto;
+}
+
+.adviseBox >h3{
+    display: flex;
+    gap:5px;
+    color: var(--default-white);
+    background-color: #E48D0A;
+    padding: 10px 65px;
+    border-radius: 5px 5px 0 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.adviseBox >p{
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+
+@media (max-width: 750px) and (min-height: 500px) {
+    .adviseBox{
+        position: unset;
+        width: 20p;
+        margin: auto;
+        width: 50vw;
+        margin-top: 40px;
+        height: 230px;
+    }
+}
+
+@media (max-height: 500px) {
+
+    .adviseBox{
+        height: calc(100vh - 180px);
+    }
+}

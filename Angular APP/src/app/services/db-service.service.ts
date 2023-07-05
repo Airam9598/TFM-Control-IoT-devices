@@ -20,63 +20,6 @@ export class DbServiceService {
     this.baseUrl=authService.baseUrl;
   }
 
-  //PANELS
-  getPanels() {
-    let token=this.authService.getToken()
-    if(token != null){
-      const headers = new HttpHeaders().set('authorization', `Bearer ${token}`);
-      return this.http.get(`${this.baseUrl}panels`, { "headers":headers }).pipe(
-        map(response => {
-          return response as Panels[];
-      }))
-    }
-  }
-
-  getPanel(id:number) {
-    let token=this.authService.getToken()
-    if(token != null){
-      const headers = new HttpHeaders().set('authorization', `Bearer ${token}`)
-      return this.http.get(`${this.baseUrl}panels/${id}`, { "headers":headers }).pipe(
-        map(response => {
-          return response as Panels
-      }))
-    }
-  }
-
-  setPanel(name:string) {
-    let token=this.authService.getToken()
-    if(token != null){
-      const headers = new HttpHeaders().set('authorization', `Bearer ${token}`)
-      return this.http.post(`${this.baseUrl}panels`,{ "name": name }, { "headers":headers }).pipe(
-        map(response => {
-          return response as Panels
-      }))
-    }
-  }
-
-  editPanel(id:number,name:string) {
-    let token=this.authService.getToken()
-    if(token != null){
-      const headers = new HttpHeaders().set('authorization', `Bearer ${token}`)
-      return this.http.patch(`${this.baseUrl}panels/${id}`,{ "name": name }, { "headers":headers }).pipe(
-      map(response => {
-        return response as Panels
-      }));
-    }
-  }
-
-  deletePanel(id:number) {
-    let token=this.authService.getToken()
-    if(token != null){
-      const headers = new HttpHeaders().set('authorization', `Bearer ${token}`)
-      return this.http.delete(`${this.baseUrl}panels/${id}`, { "headers":headers }).pipe(
-      map(response => {
-        return response as Panels
-      }))
-    }
-  }
-
-
   //ZONES
   getZones(idPanel:number) {
     let token=this.authService.getToken()

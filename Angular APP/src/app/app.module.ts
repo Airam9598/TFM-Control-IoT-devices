@@ -15,6 +15,11 @@ import { DevicesComponent } from './components/devices/devices.component';
 import { ErrorComponent } from './components/error/error.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CreateComponent } from './components/modals/panel/create/create.component';
+import { UserIconComponent } from './components/user-icon/user-icon.component';
+import { NgApexchartsModule } from 'ng-apexcharts';
+import { AdvisorComponent } from './components/advisor/advisor.component';
 
 @NgModule({
   declarations: [
@@ -28,13 +33,18 @@ import { HttpClientModule } from '@angular/common/http';
     ConfigurationComponent,
     ZoneInfoComponent,
     DevicesComponent,
-    ErrorComponent
+    ErrorComponent,
+    CreateComponent,
+    UserIconComponent,
+    AdvisorComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    NgbModule,
+    NgApexchartsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

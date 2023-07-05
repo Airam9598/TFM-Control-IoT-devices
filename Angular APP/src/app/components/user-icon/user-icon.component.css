@@ -1,0 +1,64 @@
+.user-box{
+    display: flex;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--default-dark-blue);
+    color: var(--default-white);
+    padding: 1px;
+    width: 160px;
+    border-radius: 50px;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index: 999;
+}
+
+.user-box >p{
+    margin:0;
+}
+
+.user-box > button{
+    background: transparent;
+    border: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.show{
+    inset: 1px auto auto 0px !important;
+}
+
+ul{
+    position: absolute;
+    background: #25519d;
+    color: var(--default-white);
+    padding: 5px;
+    width: 144px;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    flex-direction: column;
+}
+
+.dropdown-item {
+    color: var(--default-white);
+    display: flex;
+    gap: 5px;
+}
+
+.dropdown-item:hover{
+    background-color: transparent;
+    text-decoration: underline;
+    cursor: pointer;
+    
+
+}
+
+.dropdown-toggle::after {
+    display: none;
+}

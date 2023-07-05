@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Users } from './models/users.model';
 import { Router } from '@angular/router';
+import { AccessService } from './services/access-service.service';
 
 @Component({
   selector: 'app-root',
@@ -12,19 +13,26 @@ export class AppComponent {
   showMenu=true;
   user2:Users;
   notify2:Array<string>;
-  constructor(private router: Router, /*private userservice:UsuarioService*/) { 
-    this.user2=new Users(-1,"","","","","");
+  constructor(private router: Router, private loginservice:AccessService) { 
+    this.user2=new Users(-1,"","","",[],"");
     this.notify2=[];
   }
 
   onActivate():void{
-    if (this.router.url == "/login" || this.router.url == "/registry"){
+    if (this.router.url == "/login" || this.router.url == "/" || this.router.url == "/home" || this.router.url == "/registry"){
       this.showMenu=false;
       this.notify2=[];
     }else{
       this.showMenu=true;
     }
-   // this.user2=this.userservice.islogged();
+
+    this.loginservice.isLoggedIn().subscribe((isLoggedIn) => {
+      if (!isLoggedIn){
+        this.loginservice.deleteToken()
+      }
+      this.user2=this.loginservice.user
+    });
+      
   }
 
   onDeactivate(event:any):void{

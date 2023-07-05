@@ -51,7 +51,7 @@ class AuthController extends Controller
         if (Auth::check()) {
 
             $user = Auth::user();
-
+            $user->load('panels');
             return response()->json(['data' => $user],200);
         }
 

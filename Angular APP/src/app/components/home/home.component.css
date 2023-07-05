@@ -1,0 +1,348 @@
+.nopanel{
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: linear-gradient(180deg,var(--default-blue) -13% , var(--default-light-blue) 63%);
+    margin: 0;
+    max-width: unset;
+    color: var(--default-white);
+}
+
+.nopanel >h1{
+    margin-bottom: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.nopanel > h1 > button{
+    font-size: calc(1.4rem + 0.2vw);
+    border-radius: 6px;
+    padding: 0px 12px;
+    color: var(--default-white);
+    background: #ff3c3cc7;
+    cursor: pointer;
+    border: none;
+    box-shadow: #484848 0px 0px 5px 0px;
+    margin: 10px 0;
+}
+
+.nopanel > h1 > button:hover{
+    background: #ff3c3ce5;
+    transition: 0.1s;
+}
+
+.nopanel >p{
+    text-align: center;
+    line-height: 50px;
+    font-size:calc(1.375rem + 0.5vw);
+    color: var(--default-white);
+}
+
+.nopanel > button{
+    font-size:calc(1.375rem + 0.5vw);
+    border-radius: 6px;
+    padding: 1px 30px;
+    color: var(--default-white);
+    background: #ffffff0d;
+    cursor: pointer;
+    border: none;
+    box-shadow: #484848 0px 0px 5px 0px;
+    margin: 10px 0;
+}
+
+.nopanel > button:hover{
+    background-color: var(--default-blue);
+    transform: scale(1.05);
+    transition: 0.1s;
+}
+
+.spinner-border{
+    color: var(--default-white);
+    margin-bottom: -17px;
+    margin-top: 10px;
+}
+
+
+
+.circles{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.circles li{
+    position: absolute;
+    display: block;
+    list-style: none;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    animation: animate 25s linear infinite;
+    bottom: -150px;
+    border-radius: 100px;
+    
+}
+
+.circles li:nth-child(1){
+    left: 25%;
+    width: 80px;
+    height: 80px;
+    animation-delay: 0s;
+}
+
+
+.circles li:nth-child(2){
+    left: 10%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 2s;
+    animation-duration: 12s;
+}
+
+.circles li:nth-child(3){
+    left: 70%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 4s;
+}
+
+.circles li:nth-child(4){
+    left: 40%;
+    width: 60px;
+    height: 60px;
+    animation-delay: 0s;
+    animation-duration: 18s;
+}
+
+.circles li:nth-child(5){
+    left: 65%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 0s;
+}
+
+.circles li:nth-child(6){
+    left: 75%;
+    width: 110px;
+    height: 110px;
+    animation-delay: 3s;
+}
+
+.circles li:nth-child(7){
+    left: 35%;
+    width: 150px;
+    height: 150px;
+    animation-delay: 7s;
+}
+
+.circles li:nth-child(8){
+    left: 50%;
+    width: 25px;
+    height: 25px;
+    animation-delay: 15s;
+    animation-duration: 45s;
+}
+
+.circles li:nth-child(9){
+    left: 20%;
+    width: 15px;
+    height: 15px;
+    animation-delay: 2s;
+    animation-duration: 35s;
+}
+
+.circles li:nth-child(10){
+    left: 85%;
+    width: 150px;
+    height: 150px;
+    animation-delay: 0s;
+    animation-duration: 11s;
+}
+
+.circles li:nth-child(11){
+    left: 20%;
+    width: 90px;
+    height: 90px;
+    animation-delay: 3s;
+    animation-duration: 12s;
+}
+
+
+
+@keyframes animate {
+
+    0%{
+        transform: translateY(0);
+    }
+
+    100%{
+        transform: translateY(-1000px);
+    }
+
+}
+
+
+.container{
+    display: flex;
+    max-width: calc(100vw - 0px );
+}
+
+.main-box{
+    background-color: #d9e3fd;
+    width: 100vw;
+    margin-left: 249px;
+    min-height: 100vh;
+    padding-bottom: 15px;
+}
+
+.chartBox{
+    border-radius: 10px;
+    background-color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    box-shadow: #00000047 0px 4px 4px 0px;
+}
+
+.chartBox >h1{
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+
+.multichartBox{
+    margin-top: 70px;
+    display: flex;
+    justify-content: center;
+    width: calc(100vw - 497px);
+    align-items: center;
+    gap: 5vw;
+    flex-wrap: wrap;
+    padding: 10px;
+}
+
+.adpatedchart{
+    width: calc(100vw - 570px);
+    margin-top: 60px;
+    margin-left: 39px;
+    overflow: scroll;
+}
+
+th{
+    width: 25%;
+}
+
+.noDevice >td{
+    text-align: center;
+    font-weight: bold;
+    background: #ff7979;
+}
+
+.filter{
+    display: block;
+    margin-top: 60px;
+    margin-left: 103px;
+    width: max-content;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: var(--default-dark-blue);
+    color: var(--default-white);
+    font-size: 1.1em;
+    width: calc(100vw - 700px);
+    box-shadow: #0000004f 0px 4px 4px 0px;
+}
+
+.filter >div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.filter >div >p{
+    font-size: 1.5em;
+    margin-bottom: 2px;
+}
+
+.filter >div >select{
+    width: 135px;
+    padding: 5px;
+    font-weight: bold;
+    border-radius: 5px;
+    border: none;
+}
+
+
+@media (min-width: 750px) and (max-width: 1000px) and (min-height: 500px) {
+    .multichartBox{
+        width: calc(100vw - 309px);
+    }
+
+    .adpatedchart{
+        width: calc(100vw - 395px);
+    }
+
+    .main-box{
+        margin-left: 60px;
+    }
+
+    .filter{
+        margin-left: 169px;
+        width: calc(100vw - 661px);
+        min-width: 225px;
+    }
+}
+
+@media (max-width: 750px) and (min-height: 500px) {
+    .multichartBox{
+        width: calc(100vw - 76px);
+    }
+
+    .adpatedchart{
+        width: calc(100vw - 80px);
+        margin-left: 10px;
+    }
+
+    .main-box{
+        margin-left: 60px;
+    }
+
+    .filter{
+        min-width: 185px;
+        margin: auto;
+        margin-top: 60px;
+    }
+}
+
+@media (max-height: 500px) {
+    
+    .main-box{
+        margin-left: unset;
+    }
+
+    .multichartBox{
+        width: calc(100vw - 240px);
+    }
+
+    .adpatedchart {
+        width: calc(100vw - 313px);
+        margin-bottom: 121px;
+    }
+
+    .filter {
+        margin-left: 141px;
+        min-width: 225px;
+        width: calc(100vw - 521px);
+    }
+}

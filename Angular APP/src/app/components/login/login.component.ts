@@ -28,7 +28,7 @@ export class LoginComponent {
     this.errorMessage=""
     this.loginservice.isLoggedIn().subscribe((isLoggedIn) => {
       if (isLoggedIn){
-        this.route.navigate(['/inicio'])
+        this.route.navigate(['/home'])
       }else{
         this.loginservice.deleteToken()
       }
@@ -43,7 +43,7 @@ export class LoginComponent {
         next:(token)=>{
           this.loading=false
           this.loginservice.setToken(token.token);
-          this.route.navigate(['/inicio'])
+          this.route.navigate(['/home'])
         },
         error:(error)=>{
           this.loading=false
