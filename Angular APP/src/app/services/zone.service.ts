@@ -29,6 +29,13 @@ export class ZoneService {
     return this.http.post(`${this.baseUrl}panels/${idPanel}/zones`,info, { "headers":headers })
   }
 
+  irrigateZone(idPanel:number,id:number,value:string):Observable<any> | null  {
+    let token=this.authService.getToken()
+    if(token == null || idPanel==null || idPanel<0 || id==null || id<0 || value==null) return null
+    const headers = new HttpHeaders().set('authorization', `Bearer ${token}`)
+    return this.http.post(`${this.baseUrl}panels/${idPanel}/zones/${id}-irrigate`,{value:value}, { "headers":headers })
+  }
+
   editZone(idPanel:number,id:number,info:any):Observable<any> | null  {
     let token=this.authService.getToken()
     if(token == null || idPanel==null || idPanel<0 || id==null || id<0 || info==null) return null

@@ -135,10 +135,10 @@ export class HistoryShowComponent implements OnChanges {
       },50)
       return 
     }
-    this.devchartOptions['series'][Object.keys(this.values).findIndex(val=> elem.target.id==val)].name=types[(elem.target.options[elem.target.selectedIndex] as HTMLOptionElement).innerText.split("(")[1].replace(")","").trim()]
-    this.devchartOptions['series'][Object.keys(this.values).findIndex(val=> elem.target.id==val)].data=this.values[(elem.target.options[elem.target.selectedIndex] as HTMLOptionElement).innerText.split("(")[1].replace(")","").trim()][elem.target.value]
-    if((elem.target.options[elem.target.selectedIndex] as HTMLOptionElement).innerText.split("(")[1].replace(")","").trim()=="soil Moisture"){
-      this.devchartOptions['series'][Object.keys(this.values).findIndex(val=> elem.target.id==val)].data=this.values[(elem.target.options[elem.target.selectedIndex] as HTMLOptionElement).innerText.split("(")[1].replace(")","").trim()][elem.target.value].map(dataPoint =>({
+    this.devchartOptions['series'][Object.keys(this.values).findIndex(val=> elem.target.id==val)].name=types[(elem.target.options[elem.target.selectedIndex] as HTMLOptionElement).innerText.split("(")[1].split("/")[0].trim()]
+    this.devchartOptions['series'][Object.keys(this.values).findIndex(val=> elem.target.id==val)].data=this.values[(elem.target.options[elem.target.selectedIndex] as HTMLOptionElement).innerText.split("(")[1].split("/")[0].trim()][elem.target.value]
+    if((elem.target.options[elem.target.selectedIndex] as HTMLOptionElement).innerText.split("(")[1].split("/")[0].trim()=="soil Moisture"){
+      this.devchartOptions['series'][Object.keys(this.values).findIndex(val=> elem.target.id==val)].data=this.values[(elem.target.options[elem.target.selectedIndex] as HTMLOptionElement).innerText.split("(")[1].split("/")[0].trim()][elem.target.value].map(dataPoint =>({
         x: dataPoint["x"],
         y: (dataPoint["y"] * 100).toFixed(2)
       }));

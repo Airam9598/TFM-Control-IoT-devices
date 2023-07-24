@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { Devices } from 'src/app/models/devices.model';
 import { Zones } from 'src/app/models/zones.model';
 import { DeviceService } from 'src/app/services/device.service';
+import { ZoneService } from 'src/app/services/zone.service';
 import { SharedDataService } from 'src/app/shared/data-service';
 
 @Component({
@@ -14,16 +15,20 @@ export class ZoneInfoComponent implements OnChanges {
   @Input() devices:Devices[]
   @Input() cameras:Devices[]
   @Output()close = new EventEmitter();
+  irrigate:boolean
   devicesclasified:{[key:string] : Devices[]}
-  constructor(public dataService:SharedDataService,public deviceService:DeviceService){
+  constructor(public dataService:SharedDataService,public deviceService:DeviceService,public zoneService:ZoneService){
     this.zone=new Zones(-1,"","",0,0,-1)
     this.devices=[]
     this.cameras=[]
+    this.irrigate=false
     this.devicesclasified={
       "air temperature":[],
       "soil temperature":[],
       "soil Moisture":[],
-      "precipitation":[]
+      "precipitation":[],
+      "irrigate":[],
+      "camera":[]
     }
   }
 
@@ -42,9 +47,6 @@ export class ZoneInfoComponent implements OnChanges {
 
   changeValue(info2:string,select:any){
     let extra=""
-    console.log(info2)
-    console.log(this.devicesclasified[info2])
-    console.log(select.target.value)
     if(info2.includes("temperature")){
       extra=this.devicesclasified[info2].find(elem=>elem.id==select.target.value)!.info.data[info2].value +"°"
     }else if(info2.includes("Moisture")){
@@ -52,6 +54,15 @@ export class ZoneInfoComponent implements OnChanges {
     }
 
     (document.getElementById("Info "+info2) as HTMLParagraphElement).innerText=extra
+  }
+
+  changeIrrigate(){
+    this.zoneService.irrigateZone(this.dataService.actPanel.id,this.zone.id,!this.irrigate+"")?.subscribe({
+      next:(result)=>{
+        this.irrigate=!this.irrigate
+      }
+    })
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -67,6 +78,12 @@ export class ZoneInfoComponent implements OnChanges {
       this.devicesclasified["soil temperature"]=this.getValue("soil temperature")
       this.devicesclasified["soil Moisture"]=this.getValue("soil Moisture")
       this.devicesclasified["precipitation"]=this.getValue("precipitation")
+      this.devicesclasified["irrigate"]=this.getValue("irrigate")
+      this.devicesclasified["camera"]=this.getValue("camera")
+
+      this.devicesclasified["irrigate"].forEach(elem=>{
+        if(elem.info["data"]["irrigate"]=="true") this.irrigate=true
+      })
   } 
 }
 

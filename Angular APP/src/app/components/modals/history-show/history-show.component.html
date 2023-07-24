@@ -27,7 +27,7 @@
                 <div class="selectordiv" *ngIf="this.devices.length>1">
                   <select *ngFor="let value of values | keyvalue" id="{{value.key}}" (change)="changeDevice($event)">
                     <option value="">Ninguno</option>
-                    <option value="{{dev.id}}" *ngFor="let dev of devices">{{dev.name +" ("+ dev.types[0].name+")"}}</option>
+                    <option value="{{dev.id}}" *ngFor="let dev of devices">{{dev.name +" ("+ dev.types[0].name}}<p *ngIf="dev.types[0].name=='soil Moisture'"> / m3m-3*100</p> <p *ngIf="dev.types[0].name.includes('temperature')"> / C</p> )</option>
                   </select>
                 </div>
                

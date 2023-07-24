@@ -48,9 +48,10 @@
             </div>
         </div>
         <div class="actions">
-            <button class="blue"><img src="../../../assets/graph.png"> Historial</button>
-            <button class="green"><img src="../../../assets/water.png"> Regar</button>
-            <button class="gray" data-bs-toggle="modal" data-bs-target="#listCamera"><img src="../../../assets/camera.png"> Cámaras</button>
+            <button *ngIf="devices.length>0" class="blue" [routerLink]='["/history"]' [state]="{ name:zone}"><img src="../../../assets/graph.png"> Historial</button>
+            <button (click)="changeIrrigate()" *ngIf='devicesclasified["irrigate"].length>0 && !this.irrigate' class="green"><img src="../../../assets/water.png"> Regar</button>
+            <button (click)="changeIrrigate()" *ngIf='devicesclasified["irrigate"].length>0 && this.irrigate' class="irrigate"><img src="../../../assets/water.png"> Regando...</button>
+            <button *ngIf='devicesclasified["camera"].length>0' class="gray" data-bs-toggle="modal" data-bs-target="#listCamera"><img src="../../../assets/camera.png"> Cámaras</button>
             <button class="gray" data-bs-toggle="modal" data-bs-target="#listDev"><img src="../../../assets/device.png"> Dispositivos</button>
             <button class="yellow" data-bs-toggle="modal" data-bs-target="#listAdvise"><img src="../../../assets/settings.png"> Avisos</button>
         </div>

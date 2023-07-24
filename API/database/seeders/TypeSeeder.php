@@ -30,5 +30,8 @@ class TypeSeeder extends Seeder
         DB::connection('mysql')->table('types')->insert([
             'name' => 'camera',
         ]);
+        DB::connection('mysql')->table('types')->insert([
+            'name' => 'irrigate',
+        ]);
     }
 }

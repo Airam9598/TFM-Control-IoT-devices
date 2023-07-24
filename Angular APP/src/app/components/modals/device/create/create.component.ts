@@ -191,7 +191,8 @@ export class CreateDevComponent {
       'soil temperature': 'Temperatura del suelo',
       'air temperature': 'Temperatura del aire',
       'precipitation': 'Precipitación',
-      'camera': 'Cámara'
+      'camera': 'Cámara',
+      'irrigate':'Riego'
     }
     return type[text]|| text
   }

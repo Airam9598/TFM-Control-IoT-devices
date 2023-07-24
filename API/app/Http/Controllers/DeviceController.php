@@ -52,7 +52,8 @@ class DeviceController extends Controller
             
                     foreach ($mongoData['data'] as $field => $entries) {
                         $mongo_info = $mongoData['data'][$field];
-                        $latestEntry['data'][$field] = end($mongo_info);
+                        if(is_array($mongo_info))$latestEntry['data'][$field] = end($mongo_info);
+                        if(!is_array($mongo_info))$latestEntry['data'][$field] = $mongo_info;
                     }
 
                     $device->info = $latestEntry;
@@ -116,7 +117,14 @@ class DeviceController extends Controller
             ];
             $typeNames = Type::whereIn('id', $request->type)->pluck('name', 'id');
             foreach ($typeNames as $type) {
-                $data['data'][$type] = [];
+                if($type=="irrigate"){
+                    $data['data'][$type] = false;
+                }else if($type=="camera"){
+                    $data['data'][$type] = "";
+                }else{
+                    $data['data'][$type] = [];
+                }
+                
             }
             $newData = DeviceMDB::create($data);
             $newData->save();

@@ -7,6 +7,7 @@ import * as L from 'leaflet';
 import { Devices } from 'src/app/models/devices.model';
 import { DeviceService } from 'src/app/services/device.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Route, Router } from '@angular/router';
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
@@ -21,14 +22,16 @@ export class HistoryComponent implements AfterViewInit {
   countries:Array<string>
   actZone:Zones
   actDev:Devices
+  tempZone:any
   @ViewChild('historyShow') historymodal: any;
-  constructor(public zoneService:ZoneService,public dataService:SharedDataService,public deviceService:DeviceService,public modalService: NgbModal){
+  constructor(public router:Router,public zoneService:ZoneService,public dataService:SharedDataService,public deviceService:DeviceService,public modalService: NgbModal){
     this.zones=[]
     this.devices=[]
     this.actZone=new Zones(-1,"","",0,0,-1)
     this.actDev=new Devices("",-1,"","",0,this.actZone,[],[])
     this.backUpZones=[]
     this.countries=[]
+    this.tempZone=this.router.getCurrentNavigation()!.extras.state
   }
 
   ngAfterViewInit(): void {
@@ -76,6 +79,13 @@ export class HistoryComponent implements AfterViewInit {
 
     
     }).catch((error) => {});
+
+    if(this.tempZone){
+      this.actZone=this.tempZone['name'] as Zones
+      console.log(this.actZone)
+      this.openHistory(this.actZone)
+
+    }
   }
 
   loaddata(){

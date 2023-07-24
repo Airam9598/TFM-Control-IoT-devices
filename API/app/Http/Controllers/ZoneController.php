@@ -145,6 +145,35 @@ class ZoneController extends Controller
         return trans('validation.custom.exist',['attribute' => 'La zona', 'error']);
     }
 
+    public function irrigate(Request $request, String $id, $id_zone)
+    {
+        $user=$this->databaseConfig();
+        $panel=$this->getPanel($id);
+        if($panel != null && $request->value){
+
+            if($panel->pivot->admin== true || $panel->pivot->irrigate==true){
+                $zone = $panel->zones()->get()->find($id_zone);
+                if($zone==null){
+                    return trans('validation.custom.exist',['attribute' => 'La zona', 'error']);
+                }
+                $zone = $panel->zones()->with('devices','devices.zone', 'devices.types')->get()->pluck('devices')->flatten();
+                foreach ($zone as $device) {
+                    if ($device['types'][0]['name'] == "irrigate") {
+                        DeviceMDB::where('_id', $device->data_id)->update(['data.irrigate' => $request->value]);
+                    }
+                }
+                return response()->json(['success' => true, 'data' => $zone], 200);
+            }else{
+                return response()->json(['error' => 'No tienes permisos'], 550);
+            }
+
+
+        }else{
+           return trans('validation.custom.exist',['attribute' => 'El panel', 'error'],404);
+        }
+        
+    }
+
 
     public function update(Request $request, String $id, $id_zone)
     {

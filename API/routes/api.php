@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth:sanctum'],function(){
     Route::delete('/users',[UserController::class,'destroy']);
 
     Route::get('/panels/{id}/zones', [ZoneController::class,'index']);
+    Route::post('/panels/{id}/zones/{id_zone}-irrigate', [ZoneController::class,'irrigate']);
     Route::get('/panels/{id}/{device}', [ZoneController::class,'index']);
     Route::get('/panels/{id}/zones/{id_zone}', [ZoneController::class,'show']);
     Route::post('/panels/{id}/zones', [ZoneController::class,'store']);
