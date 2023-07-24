@@ -1,0 +1,19 @@
+<div class="modal fade" id="listAdvise" tabindex="-1" aria-labelledby="listAdvise" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Avisos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" id="closelistAdvise" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="adviseBox">
+                <h3><i class="bi bi-exclamation-diamond"></i>Avisos</h3>
+                <p *ngIf="advices.length == 0"> No hay avisos</p>
+                <ul *ngFor="let advice of advices">
+                   <li>{{advice}}</li>
+                </ul>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>

@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
+import { Users } from 'src/app/models/users.model';
 import { AccessService } from 'src/app/services/access-service.service';
+import { SharedDataService } from 'src/app/shared/data-service';
 
 
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
-  providers:[AccessService]
+  styleUrls: ['./login.component.css']
 })
 
 
@@ -22,12 +23,13 @@ export class LoginComponent {
   errorMessage: string
   error:boolean
   loading:boolean
-  constructor(private loginservice:AccessService, private route: Router){
+  constructor(private loginservice:AccessService, private route: Router, private dataService:SharedDataService){
     this.error=false
     this.loading=false
     this.errorMessage=""
     this.loginservice.isLoggedIn().subscribe((isLoggedIn) => {
       if (isLoggedIn){
+        this.dataService.addUser(this.loginservice.user)
         this.route.navigate(['/home'])
       }else{
         this.loginservice.deleteToken()
@@ -38,12 +40,27 @@ export class LoginComponent {
   onSubmit() {
     this.loading=true
     this.error=false
+    this.loginservice.user=new Users(-1,"","","",[],"")
     if(this.login.value.email != null && this.login.value.password != null){
       this.loginservice.login(this.login.value.email, this.login.value.password).subscribe({
         next:(token)=>{
-          this.loading=false
-          this.loginservice.setToken(token.token);
-          this.route.navigate(['/home'])
+          this.loginservice.isLoggedIn().subscribe({
+            next:(user)=>{
+              this.loginservice.setToken(token.token);
+              this.dataService.addUser(this.loginservice.user)
+              this.dataService.getUser().then((userData: Users) => {
+               this.route.navigate(['/home'])
+              }).catch((error) => {
+              });
+              this.loading=false
+             
+            },
+            error:(error2)=>{
+              this.loading=false
+              this.error=true;
+              this.errorMessage = error2.error.message;
+            } 
+          });
         },
         error:(error)=>{
           this.loading=false

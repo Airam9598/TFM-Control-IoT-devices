@@ -33,14 +33,45 @@ class DeviceController extends Controller
         return $panel;
     }
 
-    public function index(Request $request,$id,$zone_id)
+    public function index(Request $request,$id,$zone_id,$info=null)
     {
         $user=$this->databaseConfig();
+        $panel=$this->getPanel($id,$zone_id);
         $query = $request->input('q');
         if($query!=null){
             $zone=$this->getZone($id,$zone_id);
             $devices= $zone->devices()->get()->where('name', 'like', '%'.$query.'%')
                     ->orWhere('data_id', 'like', '%'.$query.'%')->with('zone', 'types');
+        }else if($info == "recent" && ($panel->pivot->admin== true || $panel->pivot->irrigate==true)){
+            $zone=$this->getZone($id,$zone_id);
+            if($zone !=null){
+                $devices= $zone->devices()->with('zone', 'types')->get();
+                foreach ($devices as $device) {
+                    $mongoData = DeviceMDB::find($device->data_id);
+                    $latestEntry = ['_id' => $device->data_id, 'data' => []];
+            
+                    foreach ($mongoData['data'] as $field => $entries) {
+                        $mongo_info = $mongoData['data'][$field];
+                        $latestEntry['data'][$field] = end($mongo_info);
+                    }
+
+                    $device->info = $latestEntry;
+                }
+            }else{
+                return trans('validation.custom.exist',['attribute' => 'El panel o la zona', 'error'],404);
+            }
+
+        }else if($info == "history" && ($panel->pivot->admin== true || $panel->pivot->history==true)){
+            $zone=$this->getZone($id,$zone_id);
+            if($zone !=null){
+                $devices= $zone->devices()->with('zone', 'types')->get();
+                foreach ($devices as $device) {
+                    $mongoData = DeviceMDB::find($device->data_id);
+                    $device["info"]=$mongoData;
+                }
+            }else{
+                return trans('validation.custom.exist',['attribute' => 'El panel o la zona', 'error'],404);
+            }
         }else{
             $zone=$this->getZone($id,$zone_id);
             if($zone !=null){
@@ -142,10 +173,10 @@ class DeviceController extends Controller
             $requestData = $request->all();
             $requestData['zone_id'] = $zone_id;
             $validator = Validator::make($requestData, [
-                'name' => ['required','string','min:2','max:50'],
-                'data_id' =>['required','string','min:2','max:50'],
-                'zone_id' =>['required','exists:zones,id'],
-                'type' =>['required','exists:types,id'],
+                'name' => ['sometimes','string','min:2','max:50'],
+                'data_id' =>['sometimes','string','min:2','max:50'],
+                'zone_id' =>['sometimes','exists:zones,id'],
+                'type' =>['sometimes','exists:types,id'],
             ]);
 
             if ($validator->fails()) {

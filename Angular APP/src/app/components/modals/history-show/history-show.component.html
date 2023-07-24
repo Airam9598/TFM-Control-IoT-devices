@@ -1,0 +1,46 @@
+<button class="new d-none" data-bs-toggle="modal" data-bs-target="#historyShow" id="historyShowbut"><i class="bi bi-plus-circle" ></i></button> 
+<div class="modal fade" id="historyShow" tabindex="-1" aria-labelledby="historyShow" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Historial de <p *ngIf="zone.id>0">{{zone.name}}</p></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" id="closehistoryShow" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="adviseBox">
+
+              <div class="chartBox" id="chartdev" *ngIf='this.values["soil temperature"]!= undefined'>
+                <h1>Historial</h1>
+                <apx-chart *ngIf="reloadChart"
+                  id="chartdevchart"
+                  [series]="devchartOptions['series']"
+                  [chart]="devchartOptions['chart']"
+                  [labels]="devchartOptions['labels']"
+                  [responsive]="devchartOptions['responsive']"
+                  [colors]="devchartOptions['colors']"
+                  [fill]="devchartOptions['fill']"
+                  [stroke]="devchartOptions['stroke']"
+                  [dataLabels]="devchartOptions['dataLabels']"
+                  [legend]="devchartOptions['legend']"
+                  [xaxis]="devchartOptions['xaxis']"
+                ></apx-chart>
+                <div class="selectordiv" *ngIf="this.devices.length>1">
+                  <select *ngFor="let value of values | keyvalue" id="{{value.key}}" (change)="changeDevice($event)">
+                    <option value="">Ninguno</option>
+                    <option value="{{dev.id}}" *ngFor="let dev of devices">{{dev.name +" ("+ dev.types[0].name+")"}}</option>
+                  </select>
+                </div>
+               
+            </div>
+               <!-- <p *ngIf="devices.length == 0"> No hay dispositivos</p>
+                <ul>
+                   <li data-bs-toggle="modal" data-bs-target="#EditDev" (click)="setDevice(device)" *ngFor="let device of devices">
+                    <img src="{{setImage(device.types)}}">
+                    <p>{{device.name}}</p>
+                   </li>
+                </ul>-->
+            </div>
+        </div>
+      </div>
+    </div>
+</div>

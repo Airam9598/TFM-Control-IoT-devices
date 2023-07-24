@@ -1,7 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { Panels } from 'src/app/models/panels.model';
 import { Users } from 'src/app/models/users.model';
 import { AccessService } from 'src/app/services/access-service.service';
+import { PanelService } from 'src/app/services/panel.service';
+import { SharedDataService } from 'src/app/shared/data-service';
 
 @Component({
   selector: 'app-user-icon',
@@ -9,13 +12,26 @@ import { AccessService } from 'src/app/services/access-service.service';
   styleUrls: ['./user-icon.component.css']
 })
 export class UserIconComponent {
-  @Input() user:Users=new Users(-1,"","","",[],"")
+  actUser:Users
+  constructor(private loginservice:AccessService, private route: Router, private dataService:SharedDataService, private panelservice:PanelService){
+    this.actUser=loginservice.user
+    this.dataService.getUser().then((userData: Users) => {
+      this.actUser = userData
+    }).catch((error) => {
+    });
+  }
 
-  constructor(private loginservice:AccessService, private route: Router){}
+  getUser(){
+    this.dataService.getUser().then((userData: Users) => {
+      this.actUser = userData
+    }).catch((error) => {
+    });
+  }
   
   closeSes(){
     this.loginservice.logout()?.subscribe({
       next:(response)=>{
+        this.dataService.logout()
         this.route.navigate(['/'])
       },
       error:(error)=>{

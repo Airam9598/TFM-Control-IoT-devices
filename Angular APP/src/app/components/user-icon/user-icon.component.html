@@ -1,11 +1,17 @@
 
-<div class="dropdown user-box">
+<div class="dropdown user-box" *ngIf="actUser.id >0">
     <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <div class=icon-box><i class="bi bi-person-fill"></i></div> {{user.name}}
+        <div class=icon-box><i class="bi bi-person-fill"></i></div> {{actUser.name}}
     </button>
     <ul class="dropdown-menu">
-      <li><a class="dropdown-item" ><i class="bi bi-person-fill"></i>Perfil</a></li>
+      <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#EditUserPanel" ><i class="bi bi-person-fill"></i>Perfil</a></li>
+      <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createPanel" ><i class="bi bi-plus-square-fill"></i>Crear panel</a></li>
       <li><a class="dropdown-item" (click)="closeSes()"><i class="bi bi-box-arrow-left"></i>Cerrar Sesión</a></li>
     </ul>
-  </div>
+</div>
+
+<modal-createPanel ></modal-createPanel>
+
+<modal-editUser (dataEvent)="getUser()" ></modal-editUser>
+
 

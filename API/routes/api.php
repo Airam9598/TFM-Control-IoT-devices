@@ -7,6 +7,7 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TypeController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -31,6 +32,7 @@ Route::group(['middleware' => 'auth:sanctum'],function(){
 
     Route::get('/me', [AuthController::class,'userDetails']);
     Route::get('/logout', [AuthController::class,'logout']);
+    Route::get('/types', [TypeController::class,'index']);
 
     Route::get('/panels', [PanelController::class,'index']);
     Route::get('/panels/{id}', [PanelController::class,'show']);
@@ -48,12 +50,14 @@ Route::group(['middleware' => 'auth:sanctum'],function(){
     Route::delete('/users',[UserController::class,'destroy']);
 
     Route::get('/panels/{id}/zones', [ZoneController::class,'index']);
+    Route::get('/panels/{id}/{device}', [ZoneController::class,'index']);
     Route::get('/panels/{id}/zones/{id_zone}', [ZoneController::class,'show']);
     Route::post('/panels/{id}/zones', [ZoneController::class,'store']);
     Route::patch('/panels/{id}/zones/{id_zone}',[ZoneController::class,'update']);
     Route::delete('/panels/{id}/zones/{id_zone}',[ZoneController::class,'destroy']);
 
     Route::get('/panels/{id}/zones/{id_zone}/devices', [DeviceController::class,'index']);
+    Route::get('/panels/{id}/zones/{id_zone}/devices-{info}/', [DeviceController::class,'index']);
     Route::get('/panels/{id}/zones/{id_zone}/devices/{device_id}', [DeviceController::class,'show']);
     Route::get('/panels/{id}/zones/{id_zone}/devices/{device_id}/{info}', [DeviceController::class,'show']);
     Route::get('/panels/{id}/zones/{id_zone}/devices/{device_id}', [DeviceController::class,'show']);

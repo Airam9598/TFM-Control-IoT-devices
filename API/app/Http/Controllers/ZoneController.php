@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Zone;
 use Illuminate\Http\Request;
+use App\Models\DeviceMDB;
 
 class ZoneController extends Controller
 {
@@ -21,7 +22,7 @@ class ZoneController extends Controller
     }
     
 
-    public function index(Request $request,String $id)
+    public function index(Request $request,String $id, $device=null)
     {
         $user=$this->databaseConfig();
         $query = $request->input('q');
@@ -32,6 +33,34 @@ class ZoneController extends Controller
             }else{
                 return trans('validation.custom.exist',['attribute' => 'El panel', 'error'],404);
             }
+        }else if($device=="device"){
+            $panel=$this->getPanel($id);
+            if($panel != null){
+                $zone = $panel->zones()->with('devices','devices.zone', 'devices.types')->get()->pluck('devices')->flatten();
+                foreach ($zone as $device) {
+                    $mongoData = DeviceMDB::find($device->data_id);
+                    $latestEntry = ['_id' => $device->data_id, 'data' => []];
+            
+                    foreach ($mongoData['data'] as $field => $entries) {
+                        $mongo_info = $mongoData['data'][$field];
+                        $latestEntry['data'][$field] = end($mongo_info);
+                    }
+
+                    $device->info = $latestEntry;
+                }
+            }
+        }else if($device=="devicefull"){
+            $panel=$this->getPanel($id);
+            if($panel != null){
+                $zone = $panel->zones()->with('devices','devices.zone', 'devices.types')->get()->pluck('devices')->flatten();
+                foreach ($zone as $device) {
+                    $mongoData = DeviceMDB::find($device->data_id);
+                    $device["info"]=$mongoData;
+                }
+            }else{
+               return trans('validation.custom.exist',['attribute' => 'El panel', 'error'],404);
+            }
+
         }else{
             $panel=$this->getPanel($id);
             if($panel != null){
@@ -77,6 +106,25 @@ class ZoneController extends Controller
                 'lng' => $request->lng,
                 'panel_id'=> $id,
             ];
+            if($request->max_soil_moisture){
+                $zoneData['max_soil_moisture']=$request->max_soil_moisture;
+            }
+            if($request->min_soil_moisture){
+                $zoneData['min_soil_moisture']=$request->min_soil_moisture;
+            }
+            if($request->max_soil_temp){
+                $zoneData['max_soil_temp']=$request->max_soil_temp;
+            }
+            if($request->min_soil_temp){
+                $zoneData['min_soil_temp']=$request->min_soil_temp;
+            }
+            if($request->min_air_temp){
+                $zoneData['min_air_temp']=$request->min_air_temp;
+            }
+
+            if($request->max_air_temp){
+                $zoneData['max_air_temp']=$request->max_air_temp;
+            }
 
 
             $zone = Zone::create($zoneData);

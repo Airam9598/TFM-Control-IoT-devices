@@ -1,10 +1,11 @@
 
-<modal-createPanel *ngIf="panels.length==0" (dataEvent)="reloadPanels()"></modal-createPanel>
-<div *ngIf="panels.length==0" class="container nopanel">
+<modal-createPanel (dataEvent)="reload()" *ngIf="panels.length==0"></modal-createPanel>
+<section *ngIf="panels.length==0 && user.id>0" class="container nopanel">
     <h1 *ngIf="user.name != '' ">Bienvenido {{user.name}} <button (click)="closeSes()">Cerrar sesión</button></h1>
     <button data-bs-toggle="modal" data-bs-target="#createPanel">Crea un panel</button>
-    <p>o <br> espera a que alguien te añada al suyo </p>
-    <div class="spinner-border" role="status"></div>
+    <button (click)="reloadPanels()">Buscar Paneles</button>
+    <div *ngIf="loading" class="spinner-border" role="status"></div>
+    <p *ngIf="error" class="error" id="error">No se encontró ningún panel</p>
     <ul class="circles">
         <li></li>
         <li></li>
@@ -18,20 +19,18 @@
         <li></li>
         <li></li>
     </ul>
-</div>
+</section>
 
 
 
-<app-user-icon *ngIf="panels.length>0" [user]="user"></app-user-icon>
-<div *ngIf="panels.length>0" class="container p-0">
-    <app-navigation [panels]="panels" *ngIf="panels.length>0"> </app-navigation>
-    
+<section *ngIf="panels.length>0 && user.id>0" class="container p-0">
     <div class="main-box">
         <div class="filter">
             <div>
                 <p>País</p>
-                <select>
-                    <option value="España">España</option>
+                <select (change)="filter($event)">
+                    <option value="">Selecciona un país</option>
+                    <option  *ngFor="let country of countryKeys() " value="{{country}}">{{country}}</option>
                 </select>
             </div>
             
@@ -54,7 +53,10 @@
 
             <div class="chartBox" id="chartcountryzones">
                 <h1>Zonas de riego por país</h1>
-                <apx-chart
+                <div class="noDevice" *ngIf="zones.length==0">
+                    <td colspan="4" style="padding: 12px;font-size: 1.2em;border-radius: 7px">No hay zonas</td>
+                </div>
+                <apx-chart *ngIf="zones.length>0"
                 [title]="zonechartOptions['title']"
                   [series]="zonechartOptions['series']"
                   [chart]="zonechartOptions['chart']"
@@ -82,10 +84,18 @@
                     <tr class="noDevice" *ngIf="devices.length==0">
                         <td colspan="4">No hay dispositivos</td>
                     </tr>
+                    <tr *ngFor="let dev of devices">
+                        <td>{{dev.name}}</td>
+                        <td>{{dev.zone.name}}</td>
+                        <td>{{dev.zone.country}}</td>
+                        <td *ngIf='dev.info.data[dev.types[0].name]!= undefined'>{{getDate(dev.info.data[dev.types[0].name].date.$date.$numberLong)
+                        }}</td>
+                        <td  *ngIf='dev.info.data[dev.types[0].name]== undefined'>Sin datos</td>
+                    </tr>
                 </tbody>
 
             </table>
         </div>
-        <app-advisor></app-advisor>
+        <app-advisor [advices]="advises"></app-advisor>
     </div>
-</div>
+</section>

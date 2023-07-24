@@ -180,10 +180,10 @@ class UserController extends Controller
                 return response()->json(['success' => true, 'data' => $panel->users()->find($id_user)], 200);
             }else if($id== null){
                 $validator = Validator::make($request->all(), [
-                    'name' => ['required','string','min:2','max:50'],
-                    'email' =>['required','email','min:5','max:50','unique:users,email'],
-                    'password' =>['required',Password::min(8)->mixedCase()->letters()->numbers()->symbols()],
-                    'oldpassword' =>['required', 'different:password']
+                    'name' => ['sometimes','string','min:2','max:50'],
+                    'email' =>['sometimes','email','min:5','max:50','unique:users,email'],
+                    'password' =>['sometimes',Password::min(8)->mixedCase()->letters()->numbers()->symbols()],
+                    'oldpassword' =>['sometimes','different:password']
                 ]);
     
                 if ($validator->fails()) {

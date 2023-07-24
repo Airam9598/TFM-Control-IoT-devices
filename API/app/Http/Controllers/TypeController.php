@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Type;
 use Illuminate\Http\Request;
 
@@ -10,6 +12,7 @@ class TypeController extends Controller
 {
     private function databaseConfig(){
         Config::set('database.default', 'mysql');
+        return $user = Auth::user();
     }
 
     public function index(Request $request)
@@ -17,10 +20,9 @@ class TypeController extends Controller
         $this->databaseConfig();
         $query = $request->input('q');
         if($query!=null){
-             $type = Type::whereNull('deleted_at')->where('name', 'like', '%'.$query.'%')
-                    ->paginate(10);
+             $type = Type::whereNull('deleted_at')->where('name', 'like', '%'.$query.'%');
         }else{
-            $type = Type::whereNull('deleted_at')->paginate(10);
+            $type = Type::get();
         }
         return response()->json(['success' => true, 'data' => $type],200);
     }

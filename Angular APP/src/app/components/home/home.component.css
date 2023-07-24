@@ -62,6 +62,45 @@
     transition: 0.1s;
 }
 
+.error{
+    background: #ff0000a6;
+    padding: 2px 30px;
+    color: white;
+    margin: 0;
+    margin-bottom: -14px;
+    font-size: 1.2em !important;
+    text-align: center;
+    border-radius: 4px;
+    animation:apearGeneral 0.2s linear 0s backwards, hide 0.5s linear 5s forwards;
+    width: max-content;
+}
+
+@keyframes hide {
+    0%{
+        opacity: 1;
+        transform: scale(1);
+    }
+    100%{
+        opacity: 0;
+        transform: scale(0);
+    }
+    
+}
+
+@keyframes apearGeneral {
+
+    0%{
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    100%{
+        transform: scale(1);
+        opacity: 1;
+    }
+
+}
+
 .spinner-border{
     color: var(--default-white);
     margin-bottom: -17px;
@@ -239,6 +278,13 @@
     overflow: scroll;
 }
 
+.table-responsive{
+    height: 400px;
+    overflow-y: auto;
+    min-height: unset;
+    display: block;
+}
+
 th{
     width: 25%;
 }
@@ -276,7 +322,7 @@ th{
 }
 
 .filter >div >select{
-    width: 135px;
+    width: max-content  ;
     padding: 5px;
     font-weight: bold;
     border-radius: 5px;

@@ -2,7 +2,9 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Panels } from 'src/app/models/panels.model';
+import { AccessService } from 'src/app/services/access-service.service';
 import { PanelService } from 'src/app/services/panel.service';
+import { SharedDataService } from 'src/app/shared/data-service';
 
 @Component({
   selector: 'modal-createPanel',
@@ -18,7 +20,7 @@ export class CreateComponent {
   errorMessage: string
   @Output() dataEvent = new EventEmitter();
   
-  constructor(private panelservice:PanelService,private modalService: NgbModal){
+  constructor(private panelservice:PanelService,private modalService: NgbModal,private loginservice:AccessService, private dataService:SharedDataService){
     this.error=false
     this.errorMessage=""
   }
@@ -28,9 +30,11 @@ export class CreateComponent {
     if (panelName) {
       this.panelservice.setPanel(panelName)?.subscribe({
         next:(response)=>{
-          (document.getElementById("close") as HTMLButtonElement).click()
+          (document.getElementById("closeCreatePanel") as HTMLButtonElement).click()
           this.dataEvent.emit();
-
+          let tempPanels= this.dataService.panels
+          tempPanels.push(response.data as Panels)
+          this.dataService.updatePanels(tempPanels)
           //this.loading=false
         },
         error:(error)=>{

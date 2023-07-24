@@ -14,12 +14,24 @@ import { ZoneInfoComponent } from './components/zone-info/zone-info.component';
 import { DevicesComponent } from './components/devices/devices.component';
 import { ErrorComponent } from './components/error/error.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CreateComponent } from './components/modals/panel/create/create.component';
 import { UserIconComponent } from './components/user-icon/user-icon.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { AdvisorComponent } from './components/advisor/advisor.component';
+import { SharedDataService } from './shared/data-service';
+import { DeleteComponent } from './components/modals/delete/delete.component';
+import { EditComponent } from './components/modals/user/edit/edit.component';
+import { EditZoneComponent } from './components/modals/zone/edit/edit.component';
+import { ListCameraComponent } from './components/modals/camera/list/list.component';
+import { AdviseList } from './components/modals/advise/list/list.component';
+import { DevListComponent } from './components/modals/device/list/list.component';
+import { CreateDevComponent } from './components/modals/device/create/create.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { HistoryShowComponent } from './components/modals/history-show/history-show.component';
+
+
 
 @NgModule({
   declarations: [
@@ -36,7 +48,15 @@ import { AdvisorComponent } from './components/advisor/advisor.component';
     ErrorComponent,
     CreateComponent,
     UserIconComponent,
-    AdvisorComponent
+    AdvisorComponent,
+    DeleteComponent,
+    EditComponent,
+    EditZoneComponent,
+    ListCameraComponent,
+    AdviseList,
+    DevListComponent,
+    CreateDevComponent,
+    HistoryShowComponent
   ],
   imports: [
     BrowserModule,
@@ -45,8 +65,11 @@ import { AdvisorComponent } from './components/advisor/advisor.component';
     HttpClientModule,
     NgbModule,
     NgApexchartsModule,
+    TranslateModule.forRoot({
+      defaultLanguage: 'es'
+  })
   ],
-  providers: [],
+  providers: [SharedDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

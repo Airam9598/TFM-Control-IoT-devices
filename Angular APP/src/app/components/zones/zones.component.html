@@ -1,1 +1,42 @@
-<p>zones works!</p>
+<div class="main-box">
+    <module-zone-edit [actZone]="actZone" *ngIf="zones != undefined" (dataEvent)="updateZone($event)"></module-zone-edit>
+    <div class="filter">
+        <div>
+            <p>País</p>
+            <select (change)="filter($event)">
+                <option value="">Selecciona un país</option>
+                <option  *ngFor="let country of countries " value="{{country}}">{{country}}</option>
+            </select>
+        </div>
+        
+    </div>
+    <div class="zone-box">
+        <h3>Lista de zonas</h3>
+        <button class="btn" data-bs-toggle="modal" data-bs-target="#EditZone"><i class="bi bi-plus"></i>Crear Zona</button>
+        <table class="table table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>País</th>
+                  </tr>
+            </thead>
+            <tbody>
+                <tr (click)="actZone=zone" *ngFor="let zone of zones">
+                    <td style="display: none;">{{zone.id}}</td>
+                    <td>{{zone.name}}</td>
+                    <td>{{zone.country}}</td>
+                </tr>
+                <tr class="noZone" *ngIf="zones.length==0">
+                    <td colspan="4">No hay zonas</td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <div id="map"></div>
+    <app-zone-info [devices]="devices" (close)="resetZone()" [zone]="actZone" *ngIf="actZone.id>0"></app-zone-info>
+    <modal-adviselist [devices]="devices"></modal-adviselist>
+    <modal-devlist  (dataEvent)="changeDevice($event)" [devices]="devices"></modal-devlist>
+    <modal-createDev [actZone]="actZone" [actDev]="actDev" (delete)="deleteDevice($event)" (dataEvent2)="changeDevice($event)" (dataEvent)="addDevice($event)" ></modal-createDev>
+    <modal-camera-list [devices]="devices"></modal-camera-list>
+</div>

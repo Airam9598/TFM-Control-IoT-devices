@@ -1,1 +1,28 @@
-<p>configuration works!</p>
+<div class="main-box" *ngIf="actPanel.id >0">
+    <ul class="menu">
+        <li (click)="changePanel($event)" class="nav-item active"><i class="bi bi-columns"></i>Panel</li>
+        <li (click)="changePanel($event)" class="nav-item"><i class="bi bi-people-fill"></i>Usuarios</li>
+    </ul>
+    
+    <section id="panel" *ngIf="activePanel=='Panel'">
+        <h3>Configuración del Panel <button data-bs-toggle="modal" data-bs-target="#deleteItem" class="remove"><i class="bi bi-trash-fill"></i> Eliminar</button></h3>
+        <form novalidate [formGroup]="panelform" (ngSubmit)="editPanel()">
+            <label for="name">
+                <p>Nombre</p>
+                <input class="form-control" (keyup)="checkvalid($event)" type="text" minlength="5" maxlength="50" name="name" id="name" formControlName="name" placeholder="Nombre" required>
+            </label>
+            <label for="name">
+                <p>Diferencia de días desde el último envío de información de un dispositivo</p>
+                <input class="form-control" (keyup)="checkvalid($event)" type="number" min="0" name="diference_days" id="diference_days" formControlName="diference_days" placeholder="Días" required>
+            </label>
+            <p *ngIf="error" class="error" id="error">{{errorMessage}}</p>
+            <input class="btn" type="submit" value="Editar" [disabled]="!panelform.valid">
+        </form>
+    </section>
+
+
+    <section id="users" *ngIf="activePanel=='Usuarios'">
+        <h3>Administrador de usuarios</h3>
+    </section>
+    <modal-delete (activedelete)="deletePanel()" [item]="actPanel" [text]='text'></modal-delete>
+</div>

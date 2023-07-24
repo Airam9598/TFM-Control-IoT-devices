@@ -1,1 +1,58 @@
-<p>zone-info works!</p>
+<section>
+    <h2>{{zone.name}}</h2>
+    <button class="conf" data-bs-toggle="modal" data-bs-target="#EditZone"><i class="bi bi-gear-fill"></i>Configuración</button>
+    <button class="close" (click)="closePanel()" >X</button>
+    <div class="box">
+        <div class="info">
+            <div class="orange" *ngIf='this.devicesclasified["air temperature"].length>0'>
+                Temperatura del aire
+                <div>
+                    <img src="../../../assets/temp.png">
+                    <p id='Info air temperature'>{{this.devicesclasified["air temperature"][0].info.data["air temperature"].value}}°</p>
+                </div>
+                <select (change)="changeValue('air temperature',$event)" *ngIf="this.devicesclasified['air temperature'].length>1">
+                    <option *ngFor="let dev of this.devicesclasified['air temperature']" value="{{dev.id}}" >{{dev.name}}</option>
+                </select>
+            </div>
+            <div class="orange2" *ngIf='this.devicesclasified["soil temperature"].length>0'>
+                Temperatura del suelo
+                <div>
+                    <img src="../../../assets/temp.png">
+                    <p id='Info soil temperature'>{{this.devicesclasified["soil temperature"][0].info.data["soil temperature"].value}}°</p>
+                </div>
+                <select (change)="changeValue('soil temperature',$event)" *ngIf="this.devicesclasified['soil temperature'].length>1">
+                    <option *ngFor="let dev of this.devicesclasified['soil temperature']" value="{{dev.id}}" >{{dev.name}}</option>
+                </select>
+            </div>
+
+            <div class="blue3" *ngIf='this.devicesclasified["soil Moisture"].length>0'>
+                Humedad del aire
+                <div>
+                    <img src="../../../assets/moisture.png">
+                    <p id='Info soil Moisture'>{{(this.devicesclasified["soil Moisture"][0].info.data["soil Moisture"].value* 100).toFixed(2)}}</p>
+                </div>
+                <select (change)="changeValue('soil Moisture',$event)" *ngIf="this.devicesclasified['soil Moisture'].length>1">
+                    <option *ngFor="let dev of this.devicesclasified['soil Moisture']" value="{{dev.id}}" >{{dev.name}}</option>
+                </select>
+            </div>
+
+            <div class="blue2" *ngIf='this.devicesclasified["precipitation"].length>0'>
+                Precipitación
+                <div>
+                    <img src="../../../assets/water.png">
+                    <p id='Info precipitation'>{{this.devicesclasified["precipitation"][0].info.data["precipitation"].value}}mm</p>
+                </div>
+                <select (change)="changeValue('precipitation',$event)" *ngIf="this.devicesclasified['precipitation'].length>1">
+                    <option *ngFor="let dev of this.devicesclasified['precipitation']" value="{{dev.id}}" >{{dev.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="actions">
+            <button class="blue"><img src="../../../assets/graph.png"> Historial</button>
+            <button class="green"><img src="../../../assets/water.png"> Regar</button>
+            <button class="gray" data-bs-toggle="modal" data-bs-target="#listCamera"><img src="../../../assets/camera.png"> Cámaras</button>
+            <button class="gray" data-bs-toggle="modal" data-bs-target="#listDev"><img src="../../../assets/device.png"> Dispositivos</button>
+            <button class="yellow" data-bs-toggle="modal" data-bs-target="#listAdvise"><img src="../../../assets/settings.png"> Avisos</button>
+        </div>
+    </div>
+</section>

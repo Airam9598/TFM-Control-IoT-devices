@@ -1,0 +1,25 @@
+<div class="modal fade" id="listDev" tabindex="-1" aria-labelledby="listDev" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Dispositivos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" id="closelistDev" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="menu">
+                <button class="new" data-bs-toggle="modal" data-bs-target="#EditDev"><i class="bi bi-plus-circle" ></i> Nuevo dispositivo</button> 
+                <button class="edit"><i class="bi bi-gear"></i>Editar</button>
+            </div>
+            <div class="adviseBox">
+                <p class="noone" *ngIf="devices.length == 0"> No hay dispositivos</p>
+                <ul>
+                   <li data-bs-toggle="modal" data-bs-target="#EditDev" (click)="setDevice(device)" *ngFor="let device of devices">
+                    <img src="{{setImage(device.types)}}">
+                    <p>{{device.name}}</p>
+                   </li>
+                </ul>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>

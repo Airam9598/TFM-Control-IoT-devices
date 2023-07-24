@@ -1,7 +1,7 @@
 <div class="adviseBox">
  <h3><i class="bi bi-exclamation-diamond"></i>Avisos</h3>
  <p *ngIf="advices.length == 0"> No hay avisos</p>
- <ul *ngFor="let advice of advices">
-    <li>advice</li>
+ <ul >
+    <li *ngFor="let advice of advices">{{advice}}</li>
  </ul>
 </div>

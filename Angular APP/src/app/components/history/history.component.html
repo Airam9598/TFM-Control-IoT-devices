@@ -1,1 +1,37 @@
-<p>history works!</p>
+<div class="main-box">
+    <div class="filter">
+        <div>
+            <p>País</p>
+            <select (change)="filter($event)">
+                <option value="">Selecciona un país</option>
+                <option  *ngFor="let country of countries " value="{{country}}">{{country}}</option>
+            </select>
+        </div>
+        
+    </div>
+    <div class="zone-box">
+        <h3>Lista de zonas</h3>
+        <table class="table table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>País</th>
+                  </tr>
+            </thead>
+            <tbody>
+                <tr (click)="openHistory(zone)" *ngFor="let zone of zones">
+                    <td style="display: none;">{{zone.id}}</td>
+                    <td>{{zone.name}}</td>
+                    <td>{{zone.country}}</td>
+                </tr>
+                <tr class="noZone" *ngIf="zones.length==0">
+                    <td colspan="4">No hay zonas</td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <div id="map3"></div>
+</div>
+
+<modal-history-show [devices]="devices" [zone]="actZone"></modal-history-show>

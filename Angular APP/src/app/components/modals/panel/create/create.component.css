@@ -54,3 +54,10 @@ input[type="text"]:focus-visible {
     transform: scale(1.05);
     transition: 0.1s;
 }
+
+@media (max-width: 750px) {
+    form{
+        padding: 5px;
+        width: 90%;
+    }
+}

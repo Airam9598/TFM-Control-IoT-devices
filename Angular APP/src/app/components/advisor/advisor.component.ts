@@ -7,9 +7,8 @@ import { Zones } from 'src/app/models/zones.model';
   styleUrls: ['./advisor.component.css']
 })
 export class AdvisorComponent {
-  @Input() user:Zones=new Zones(-1,"","",-1,0,0)
-  
-  advices:Array<String>;
+  @Input() zone:Zones=new Zones(-1,"","",-1,0,0)
+  @Input() advices:Array<string>
   constructor(){
     this.advices=[]
   }

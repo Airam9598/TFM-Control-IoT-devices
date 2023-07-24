@@ -40,8 +40,7 @@ export class RegistryComponent {
       this.loginservice.registry(this.registry.value.name,this.registry.value.email, this.registry.value.password,this.registry.value.repassword).subscribe({
         next:(token)=>{
           this.loading=false
-          console.log(token)
-         // this.route.navigate(['/'])
+          this.route.navigate(['/'])
         },
         error:(error)=>{
           this.loading=false

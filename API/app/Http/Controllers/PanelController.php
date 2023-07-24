@@ -36,7 +36,8 @@ class PanelController extends Controller
     {
         $user=$this->databaseConfig();
         $validator = Validator::make($request->all(), [
-            'name' => ['required','string','min:2','max:50']
+            'name' => ['required','string','min:2','max:50'],
+            'diference_days' => ['required','numeric','min:0']
         ]);
 
         if ($validator->fails()) {
@@ -44,7 +45,8 @@ class PanelController extends Controller
         }
 
         $panelData=[
-            'name' => $request->name
+            'name' => $request->name,
+            'diference_days' =>$request->diference_days,
         ];
         $panel = Panel::create($panelData);
         $panel->users()->attach($user->id);
@@ -68,7 +70,8 @@ class PanelController extends Controller
     {
         $user=$this->databaseConfig();
         $validator = Validator::make($request->all(), [
-            'name' => ['required','string','min:2','max:50']
+            'name' => ['sometimes','string','min:2','max:50'],
+            'diference_days' => ['sometimes','numeric','min:0']
         ]);
 
         if ($validator->fails()) {

@@ -1,0 +1,14 @@
+<div class="modal fade" id="deleteItem" tabindex="-1" aria-labelledby="deleteItem" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Eliminar {{text}} </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" id="close" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>¿Seguro de que quieres eliminar {{this.mem[this.text]}} {{item.name}} ?</p>
+            <button (click)="close()" class="btn">Cancelar</button> <button (click)="delete()" class="btn right">Eliminar</button>
+        </div>
+      </div>
+    </div>
+</div>

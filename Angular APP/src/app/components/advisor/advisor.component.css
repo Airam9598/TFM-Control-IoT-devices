@@ -29,6 +29,33 @@
     font-weight: bold;
 }
 
+ul{
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 92%;
+    margin: 0;
+    overflow-y: auto;
+    height: max-content;
+    padding-bottom: 10px;
+}
+li{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e48d0aa8;
+    width: 90%;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: #0000004a 0 4px 4px 0;
+
+}
+
 
 @media (max-width: 750px) and (min-height: 500px) {
     .adviseBox{

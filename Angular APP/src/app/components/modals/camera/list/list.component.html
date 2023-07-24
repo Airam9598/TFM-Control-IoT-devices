@@ -1,0 +1,21 @@
+<div class="modal fade" id="listCamera" tabindex="-1" aria-labelledby="listCamera" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Cámaras</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" id="closelistCamera" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="adviseBox">
+                <p class="noone" *ngIf="cameras.length == 0"> No hay dispositivos</p>
+                <ul>
+                   <li  *ngFor="let camera of cameras">
+                    <img src="../../../../assets/camera.png">
+                    <p>{{camera.name}}</p>
+                   </li>
+                </ul>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>

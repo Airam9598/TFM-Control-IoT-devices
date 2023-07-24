@@ -16,7 +16,8 @@ class Panel extends Model
     protected $dates = ['deleted_at'];
 
     protected $fillable = [
-        'name'
+        'name',
+        'diference_days'
     ];
 
     public function users()

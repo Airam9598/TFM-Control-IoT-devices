@@ -4,6 +4,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { Observable, catchError, map, of, retry, throwError } from 'rxjs';
 import { Users } from '../models/users.model';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -47,10 +48,8 @@ export class AccessService {
   }
 
   logout(): Observable<any> {
-    
     let token=this.getToken()
     const headers = new HttpHeaders().set('authorization', `Bearer ${token}`);
-    this.deleteToken();
     return this.http.get<any>(this.baseUrl+"logout",{ headers: headers })
   }
 
@@ -60,7 +59,7 @@ export class AccessService {
       const headers = new HttpHeaders().set('authorization', `Bearer ${token}`);
       return this.http.get<any>(this.baseUrl + 'me', { headers: headers }).pipe(
         map((response) => {
-          this.user=response.data
+          this.user= response.data as Users
           return true}),
         catchError((error) => {
           console.error('Error al realizar la solicitud:', error);
@@ -70,6 +69,10 @@ export class AccessService {
     } else {
       return of(false);
     }
+  }
+
+  getUser():Users{
+    return this.user;
   }
 /*
     

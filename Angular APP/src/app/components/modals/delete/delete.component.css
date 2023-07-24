@@ -1,0 +1,30 @@
+
+.btn{
+    background-color: var(--default-dark-blue);
+    border-radius: 6px;
+    color: var(--default-white);
+    padding: 10px 25px;
+    font-size: 1em;
+    font-weight: 600;
+    border: none;
+    box-shadow: gray 2px 2px 6px 0px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.right{
+    float: right;
+    background: #d92727;
+}
+
+.right:hover{
+    background: #f72b2b !important;
+    transform: scale(1.05);
+    transition: 0.1s;
+}
+
+.btn:hover{
+    background-color: var(--default-blue);
+    transform: scale(1.05);
+    transition: 0.1s;
+}

@@ -1,6 +1,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans&display=swap');
 @import "~bootstrap-icons/font/bootstrap-icons.css";
+@import "~leaflet/dist/leaflet.css";
 :root{
     --default-blue: #164596d5;
     --default-white: #f3f3f3;
@@ -27,6 +28,10 @@ app-root{
     min-height: 100vh;
     display: flex;
     
+}
+
+app-home{
+    overflow-x: hidden;
 }
 
 app-login{
