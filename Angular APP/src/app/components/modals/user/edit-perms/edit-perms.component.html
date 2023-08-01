@@ -1,0 +1,47 @@
+<div class="modal fade" id="EditUserPermsPanel" tabindex="-1" aria-labelledby="EditUserPermsPanel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Permisos {{editedUser.name}}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" id="closeEditUserPerms" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form novalidate [formGroup]="userform" (ngSubmit)="editUser()">
+
+                <div class="form-check form-switch">
+                    <label class="form-check-label" for="typew.name">Administrador</label>
+                    <input class="form-check-input" (change)="checkAdmin($event)"  type="checkbox" name="admin" id="admin" formControlName="admin">
+                </div>
+
+                <div class="form-check form-switch">
+                    <label class="form-check-label" for="typew.name">Permiso de historial</label>
+                    <input class="form-check-input"  type="checkbox" name="history" id="history" formControlName="history">
+                </div>
+
+                <div class="form-check form-switch">
+                    <label class="form-check-label" for="typew.name">Permiso de acceso a las cámaras</label>
+                    <input class="form-check-input" type="checkbox" name="camera" id="camera" formControlName="camera">
+                </div>
+
+                <div class="form-check form-switch">
+                    <label class="form-check-label" for="typew.name">Permiso de dispositivos</label>
+                    <input class="form-check-input" type="checkbox" name="devices" id="devices" formControlName="devices">
+                </div>
+
+                <div class="form-check form-switch">
+                    <label class="form-check-label" for="typew.name">Permiso de zonas</label>
+                    <input class="form-check-input" type="checkbox" name="zones" id="zones" formControlName="zones">
+                </div>
+
+                <div class="form-check form-switch">
+                    <label class="form-check-label" for="typew.name">Permiso de riego</label>
+                    <input class="form-check-input" type="checkbox" name="irrigate" id="irrigate" formControlName="irrigate">
+                </div>
+
+                <p *ngIf="error" class="error" id="error" [innerHTML]="errorMessage"></p>
+                <input class="btn" type="submit" value="Modificar" [disabled]="!userform.valid">
+            </form>
+        </div>
+      </div>
+    </div>
+</div>

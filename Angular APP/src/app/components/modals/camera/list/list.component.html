@@ -9,7 +9,7 @@
             <div class="adviseBox">
                 <p class="noone" *ngIf="cameras.length == 0"> No hay dispositivos</p>
                 <ul>
-                   <li  *ngFor="let camera of cameras">
+                   <li (click)="open(camera)"  *ngFor="let camera of cameras">
                     <img src="../../../../assets/camera.png">
                     <p>{{camera.name}}</p>
                    </li>

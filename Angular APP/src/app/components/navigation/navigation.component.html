@@ -22,7 +22,7 @@
                     </a>
                     
                 </li>
-                <li class="nav-item" routerLinkActive="active">
+                <li *ngIf="isButtonVisible(['admin','history'])" class="nav-item" routerLinkActive="active">
                     <a [routerLink]='["/history"]'>
                         <i class="bi bi-bar-chart-fill"></i>
                         <span class="nav-text">

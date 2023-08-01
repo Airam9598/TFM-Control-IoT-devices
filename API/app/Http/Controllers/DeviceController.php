@@ -42,7 +42,7 @@ class DeviceController extends Controller
             $zone=$this->getZone($id,$zone_id);
             $devices= $zone->devices()->get()->where('name', 'like', '%'.$query.'%')
                     ->orWhere('data_id', 'like', '%'.$query.'%')->with('zone', 'types');
-        }else if($info == "recent" && ($panel->pivot->admin== true || $panel->pivot->irrigate==true)){
+        }else if($info == "recent" && ($panel->pivot->admin== true || $panel->pivot->irrigate==true || $panel->pivot->camera==true)){
             $zone=$this->getZone($id,$zone_id);
             if($zone !=null){
                 $devices= $zone->devices()->with('zone', 'types')->get();
@@ -120,7 +120,12 @@ class DeviceController extends Controller
                 if($type=="irrigate"){
                     $data['data'][$type] = false;
                 }else if($type=="camera"){
-                    $data['data'][$type] = "";
+                    if($request->url){
+                        $data['data'][$type] = $request->url;
+                    }else{
+                        $data['data'][$type] = "";
+                    }
+                    
                 }else{
                     $data['data'][$type] = [];
                 }
@@ -154,7 +159,7 @@ class DeviceController extends Controller
                 if($info == "history" && $panel->pivot->admin== true || $panel->pivot->history==true){
                     $mongoData = DeviceMDB::find($device->data_id);
                     $device["info"]=$mongoData;
-                }else if($info == "recent" && $panel->pivot->admin== true || $panel->pivot->irrigate==true){
+                }else if($info == "recent" && $panel->pivot->admin== true || $panel->pivot->irrigate==true || $panel->pivot->camera==true){
                     $mongoData = DeviceMDB::find($device->data_id);
                     $latestEntry=['_id'=>$device->data_id, 'data'=>[]];
                     foreach ($mongoData['data'] as $field => $entries) {
@@ -193,6 +198,14 @@ class DeviceController extends Controller
 
             $zone=$this->getZone($id,$zone_id);
             $device = $zone->devices()->with('zone', 'types')->find($device_id);
+            $typeNames = Type::whereIn('id', $request->type)->pluck('name', 'id');
+            foreach ($typeNames as $type) {
+                if($type=="camera"){
+                    if($request->url){
+                        DeviceMDB::where('_id', $device->data_id)->update(['data.camera' => $request->url]);
+                    }
+                }
+            }
             if($device==null)return trans('validation.custom.exist',['attribute' => 'El dispositivo', 'error']);
             $device->update($request->all());
             $device->types()->detach();

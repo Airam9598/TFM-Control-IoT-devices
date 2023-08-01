@@ -89,7 +89,7 @@ label>p{
 }
 
 
-input[type="text"],input[type="number"] {
+input[type="text"],input[type="number"], select {
     border: 1px #7c7c7c solid;
     border-radius: 5px;
     font-size: 1.2em;
@@ -104,6 +104,15 @@ input[type="text"]:focus-visible,input[type="number"]:focus-visible {
     transition: 0.1s;
     outline: none;
     box-shadow: none;
+}
+
+select{
+    width: max-content;
+}
+.internalbox{
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 .btn{
@@ -122,12 +131,27 @@ input[type="text"]:focus-visible,input[type="number"]:focus-visible {
     margin-left: auto;
 }
 
-.btn:hover{
+.btn:hover, .btn2:hover{
     background-color: var(--default-blue);
     transform: scale(1.05);
     transition: 0.1s;
 }
 
+
+.btn2{
+    background-color: var(--default-dark-blue);
+    border-radius: 6px;
+    color: var(--default-white);
+    font-size: 1.2em;
+    font-weight: 600;
+    border: none;
+    box-shadow: gray 2px 2px 6px 0px;
+    cursor: pointer;
+    width: 200px;
+    margin: 20px auto;
+    margin-top: 20px;
+    display: block;
+}
 .remove{
     background: red;
     color: white;
@@ -140,6 +164,47 @@ input[type="text"]:focus-visible,input[type="number"]:focus-visible {
     top: 5px;
     right: 5px;
 }
+
+.table-responsive{
+    max-height: 400px;
+    overflow-y: auto;
+    min-height: unset;
+    width: 100%;
+    display: block;
+}
+
+th{
+    width: 25%;
+}
+
+.edited{
+    border-radius: 10px;
+    padding: 5px 10px;
+    border: none;
+    box-shadow: #0000004f 0 4px 4px 0;
+    background: var(--default-dark-blue);
+    color: white;
+    margin: 5px;
+}
+
+.edited:hover{
+    background: var(--default-blue);
+}
+
+.delete{
+    border-radius: 10px;
+    padding: 5px 10px;
+    border: none;
+    box-shadow: #0000004f 0 4px 4px 0;
+    background: rgb(248, 58, 58);
+    color: white;
+    margin: 5px;
+}
+
+.delete:hover{
+    background: rgb(252, 98, 98);
+}
+
 
 @media (min-width: 750px) and (max-width: 1000px) and (min-height: 500px) {
 

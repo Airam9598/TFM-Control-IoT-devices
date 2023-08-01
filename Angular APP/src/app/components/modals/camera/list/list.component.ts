@@ -21,4 +21,8 @@ export class ListCameraComponent implements OnChanges {
       }
     })
   }
+
+  open(item:Devices){
+    window.open(item.info.data.camera, "_blank")
+  }
 }

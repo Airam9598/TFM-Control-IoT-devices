@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Devices } from 'src/app/models/devices.model';
+import { Users } from 'src/app/models/users.model';
 import { Zones } from 'src/app/models/zones.model';
 import { DeviceService } from 'src/app/services/device.service';
 import { ZoneService } from 'src/app/services/zone.service';
@@ -16,12 +17,14 @@ export class ZoneInfoComponent implements OnChanges {
   @Input() cameras:Devices[]
   @Output()close = new EventEmitter();
   irrigate:boolean
+  actUser:Users
   devicesclasified:{[key:string] : Devices[]}
   constructor(public dataService:SharedDataService,public deviceService:DeviceService,public zoneService:ZoneService){
     this.zone=new Zones(-1,"","",0,0,-1)
     this.devices=[]
     this.cameras=[]
     this.irrigate=false
+    this.actUser=new Users(-1,"","","",[],{})
     this.devicesclasified={
       "air temperature":[],
       "soil temperature":[],
@@ -30,6 +33,9 @@ export class ZoneInfoComponent implements OnChanges {
       "irrigate":[],
       "camera":[]
     }
+    this.dataService.getUser().then((userData: Users) => {
+      this.actUser=userData
+    })
   }
 
   closePanel(){
@@ -85,6 +91,15 @@ export class ZoneInfoComponent implements OnChanges {
         if(elem.info["data"]["irrigate"]=="true") this.irrigate=true
       })
   } 
+
+  isButtonVisible(array:Array<string>):boolean{
+    let value=false;
+    array.forEach(elem=>{
+      let temp=this.actUser.panels.find(elem => elem.id === this.dataService.actPanel.id)
+      if(temp) if(!!+temp.pivot[elem]) value=true
+    })
+    return (this.actUser.id >= 0 && value)
+  }
 }
 
 

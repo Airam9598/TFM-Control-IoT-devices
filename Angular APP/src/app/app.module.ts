@@ -30,6 +30,8 @@ import { DevListComponent } from './components/modals/device/list/list.component
 import { CreateDevComponent } from './components/modals/device/create/create.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { HistoryShowComponent } from './components/modals/history-show/history-show.component';
+import { EditPermsComponent } from './components/modals/user/edit-perms/edit-perms.component';
+import { AddPanelComponent } from './components/modals/user/add-panel/add-panel.component';
 
 
 
@@ -56,7 +58,9 @@ import { HistoryShowComponent } from './components/modals/history-show/history-s
     AdviseList,
     DevListComponent,
     CreateDevComponent,
-    HistoryShowComponent
+    HistoryShowComponent,
+    EditPermsComponent,
+    AddPanelComponent
   ],
   imports: [
     BrowserModule,

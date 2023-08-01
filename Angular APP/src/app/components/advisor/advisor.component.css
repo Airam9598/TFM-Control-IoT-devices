@@ -51,9 +51,8 @@ li{
     border-radius: 6px;
     padding: 10px;
     text-align: center;
-    font-weight: bold;
     box-shadow: #0000004a 0 4px 4px 0;
-
+    flex-direction: column;
 }
 
 

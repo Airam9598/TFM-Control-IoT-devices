@@ -40,7 +40,7 @@ export class LoginComponent {
   onSubmit() {
     this.loading=true
     this.error=false
-    this.loginservice.user=new Users(-1,"","","",[],"")
+    this.loginservice.user=new Users(-1,"","","",[],{})
     if(this.login.value.email != null && this.login.value.password != null){
       this.loginservice.login(this.login.value.email, this.login.value.password).subscribe({
         next:(token)=>{

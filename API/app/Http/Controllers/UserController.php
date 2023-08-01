@@ -63,7 +63,8 @@ class UserController extends Controller
                     return response()->json(['error' => 'No tienes permisos'], 550);
                 }
                 $user = $actuser->panels()->attach($id, ['user_id' => $changeuser->id]);
-                return response()->json(['success' => true, 'data' => $changeuser], 200);
+                $user=$panel->users()->find($changeuser->id);
+                return response()->json(['success' => true, 'data' => $user], 200);
             }
         }
         if($id == null){

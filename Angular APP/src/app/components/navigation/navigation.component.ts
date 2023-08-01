@@ -2,6 +2,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { Panels } from 'src/app/models/panels.model';
+import { Users } from 'src/app/models/users.model';
 import { PanelService } from 'src/app/services/panel.service';
 import { SharedDataService } from 'src/app/shared/data-service';
 
@@ -21,8 +22,10 @@ export class NavigationComponent   {
   pane:Panels[]
   panelUpdate:any
   Timer:any
+  actUser:Users
   constructor(private router:Router,private cookieService:CookieService,public dataService:SharedDataService, private panelService:PanelService){
     this.pane=[]
+    this.actUser=new Users(-1,"","","",[],{})
     if(this.cookieService.check("panels") && this.pane.length>0){
       let panel= this.pane.find(elem=> elem.id.toString()==this.cookieService.get("panels"))
       if(panel != null){
@@ -33,6 +36,9 @@ export class NavigationComponent   {
         if(dataService.panels != undefined) this.pane=dataService.panels
       }
     }
+    this.dataService.getUser().then((userData: Users) => {
+      this.actUser=userData
+    })
     this.Timer=setInterval(() => this.changeSelectedPanel(), 1000); 
   }
 
@@ -105,6 +111,15 @@ export class NavigationComponent   {
     this.dataService.updateActPanel()
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
     this.router.navigate(["/home"]))
+  }
+
+  isButtonVisible(array:Array<string>):boolean{
+    let value=false;
+    array.forEach(elem=>{
+      let temp=this.actUser.panels.find(elem => elem.id === this.dataService.actPanel.id)
+      if(temp) if(!!+temp.pivot[elem]) value=true
+    })
+    return (this.actUser.id >= 0 && value)
   }
 
 

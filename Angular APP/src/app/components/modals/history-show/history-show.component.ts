@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import * as ApexCharts from 'apexcharts';
 import { ChartComponent } from 'ng-apexcharts';
 import { Devices } from 'src/app/models/devices.model';
@@ -26,13 +26,18 @@ export class HistoryShowComponent implements OnChanges {
     this.devchartOptions = {
       series: [],
       chart: {
-      type: 'area',
-      stacked: false,
+      type: 'line',
       height: 350,
+      stroke: {
+        curve: 'straight',
+      },
+      animations: {
+        enabled: false,
+    },
       zoom: {
         type: 'x',
         enabled: true,
-        autoScaleYaxis: true
+        //autoScaleYaxis: true
       },
       toolbar: {
         autoSelected: 'zoom'
@@ -44,21 +49,10 @@ export class HistoryShowComponent implements OnChanges {
     markers: {
       size: 0,
     },
-    fill: {
-      type: 'gradient',
-      gradient: {
-        shadeIntensity: 1,
-        inverseColors: false,
-        opacityFrom: 0.5,
-        opacityTo: 0,
-        stops: [0, 90, 100]
-      },
-    },
     labels: [],
     yaxis: {
     },
     xaxis: {
-      categories: [],
       type: 'datetime',
       tooltip: { enabled: false }
     },
@@ -78,6 +72,7 @@ export class HistoryShowComponent implements OnChanges {
     this.values={}
     this.devchartOptions['series']=[]
     if(this.devices.length>0){
+      this.devices=this.devices.filter(elem=>elem.types[0].name!="irrigate" && elem.types[0].name!="camera" )
       this.devices.forEach(dev=>{
         if(Array.isArray(dev.info.data[dev.types[0].name])){
           dev.info.data[dev.types[0].name].sort((a:any, b:any) => {
@@ -107,18 +102,27 @@ export class HistoryShowComponent implements OnChanges {
     let i=0
     Object.keys(this.values).forEach(elem=>{
       if(this.values[elem]!= undefined){
-        this.devchartOptions['series'].push({name: types[elem],data: []})
-        this.devchartOptions['series'][i].data=this.values[elem][Object.keys(this.values[elem])[0]]
+        this.multieject(elem,i,types)
+        setTimeout(()=>{
+          (document.getElementById(elem) as HTMLSelectElement).value=Object.keys(this.values[elem])[0]
+        },500)
+      }
+      i++
+    })
+  } 
 
-        if(elem=="soil Moisture")this.devchartOptions['series'][i].data=this.values[elem][Object.keys(this.values[elem])[0]].map(dataPoint =>({
+  async multieject(elem:string,i:number,types:{[key:string]:string}){
+      this.devchartOptions['series'].push({name: types[elem],data: []})
+      this.devchartOptions['series'][i].data= this.values[elem][Object.keys(this.values[elem])[0]]
+
+      if (elem === "soil Moisture") {
+        const dataPoints = this.values[elem][Object.keys(this.values[elem])[0]];
+        this.devchartOptions['series'][i].data = dataPoints.map(dataPoint => ({
           x: dataPoint["x"],
           y: (dataPoint["y"] * 100).toFixed(2)
         }));
-        setTimeout(()=>{(document.getElementById(elem) as HTMLSelectElement).value=Object.keys(this.values[elem])[0]},500)
-        i++
-      } 
-    })
-  } 
+      }
+  }
 
   changeDevice(elem:any){
     let types:{[key:string]:string}={

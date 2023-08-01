@@ -82,7 +82,6 @@ export class HistoryComponent implements AfterViewInit {
 
     if(this.tempZone){
       this.actZone=this.tempZone['name'] as Zones
-      console.log(this.actZone)
       this.openHistory(this.actZone)
 
     }
@@ -206,9 +205,8 @@ export class HistoryComponent implements AfterViewInit {
       return
     }
 
-   
-    
-    this.zones=this.backUpZones.filter(zone=>zone.country==elem.target.value)
+    if(elem.target.id=="filtercountry") this.zones=this.backUpZones.filter(zone=>zone.country==elem.target.value)
+    if(elem.target.id=="filtername") this.zones=this.backUpZones.filter(zone=>zone.name.includes(elem.target.value))
     this.map.off();
     this.map.remove();
     let map = L.map("map3",{scrollWheelZoom:true,minZoom: 2}).setView([27.96, -15.6], 3);

@@ -3,7 +3,7 @@ export class Panels {
         public id:number,
         public name:string, 
         public diference_days:number,
-        public pivot:Object,
+        public pivot:{[key:string]:string},
        
     ){}
 }

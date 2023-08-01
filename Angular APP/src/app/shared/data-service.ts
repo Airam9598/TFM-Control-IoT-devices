@@ -51,9 +51,9 @@ export class SharedDataService {
 
     logout(){
         this.panels=[]
-        this.userData=new Users(-1,"","","",[],"")
+        this.userData=new Users(-1,"","","",[],{})
         this.zones=[]
-        this.actPanel=new Panels(-1,"",0,"")
+        this.actPanel=new Panels(-1,"",0,{})
     }
 
     updatePanels(newPanels:Panels[]){

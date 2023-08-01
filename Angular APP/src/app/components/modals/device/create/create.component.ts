@@ -22,6 +22,7 @@ export class CreateDevComponent {
   devform = new FormGroup({
     name: new FormControl('',[Validators.required,Validators.minLength(2),Validators.maxLength(50)]),
     dev_id: new FormControl('',[Validators.required]),
+    url: new FormControl('',[]),
   });
 
   error:boolean
@@ -52,7 +53,7 @@ export class CreateDevComponent {
     this.button="Crear"
     this.actZone=new Zones(-1,"","",0,0,-1)
     this.actDev=new Devices("",-1,"","",0,this.actZone,[],[])
-    this.actPanel=new Panels(-1,"",0,"")
+    this.actPanel=new Panels(-1,"",0,{})
     /*if(this.actZone.id >0){
       this.button="Editar"
       this.devform.patchValue({name: this.actZone.name,country: this.actZone.country,lat: this.actZone.lat,lng: this.actZone.lng});
@@ -63,11 +64,12 @@ export class CreateDevComponent {
   }
 
   close(){
-    this.actDev.id=-1
     this.button="Crear"
+    this.createdTypes=[]
     this.devform.patchValue({
       name: "",
-      dev_id:""
+      dev_id:"",
+      url:""
     });
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach((checkbox) => {
@@ -76,6 +78,17 @@ export class CreateDevComponent {
   }
  
   ngOnChanges(changes: SimpleChanges) {
+    this.button="Crear"
+    this.createdTypes=[]
+    this.devform.patchValue({
+      name: "",
+      dev_id:"",
+      url:""
+    });
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      (checkbox as HTMLInputElement).checked = false;
+    });
     if(this.actDev.id >0){
       this.button="Editar"
       
@@ -84,10 +97,23 @@ export class CreateDevComponent {
         dev_id:this.actDev.dev_id
       });
 
-      this.actDev.types.forEach(value=>{
-        (document.getElementById(value.name) as HTMLInputElement).checked=true
-        this.createdTypes.push(value.id.toString())
-      })
+      if(this.actDev.info){
+        this.actDev.types.forEach(value=>{
+          if(value.name=="camera"){
+            this.devform.patchValue({
+              url: this.actDev.info["data"][value.name]
+            });
+          }
+          (document.getElementById(value.name) as HTMLInputElement).checked=true
+          this.createdTypes.push(value.id.toString())
+        })
+      }else{
+        this.actDev.types.forEach(value=>{
+          (document.getElementById(value.name) as HTMLInputElement).checked=true
+          this.createdTypes.push(value.id.toString())
+        })
+      }
+      
     }
   } 
 
@@ -104,6 +130,7 @@ export class CreateDevComponent {
   editType(info:any){
     if((info.target as HTMLInputElement).checked){
       this.createdTypes.push(info.target.value)
+      console.log(this.createdTypes)
     }else{
       this.createdTypes=this.createdTypes.filter(elem=>elem!= info.target.value)
     }
@@ -114,7 +141,8 @@ export class CreateDevComponent {
     let info={
       'name':this.devform.value.name,
       'dev_id':this.devform.value.dev_id,
-      'type':this.createdTypes
+      'type':this.createdTypes,
+      'url':this.devform.value.url
     }
 
     if(info){

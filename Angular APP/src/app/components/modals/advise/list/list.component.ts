@@ -18,7 +18,6 @@ export class AdviseList implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if(this.devices.length>0){
       this.devices.forEach(dev=>{
-        console.log(dev)
         if(dev.types[0].name=="air temperature"){
           if(dev.zone.max_air_temp){
             if(dev.info.data[dev.types[0].name].value> dev.zone.max_air_temp) this.advices.push("Se ha superado la temperatura del aire en la zona "+dev.zone.name)

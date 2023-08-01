@@ -101,7 +101,7 @@ h2{
 .irrigate{
     background: linear-gradient(177deg,#23B543 35%, #00a8e9 39%);
     background-size: 200px 150px;
-    animation: _ngcontent-ng-c2230497153_irriga 5s infinite alternate-reverse;
+    animation: irriga 5s infinite alternate-reverse;
 }
 
 @keyframes irriga {

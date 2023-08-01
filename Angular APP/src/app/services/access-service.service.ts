@@ -16,7 +16,7 @@ export class AccessService {
   user:Users
 
   constructor(private http: HttpClient,private cookieService: CookieService) {
-    this.user=new Users(-1,"","","",[],"")
+    this.user=new Users(-1,"","","",[],{})
    }
 
   getToken():string{

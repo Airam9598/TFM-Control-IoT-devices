@@ -282,7 +282,7 @@
     height: 400px;
     overflow-y: auto;
     min-height: unset;
-    display: block;
+    /*display: block;*/
 }
 
 th{

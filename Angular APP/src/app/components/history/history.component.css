@@ -92,7 +92,7 @@ tbody>tr>td{
 }
 
 .filter{
-    display: block;
+    display: flex;
     margin-bottom: 20px;
     margin-left: 103px;
     width: max-content;
@@ -103,13 +103,18 @@ tbody>tr>td{
     font-size: 1.1em;
     width: calc(100vw - 590px);
     box-shadow: #0000004f 0px 4px 4px 0px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .filter >div{
-    display: flex;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    width: max-content;
 }
 
 .filter >div >p{
@@ -117,7 +122,7 @@ tbody>tr>td{
     margin-bottom: 2px;
 }
 
-.filter >div >select{
+.filter >div >select,.filter >div >input{
     width: max-content;
     padding: 5px;
     font-weight: bold;

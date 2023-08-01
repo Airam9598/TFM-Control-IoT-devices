@@ -1,9 +1,13 @@
 <div class="main-box">
-    <module-zone-edit [actZone]="actZone" *ngIf="zones != undefined" (dataEvent)="updateZone($event)"></module-zone-edit>
+    <module-zone-edit *ngIf="zones != undefined && isButtonVisible(['zone','admin'])" [actZone]="actZone" (dataEvent)="updateZone($event)"></module-zone-edit>
     <div class="filter">
         <div>
+            <p>Nombre de zona</p>
+            <input id="filtername" type="text" min="0" max="50" (keyup)="filter($event)">
+        </div>
+        <div>
             <p>País</p>
-            <select (change)="filter($event)">
+            <select id="filtercountry" (change)="filter($event)">
                 <option value="">Selecciona un país</option>
                 <option  *ngFor="let country of countries " value="{{country}}">{{country}}</option>
             </select>
@@ -12,7 +16,7 @@
     </div>
     <div class="zone-box">
         <h3>Lista de zonas</h3>
-        <button class="btn" data-bs-toggle="modal" data-bs-target="#EditZone"><i class="bi bi-plus"></i>Crear Zona</button>
+        <button *ngIf="isButtonVisible(['zone','admin'])" class="btn" data-bs-toggle="modal" data-bs-target="#EditZone"><i class="bi bi-plus"></i>Crear Zona</button>
         <table class="table table-striped table-responsive">
             <thead>
                 <tr>

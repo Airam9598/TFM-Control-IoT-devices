@@ -71,7 +71,7 @@ export class HomeComponent {
     this.backUpZones=[]
     this.backUpdevices=[]
     this.countries=new Map
-    this.actPanel=new Panels(-1,"",0,"")
+    this.actPanel=new Panels(-1,"",0,{})
     this.dataService.getUser().then((userData: Users) => {
       this.user = userData
       this.panels=this.dataService.panels
@@ -84,38 +84,38 @@ export class HomeComponent {
               this.devices.forEach(dev=>{
                 if(dev.types[0].name=="air temperature"){
                   if(dev.zone.max_air_temp){
-                    if(dev.info.data[dev.types[0].name].value> dev.zone.max_air_temp) this.advises.push("Se ha superado la temperatura del aire en la zona "+dev.zone.name)
+                    if(dev.info.data[dev.types[0].name].value> dev.zone.max_air_temp) this.advises.push("Se ha superado la temperatura del aire<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
                   }
                   if(dev.zone.min_air_temp){
-                    if(dev.info.data[dev.types[0].name].value< dev.zone.min_air_temp) this.advises.push("La temperatura del aire está por debajo del mínimo en la zona "+dev.zone.name)
+                    if(dev.info.data[dev.types[0].name].value< dev.zone.min_air_temp) this.advises.push("La temperatura del aire está por debajo del mínimo<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
                   }
 
                 }else  if(dev.types[0].name=="soil temperature"){
                   if(dev.zone.max_soil_temp){
-                    if(dev.info.data[dev.types[0].name].value> dev.zone.max_soil_temp) this.advises.push("Se ha superado la temperatura del suelo en la zona "+dev.zone.name)
+                    if(dev.info.data[dev.types[0].name].value> dev.zone.max_soil_temp) this.advises.push("Se ha superado la temperatura del suelo<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
                   }
                   if(dev.zone.min_soil_temp){
-                    if(dev.info.data[dev.types[0].name].value< dev.zone.min_soil_temp) this.advises.push("La temperatura del suelo está por debajo del mínimo en la zona "+dev.zone.name)
+                    if(dev.info.data[dev.types[0].name].value< dev.zone.min_soil_temp) this.advises.push("La temperatura del suelo está por debajo del mínimo<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
                   }
 
                 }else  if(dev.types[0].name=="soil Moisture"){
                   if(dev.zone.max_soil_moisture){
-                    if(parseFloat((dev.info.data[dev.types[0].name].value * 100).toFixed(2)) > dev.zone.max_soil_moisture) this.advises.push("Se ha superado la humedad del suelo en la zona "+dev.zone.name)
+                    if(parseFloat((dev.info.data[dev.types[0].name].value * 100).toFixed(2)) > dev.zone.max_soil_moisture) this.advises.push("Se ha superado la humedad del suelo<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
                   }
                   if(dev.zone.min_soil_moisture){
-                    if(parseFloat((dev.info.data[dev.types[0].name].value * 100).toFixed(2)) < dev.zone.min_soil_moisture) this.advises.push("La humedad del suelo está por debajo del mínimo en la zona "+dev.zone.name)
+                    if(parseFloat((dev.info.data[dev.types[0].name].value * 100).toFixed(2)) < dev.zone.min_soil_moisture) this.advises.push("La humedad del suelo está por debajo del mínimo<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
                   }
 
                 }
                 var res = new Date();
                 res.setDate(res.getDate() - this.actPanel.diference_days);
-                if(res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong){
+                if(dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong){
                   if (this.activateddevices.has("Inactivos")) {
                     this.activateddevices.set("Inactivos", this.activateddevices.get("Inactivos")! + 1);
                   } else {
                     this.activateddevices.set("Inactivos", 1);
                   }
-                }else if(res.valueOf()<=dev.info.data[dev.types[0].name].date.$date.$numberLong){
+                }else if(dev.types[0].name=="camera" || dev.types[0].name=="irrigate" || res.valueOf()<=dev.info.data[dev.types[0].name].date!.$date.$numberLong){
                   if (this.activateddevices.has("Activos")) {
                     this.activateddevices.set("Activos", this.activateddevices.get("Activos")! + 1);
                   } else {
@@ -312,8 +312,14 @@ export class HomeComponent {
     return Array.from(this.countries.keys())
   }
 
-  getDate(date:string){
-    return moment(parseInt(date)).format('DD/MM/YYYY HH:mm')
+  getDate2(date:any){
+    if(date){
+      let tempdate=date.$date.$numberLong
+      return moment(parseInt(tempdate)).format('DD/MM/YYYY HH:mm')
+    }else{
+      return "Sin datos"
+    }
+    
   }
 
   reloadPanels(){
@@ -323,7 +329,12 @@ export class HomeComponent {
       next:(response)=>{
         this.dataService.updatePanels(response.data as Panels[])
         this.loading=false
-        if(this.dataService.panels.length<=0)this.error=true
+        if(this.dataService.panels.length<=0){
+          this.error=true
+        }else{
+          this.route.navigateByUrl('/', { skipLocationChange: true }).then(() =>
+          this.route.navigate(["/home"]))
+        }
       },
       error:(error)=>{
         this.error=true

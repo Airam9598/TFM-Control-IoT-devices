@@ -25,6 +25,11 @@
                     </div>
                 </label>
 
+                <label for="camera" *ngIf="createdTypes.includes('5')">
+                    <p>Url</p>
+                    <input class="form-control" (keyup)="checkvalid($event)" type="url" minlength="2" maxlength="50" name="url" id="url" formControlName="url" placeholder="Url">
+                </label>
+
                 <p *ngIf="error" class="error" id="error" [innerHTML]="errorMessage"></p>
                 <input class="btn" type="submit" [value]="button" [disabled]="!devform.valid">
             </form>

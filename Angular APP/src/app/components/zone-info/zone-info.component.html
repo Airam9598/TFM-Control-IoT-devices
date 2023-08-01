@@ -1,9 +1,9 @@
 <section>
     <h2>{{zone.name}}</h2>
-    <button class="conf" data-bs-toggle="modal" data-bs-target="#EditZone"><i class="bi bi-gear-fill"></i>Configuración</button>
+    <button *ngIf='isButtonVisible(["admin","zones"])' class="conf" data-bs-toggle="modal" data-bs-target="#EditZone"><i class="bi bi-gear-fill"></i>Configuración</button>
     <button class="close" (click)="closePanel()" >X</button>
     <div class="box">
-        <div class="info">
+        <div class="info" *ngIf='isButtonVisible(["admin","irrigate"])'>
             <div class="orange" *ngIf='this.devicesclasified["air temperature"].length>0'>
                 Temperatura del aire
                 <div>
@@ -26,7 +26,7 @@
             </div>
 
             <div class="blue3" *ngIf='this.devicesclasified["soil Moisture"].length>0'>
-                Humedad del aire
+                Humedad del suelo
                 <div>
                     <img src="../../../assets/moisture.png">
                     <p id='Info soil Moisture'>{{(this.devicesclasified["soil Moisture"][0].info.data["soil Moisture"].value* 100).toFixed(2)}}</p>
@@ -48,10 +48,10 @@
             </div>
         </div>
         <div class="actions">
-            <button *ngIf="devices.length>0" class="blue" [routerLink]='["/history"]' [state]="{ name:zone}"><img src="../../../assets/graph.png"> Historial</button>
-            <button (click)="changeIrrigate()" *ngIf='devicesclasified["irrigate"].length>0 && !this.irrigate' class="green"><img src="../../../assets/water.png"> Regar</button>
-            <button (click)="changeIrrigate()" *ngIf='devicesclasified["irrigate"].length>0 && this.irrigate' class="irrigate"><img src="../../../assets/water.png"> Regando...</button>
-            <button *ngIf='devicesclasified["camera"].length>0' class="gray" data-bs-toggle="modal" data-bs-target="#listCamera"><img src="../../../assets/camera.png"> Cámaras</button>
+            <button *ngIf="devices.length>0 && isButtonVisible(['admin','history'])" class="blue" [routerLink]='["/history"]' [state]="{ name:zone}"><img src="../../../assets/graph.png"> Historial</button>
+            <button (click)="changeIrrigate()" *ngIf='devicesclasified["irrigate"].length>0 && !this.irrigate && isButtonVisible(["admin","irrigate"])' class="green"><img src="../../../assets/water.png"> Regar</button>
+            <button (click)="changeIrrigate()" *ngIf='devicesclasified["irrigate"].length>0 && this.irrigate && isButtonVisible(["admin","irrigate"])' class="irrigate"><img src="../../../assets/water.png"> Regando...</button>
+            <button *ngIf='devicesclasified["camera"].length>0 && isButtonVisible(["admin","camera"])' class="gray" data-bs-toggle="modal" data-bs-target="#listCamera"><img src="../../../assets/camera.png"> Cámaras</button>
             <button class="gray" data-bs-toggle="modal" data-bs-target="#listDev"><img src="../../../assets/device.png"> Dispositivos</button>
             <button class="yellow" data-bs-toggle="modal" data-bs-target="#listAdvise"><img src="../../../assets/settings.png"> Avisos</button>
         </div>

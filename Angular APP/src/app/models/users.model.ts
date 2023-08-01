@@ -7,6 +7,6 @@ export class Users {
         public email:string,
         public passwd:string,
         public panels:Panels[],
-        public pivot:Object,
+        public pivot:{[key:string]:string},
     ){}
 }

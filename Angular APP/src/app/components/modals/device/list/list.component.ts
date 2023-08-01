@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { Devices } from 'src/app/models/devices.model';
 import { Types } from 'src/app/models/types.model';
+import { Users } from 'src/app/models/users.model';
+import { SharedDataService } from 'src/app/shared/data-service';
 
 @Component({
   selector: 'modal-devlist',
@@ -12,8 +14,13 @@ import { Types } from 'src/app/models/types.model';
 export class DevListComponent implements OnChanges {
   @Input() devices:Devices[]
   @Output() dataEvent = new EventEmitter<any>();
-  constructor(){
+  actUser:Users
+  constructor(private dataService:SharedDataService){
     this.devices=[]
+    this.actUser=new Users(-1,"","","",[],{})
+    this.dataService.getUser().then((userData: Users) => {
+      this.actUser=userData
+    })
   }
 
   close(){
@@ -40,6 +47,15 @@ export class DevListComponent implements OnChanges {
       'camera':"../../../../assets/camera.png",
     }
     return images[type[0].name] || images["device"]
+  }
+
+  isButtonVisible(array:Array<string>):boolean{
+    let value=false;
+    array.forEach(elem=>{
+      let temp=this.actUser.panels.find(elem => elem.id === this.dataService.actPanel.id)
+      if(temp) if(!!+temp.pivot[elem]) value=true
+    })
+    return (this.actUser.id >= 0 && value)
   }
 
 }

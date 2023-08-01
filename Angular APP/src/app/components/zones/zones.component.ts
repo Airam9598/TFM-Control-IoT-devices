@@ -6,6 +6,7 @@ import { SharedDataService } from 'src/app/shared/data-service';
 import * as L from 'leaflet';
 import { Devices } from 'src/app/models/devices.model';
 import { DeviceService } from 'src/app/services/device.service';
+import { Panels } from 'src/app/models/panels.model';
 @Component({
   selector: 'app-zones',
   templateUrl: './zones.component.html',
@@ -20,9 +21,11 @@ export class ZonesComponent implements AfterViewInit {
   countries:Array<string>
   actZone:Zones
   actDev:Devices
+  actUser:Users
   constructor(public zoneService:ZoneService,public dataService:SharedDataService,public deviceService:DeviceService){
     this.zones=[]
     this.devices=[]
+    this.actUser=new Users(-1,"","","",[],{})
     this.actZone=new Zones(-1,"","",0,0,-1)
     this.actDev=new Devices("",-1,"","",0,this.actZone,[],[])
     this.backUpZones=[]
@@ -31,6 +34,7 @@ export class ZonesComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.dataService.getUser().then((userData: Users) => {
+      this.actUser=userData
       this.zones=this.dataService.zones.sort((a, b) => {
         if (a.country < b.country) {
           return -1;
@@ -152,6 +156,14 @@ export class ZonesComponent implements AfterViewInit {
       this.devices.push(device)
     }
     this.actDev=device
+    this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.actZone.id)?.subscribe({
+      next:(result)=>{
+        this.devices=(result.data as Devices[])
+      },
+      error: (err) => {
+        console.error('Error al obtener los dispositivos:', err);
+      }
+    })
   }
 
   deleteDevice(dev:Devices){
@@ -160,6 +172,14 @@ export class ZonesComponent implements AfterViewInit {
 
   changeDevice(device:Devices){
     this.actDev=device
+    this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.actZone.id)?.subscribe({
+      next:(result)=>{
+        this.devices=(result.data as Devices[])
+      },
+      error: (err) => {
+        console.error('Error al obtener los dispositivos:', err);
+      }
+    })
   }
 
   filter(elem:any){
@@ -187,7 +207,8 @@ export class ZonesComponent implements AfterViewInit {
 
    
     
-    this.zones=this.backUpZones.filter(zone=>zone.country==elem.target.value)
+    if(elem.target.id=="filtercountry") this.zones=this.backUpZones.filter(zone=>zone.country==elem.target.value)
+    if(elem.target.id=="filtername") this.zones=this.backUpZones.filter(zone=>zone.name.includes(elem.target.value))
     this.map.off();
     this.map.remove();
     let map = L.map("map",{scrollWheelZoom:true,minZoom: 2}).setView([27.96, -15.6], 3);
@@ -205,6 +226,15 @@ export class ZonesComponent implements AfterViewInit {
     L.control.layers(baseMaps,{}, {position: 'bottomleft'}).addTo(map);
     this.map=map;
     this.loaddata();
+  }
+
+  isButtonVisible(array:Array<string>):boolean{
+    let value=false;
+    array.forEach(elem=>{
+      let temp=this.actUser.panels.find(elem => elem.id === this.dataService.actPanel.id)
+      if(temp) if(!!+temp.pivot[elem]) value=true
+    })
+    return (this.actUser.id >= 0 && value)
   }
     
 }

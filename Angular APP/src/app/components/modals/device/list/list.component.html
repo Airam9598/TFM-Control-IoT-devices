@@ -7,17 +7,22 @@
         </div>
         <div class="modal-body">
             <div class="menu">
-                <button class="new" data-bs-toggle="modal" data-bs-target="#EditDev"><i class="bi bi-plus-circle" ></i> Nuevo dispositivo</button> 
-                <button class="edit"><i class="bi bi-gear"></i>Editar</button>
+                <button *ngIf="isButtonVisible(['admin','devices'])" class="new" data-bs-toggle="modal" data-bs-target="#EditDev"><i class="bi bi-plus-circle" ></i> Nuevo dispositivo</button> 
             </div>
             <div class="adviseBox">
                 <p class="noone" *ngIf="devices.length == 0"> No hay dispositivos</p>
-                <ul>
+                <ul *ngIf="isButtonVisible(['admin','devices'])">
                    <li data-bs-toggle="modal" data-bs-target="#EditDev" (click)="setDevice(device)" *ngFor="let device of devices">
                     <img src="{{setImage(device.types)}}">
                     <p>{{device.name}}</p>
                    </li>
                 </ul>
+                <ul *ngIf="!isButtonVisible(['admin','devices'])">
+                  <li *ngFor="let device of devices">
+                   <img src="{{setImage(device.types)}}">
+                   <p>{{device.name}}</p>
+                  </li>
+               </ul>
             </div>
         </div>
       </div>

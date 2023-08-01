@@ -88,9 +88,9 @@
                         <td>{{dev.name}}</td>
                         <td>{{dev.zone.name}}</td>
                         <td>{{dev.zone.country}}</td>
-                        <td *ngIf='dev.info.data[dev.types[0].name]!= undefined'>{{getDate(dev.info.data[dev.types[0].name].date.$date.$numberLong)
+                        <td *ngIf='dev.info.data[dev.types[0].name]!= undefined && dev.info.data[dev.types[0].name]!="camera" && dev.info.data[dev.types[0].name]!="irrigate"'>{{getDate2(dev.info.data[dev.types[0].name].date)
                         }}</td>
-                        <td  *ngIf='dev.info.data[dev.types[0].name]== undefined'>Sin datos</td>
+                        <td *ngIf='dev.info.data[dev.types[0].name]== undefined || dev.info.data[dev.types[0].name]=="camera"|| dev.info.data[dev.types[0].name]=="irrigate"'>Sin datos</td>
                     </tr>
                 </tbody>
 

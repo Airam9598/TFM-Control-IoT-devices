@@ -1,10 +1,10 @@
 <div class="main-box" *ngIf="actPanel.id >0">
     <ul class="menu">
-        <li (click)="changePanel($event)" class="nav-item active"><i class="bi bi-columns"></i>Panel</li>
-        <li (click)="changePanel($event)" class="nav-item"><i class="bi bi-people-fill"></i>Usuarios</li>
+        <li *ngIf="isButtonVisible(['admin'])" (click)="changePanel($event)" class="nav-item active"><i class="bi bi-columns"></i>Panel</li>
+        <li id="UsersbutConfig" (click)="changePanel($event)" class="nav-item"><i class="bi bi-people-fill"></i>Usuarios</li>
     </ul>
     
-    <section id="panel" *ngIf="activePanel=='Panel'">
+    <section id="panel" *ngIf="activePanel=='Panel' && isButtonVisible(['admin'])">
         <h3>Configuración del Panel <button data-bs-toggle="modal" data-bs-target="#deleteItem" class="remove"><i class="bi bi-trash-fill"></i> Eliminar</button></h3>
         <form novalidate [formGroup]="panelform" (ngSubmit)="editPanel()">
             <label for="name">
@@ -13,7 +13,15 @@
             </label>
             <label for="name">
                 <p>Diferencia de días desde el último envío de información de un dispositivo</p>
-                <input class="form-control" (keyup)="checkvalid($event)" type="number" min="0" name="diference_days" id="diference_days" formControlName="diference_days" placeholder="Días" required>
+                <div class="internalbox">
+                    <input class="form-control" (keyup)="checkvalid($event)" type="number" min="0" name="diference_days" id="diference_days" formControlName="diference_days" placeholder="Días" required>
+                    <select id="dayMultiplier">
+                        <option selected value="1">Días</option>
+                        <option value="31">Meses</option>
+                        <option value="365">Años</option>
+                    </select>
+                </div>
+                
             </label>
             <p *ngIf="error" class="error" id="error">{{errorMessage}}</p>
             <input class="btn" type="submit" value="Editar" [disabled]="!panelform.valid">
@@ -23,6 +31,44 @@
 
     <section id="users" *ngIf="activePanel=='Usuarios'">
         <h3>Administrador de usuarios</h3>
+        <button *ngIf="isButtonVisible(['admin'])" class="btn2" data-bs-toggle="modal" data-bs-target="#AddUserPanel"><i class="bi bi-plus"></i>Añadir usuario</button>
+        <table class="table table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>email</th>
+                    <th>Tipo de usuario</th>
+                    <th>Acciones</th>
+                  </tr>
+            </thead>
+            <tbody *ngIf="isButtonVisible(['admin'])">
+                <tr *ngFor="let user of users">
+                    <td>{{user.name}}</td>
+                    <td>{{user.email}}</td>
+                    <td *ngIf="user.pivot['admin']=='1'">Administrador</td>
+                    <td *ngIf="user.pivot['admin']!='1'">Usuario</td>
+                    <td>
+                        <button class="edited" (click)="changeEditedUser(user)" data-bs-toggle="modal" data-bs-target="#EditUserPermsPanel">Editar permisos</button>
+                        <button (click)="deleteUserPanel(user)" *ngIf="this.actUser.id!=user.id" class="delete">Quitar Usuario</button>
+                        <button (click)="deleteUserPanel(user)" *ngIf="this.actUser.id==user.id" class="delete">Salir del panel</button>
+                    </td>
+                </tr>
+            </tbody>
+
+            <tbody *ngIf="!isButtonVisible(['admin'])">
+                <tr>
+                    <td>{{actUser.name}}</td>
+                    <td>{{actUser.email}}</td>
+                    <td>Usuario</td>
+                    <td>
+                        <button (click)="deleteUserPanel(actUser)" class="delete">Salir del panel</button>
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
     </section>
     <modal-delete (activedelete)="deletePanel()" [item]="actPanel" [text]='text'></modal-delete>
+    <modals-edit-perms [editedUser]="editedUser" (dataEvent)="editPerms($event)"></modals-edit-perms>
+    <modal-add-panel (dataEvent)="addUserPanel($event)"></modal-add-panel>
 </div>

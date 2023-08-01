@@ -54,7 +54,7 @@ export class EditZoneComponent implements AfterViewInit{
     this.errorMessage=""
     this.button="Crear"
     this.actZone=new Zones(-1,"","",0,0,-1)
-    this.actPanel=new Panels(-1,"",0,"")
+    this.actPanel=new Panels(-1,"",0,{})
     if(this.actZone.id >0){
       this.button="Editar"
       this.zoneform.patchValue({name: this.actZone.name,country: this.actZone.country,lat: this.actZone.lat,lng: this.actZone.lng});
@@ -63,44 +63,10 @@ export class EditZoneComponent implements AfterViewInit{
       this.actPanel=this.dataService.actPanel
     }).catch((error) => {});
   }
-  restore(): void {
-    try {
-      this.map.off();
-      this.map.remove();
-    } catch (error) {}
-      this.zoneform.patchValue({
-        name: "",
-        country: "",
-        lat: 0,
-        lng: 0,
-        max_air_temp:undefined,
-        min_air_temp:undefined,
-        max_soil_moisture:undefined,
-        min_soil_moisture:undefined,
-        max_soil_temp:undefined,
-        min_soil_temp:undefined
-
-      });
-    let map = L.map("map2",{scrollWheelZoom:true,minZoom: 1}).setView([0,0], 1);
-    let osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      noWrap: true // Set the noWrap option to true
-    }),
-    satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-      noWrap: true // Set the noWrap option to true
-    });
-    map.addLayer(osm);
-    var baseMaps = {
-      "OpenStreetMap": osm,
-      "Satélite": satellite,
-    };
-    L.control.layers(baseMaps,{}, {position: 'bottomleft'}).addTo(map);
-    
-    map.on('click', (e)=> {
-      this.loaddata(map,Number(e.latlng.lat.toFixed(4)),Number(e.latlng.lng.toFixed(4)))
-    });
-    this.map=map;
-
+  restore() {
+    if(this.mark != undefined) this.map.removeLayer(this.mark)
     if(this.actZone.id>0){
+      this.button="Editar"
       this.zoneform.patchValue({
         name: this.actZone.name,
         country: this.actZone.country,
@@ -120,13 +86,28 @@ export class EditZoneComponent implements AfterViewInit{
       }
       this.mark=L.marker(new L.LatLng(this.actZone.lat, this.actZone.lng), markerOptions);
       this.mark.addTo(this.map);
+      
+    }else{
+      this.zoneform.patchValue({
+        name: "",
+        country: "",
+        lat: 0,
+        lng: 0,
+        max_air_temp:undefined,
+        min_air_temp:undefined,
+        max_soil_moisture:undefined,
+        min_soil_moisture:undefined,
+        max_soil_temp:undefined,
+        min_soil_temp:undefined
+      });
     }
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.restore()
-    if(this.actZone.id >0){
+      this.restore()
+    
+    }
+    /*if(this.actZone.id >0){
       this.button="Editar"
       this.zoneform.patchValue({
         name: this.actZone.name,
@@ -147,11 +128,9 @@ export class EditZoneComponent implements AfterViewInit{
         }
         this.mark=L.marker(new L.LatLng(this.actZone.lat, this.actZone.lng), markerOptions);
         this.mark.addTo(this.map);
-    }
-  } 
+    }*/
 
   ngAfterViewInit(): void {
-    
     setTimeout(()=>{
       if(this.actZone.id >0){
         this.button="Editar"
@@ -174,10 +153,10 @@ export class EditZoneComponent implements AfterViewInit{
     } catch (error) {}
       let map = L.map("map2",{scrollWheelZoom:true,minZoom: 1}).setView([0,0], 1);
       let osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        noWrap: true // Set the noWrap option to true
+        noWrap: true 
       }),
       satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-        noWrap: true // Set the noWrap option to true
+        noWrap: true 
       });
       map.addLayer(osm);
       var baseMaps = {
@@ -189,9 +168,10 @@ export class EditZoneComponent implements AfterViewInit{
       map.on('click', (e)=> {
         this.loaddata(map,Number(e.latlng.lat.toFixed(4)),Number(e.latlng.lng.toFixed(4)))
       });
+      map.invalidateSize(true)
       this.map=map;
-
-    },2000)
+     // if(this.actZone.id>0)this.restore()
+    },1000)
   }
 
   loaddata(map:any,lat:number,lng:number){

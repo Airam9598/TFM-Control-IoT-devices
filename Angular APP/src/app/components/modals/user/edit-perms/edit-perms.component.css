@@ -1,0 +1,46 @@
+
+form{
+    display: flex;
+    gap: 25px;
+    width: 420px;
+    justify-content: center;
+    background-color: #ffffffd1;
+    flex-direction: column;
+    border-radius: 8px;
+    margin: auto;
+}
+
+.form-switch {
+    padding-left: 0em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+label{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1.3em;
+   
+}
+
+label{
+    margin: 0;
+    font-size: 1.3rem;
+    margin-right: 36px;
+    font-weight: bold;
+    color: var(--default-blue);
+}
+
+
+input[type="submit"]{
+    background: var(--default-dark-blue);
+    color: white;
+    font-size: 1.3em;
+    margin-top: 20px;
+}
+
+input[type="submit"]:hover{
+    background: var(--default-blue);
+}

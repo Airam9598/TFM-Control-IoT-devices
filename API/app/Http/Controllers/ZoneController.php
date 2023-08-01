@@ -43,7 +43,11 @@ class ZoneController extends Controller
             
                     foreach ($mongoData['data'] as $field => $entries) {
                         $mongo_info = $mongoData['data'][$field];
-                        $latestEntry['data'][$field] = end($mongo_info);
+                        foreach ($mongoData['data'] as $field => $entries) {
+                            $mongo_info = $mongoData['data'][$field];
+                            if(is_array($mongo_info))$latestEntry['data'][$field] = end($mongo_info);
+                            if(!is_array($mongo_info))$latestEntry['data'][$field] = $mongo_info;
+                        }
                     }
 
                     $device->info = $latestEntry;
