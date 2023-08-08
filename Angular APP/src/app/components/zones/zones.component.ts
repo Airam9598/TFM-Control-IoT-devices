@@ -7,6 +7,7 @@ import * as L from 'leaflet';
 import { Devices } from 'src/app/models/devices.model';
 import { DeviceService } from 'src/app/services/device.service';
 import { Panels } from 'src/app/models/panels.model';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-zones',
   templateUrl: './zones.component.html',
@@ -22,7 +23,8 @@ export class ZonesComponent implements AfterViewInit {
   actZone:Zones
   actDev:Devices
   actUser:Users
-  constructor(public zoneService:ZoneService,public dataService:SharedDataService,public deviceService:DeviceService){
+  tempZone:any
+  constructor(public zoneService:ZoneService,public dataService:SharedDataService,public deviceService:DeviceService,public router:Router){
     this.zones=[]
     this.devices=[]
     this.actUser=new Users(-1,"","","",[],{})
@@ -30,6 +32,7 @@ export class ZonesComponent implements AfterViewInit {
     this.actDev=new Devices("",-1,"","",0,this.actZone,[],[])
     this.backUpZones=[]
     this.countries=[]
+    this.tempZone=this.router.getCurrentNavigation()!.extras.state
   }
 
   ngAfterViewInit(): void {
@@ -82,6 +85,23 @@ export class ZonesComponent implements AfterViewInit {
 
     
     }).catch((error) => {});
+
+    if(this.tempZone){
+      this.actZone=this.tempZone['name'] as Zones
+      this.openZonesInfo(this.actZone)
+    }
+  }
+
+  openZonesInfo(zone:Zones){
+    this.actZone=zone;
+    this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.actZone.id)?.subscribe({
+      next:(result)=>{
+        this.devices=(result.data as Devices[])
+      },
+      error: (err) => {
+        console.error('Error al obtener los dispositivos:', err);
+      }
+    })
   }
 
   loaddata(){

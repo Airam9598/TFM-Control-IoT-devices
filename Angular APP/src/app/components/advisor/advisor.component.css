@@ -29,6 +29,11 @@
     font-weight: bold;
 }
 
+.adviseBox>div{
+    max-height: 92%;
+    overflow-y: auto;
+}
+
 ul{
     padding: 0;
     display: flex;
@@ -36,9 +41,7 @@ ul{
     align-items: center;
     flex-direction: column;
     gap: 10px;
-    max-height: 92%;
     margin: 0;
-    overflow-y: auto;
     height: max-content;
     padding-bottom: 10px;
 }

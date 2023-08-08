@@ -275,14 +275,13 @@
     width: calc(100vw - 570px);
     margin-top: 60px;
     margin-left: 39px;
-    overflow: scroll;
 }
 
 .table-responsive{
     height: 400px;
     overflow-y: auto;
     min-height: unset;
-    /*display: block;*/
+    display: block;
 }
 
 th{

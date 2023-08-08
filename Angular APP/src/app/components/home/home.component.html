@@ -48,6 +48,7 @@
                   [stroke]="devchartOptions['stroke']"
                   [dataLabels]="devchartOptions['dataLabels']"
                   [legend]="devchartOptions['legend']"
+                  [plotOptions]="devchartOptions"
                 ></apx-chart>
             </div>
 
@@ -84,7 +85,7 @@
                     <tr class="noDevice" *ngIf="devices.length==0">
                         <td colspan="4">No hay dispositivos</td>
                     </tr>
-                    <tr *ngFor="let dev of devices">
+                    <tr style="cursor: pointer;" *ngFor="let dev of devices"  [routerLink]='["/zones"]' [state]="{ name:dev.zone}">
                         <td>{{dev.name}}</td>
                         <td>{{dev.zone.name}}</td>
                         <td>{{dev.zone.country}}</td>

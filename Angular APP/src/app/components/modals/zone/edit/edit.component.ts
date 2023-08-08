@@ -45,6 +45,7 @@ export class EditZoneComponent implements AfterViewInit{
   map:any;
   button:string;
   mark:any
+  init:boolean
   showExtra:boolean
   @Output() dataEvent = new EventEmitter<any>();
   @Input() actZone:Zones
@@ -62,6 +63,7 @@ export class EditZoneComponent implements AfterViewInit{
     this.dataService.getUser().then((userData: Users) => {
       this.actPanel=this.dataService.actPanel
     }).catch((error) => {});
+    this.init=false
   }
   restore() {
     if(this.mark != undefined) this.map.removeLayer(this.mark)
@@ -104,7 +106,7 @@ export class EditZoneComponent implements AfterViewInit{
   }
 
   ngOnChanges(changes: SimpleChanges) {
-      this.restore()
+      if(this.init)this.restore()
     
     }
     /*if(this.actZone.id >0){
@@ -170,8 +172,9 @@ export class EditZoneComponent implements AfterViewInit{
       });
       map.invalidateSize(true)
       this.map=map;
-     // if(this.actZone.id>0)this.restore()
-    },1000)
+      if(this.actZone.id>0)this.restore()
+      this.init=true
+    },5000)
   }
 
   loaddata(map:any,lat:number,lng:number){

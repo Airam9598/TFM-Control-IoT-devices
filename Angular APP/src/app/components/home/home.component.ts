@@ -12,7 +12,8 @@ import {
   ApexResponsive,
   ApexChart,
   ApexFill,
-  ApexTitleSubtitle
+  ApexTitleSubtitle,
+  ApexOptions
 } from "ng-apexcharts";
 import { Devices } from 'src/app/models/devices.model';
 import { SharedDataService } from 'src/app/shared/data-service';
@@ -27,6 +28,8 @@ export type ChartOptions = {
   title:ApexTitleSubtitle;
   responsive: ApexResponsive[];
   labels: any;
+  events:any;
+  options:ChartOptions
 };
 
 @Component({
@@ -125,6 +128,11 @@ export class HomeComponent {
               })
               this.devchartOptions['series']=Array.from(this.activateddevices.values())
               this.devchartOptions['labels']=Array.from(this.activateddevices.keys())
+              this.devchartOptions['events'] = {
+                click: (event:any, chartContext:any, config:any) => {
+                  console.log("Data point selected:", chartContext, config);
+                }
+              };
               this.backUpdevices= this.backUpdevices.concat(result.data as Devices[])
             },
             error: (err) => {
@@ -157,7 +165,22 @@ export class HomeComponent {
       series: [],
       chart: {
         width: 380,
-        type: "pie"
+        type: "pie",
+        events: {
+          dataPointSelection: (event:any, chartContext:any, config:any) => {
+            if(this.devchartOptions['labels'][config["selectedDataPoints"][0]]){
+              var res = new Date();
+              res.setDate(res.getDate() - this.actPanel.diference_days);
+              if(this.devchartOptions['labels'][config["selectedDataPoints"][0]]=="Inactivos"){
+                this.devices=this.backUpdevices.filter(dev=> dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong)
+              }else{
+                this.devices=this.backUpdevices.filter(dev=> dev.types[0].name=="camera" || dev.types[0].name=="irrigate" || res.valueOf()<=dev.info.data[dev.types[0].name].date!.$date.$numberLong)
+              }
+            }else{
+              this.devices=this.backUpdevices
+            }
+          }
+        },
       },
       dataLabels: {
         enabled: true,
@@ -293,9 +316,31 @@ export class HomeComponent {
 */
 
   filter(elem:any){
+    this.activateddevices=new Map
+    this.activateddevices.set("Activos",0)
+    this.activateddevices.set("Inactivos",0)
     if(elem.target.value==""){
       this.zones=this.backUpZones
       this.devices=this.backUpdevices
+      this.devices.forEach(dev=>{
+        var res = new Date();
+        res.setDate(res.getDate() - this.actPanel.diference_days);
+        if(dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong){
+          if (this.activateddevices.has("Inactivos")) {
+            this.activateddevices.set("Inactivos", this.activateddevices.get("Inactivos")! + 1);
+          } else {
+            this.activateddevices.set("Inactivos", 1);
+          }
+        }else if(dev.types[0].name=="camera" || dev.types[0].name=="irrigate" || res.valueOf()<=dev.info.data[dev.types[0].name].date!.$date.$numberLong){
+          if (this.activateddevices.has("Activos")) {
+            this.activateddevices.set("Activos", this.activateddevices.get("Activos")! + 1);
+          } else {
+            this.activateddevices.set("Activos", 1);
+          }
+        }
+      })
+      this.devchartOptions['series']=Array.from(this.activateddevices.values())
+      this.devchartOptions['labels']=Array.from(this.activateddevices.keys())
       this.zonechartOptions['series']=Array.from(this.countries.values())
       this.zonechartOptions['labels']=Array.from(this.countries.keys())
       return
@@ -303,6 +348,26 @@ export class HomeComponent {
 
     this.zones=this.backUpZones.filter(zone=>zone.country==elem.target.value)
     this.devices=this.backUpdevices.filter(dev=>dev.zone.country==elem.target.value)
+
+    this.devices.forEach(dev=>{
+      var res = new Date();
+      res.setDate(res.getDate() - this.actPanel.diference_days);
+      if(dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong){
+        if (this.activateddevices.has("Inactivos")) {
+          this.activateddevices.set("Inactivos", this.activateddevices.get("Inactivos")! + 1);
+        } else {
+          this.activateddevices.set("Inactivos", 1);
+        }
+      }else if(dev.types[0].name=="camera" || dev.types[0].name=="irrigate" || res.valueOf()<=dev.info.data[dev.types[0].name].date!.$date.$numberLong){
+        if (this.activateddevices.has("Activos")) {
+          this.activateddevices.set("Activos", this.activateddevices.get("Activos")! + 1);
+        } else {
+          this.activateddevices.set("Activos", 1);
+        }
+      }
+    })
+    this.devchartOptions['series']=Array.from(this.activateddevices.values())
+    this.devchartOptions['labels']=Array.from(this.activateddevices.keys())
     this.zonechartOptions['series']=[this.zones.length]
     this.zonechartOptions['labels']=[elem.target.value]
 

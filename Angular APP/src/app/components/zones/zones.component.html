@@ -25,7 +25,7 @@
                   </tr>
             </thead>
             <tbody>
-                <tr (click)="actZone=zone" *ngFor="let zone of zones">
+                <tr (click)="openZonesInfo(zone)" *ngFor="let zone of zones">
                     <td style="display: none;">{{zone.id}}</td>
                     <td>{{zone.name}}</td>
                     <td>{{zone.country}}</td>
