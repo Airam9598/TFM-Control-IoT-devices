@@ -83,7 +83,6 @@ export class HistoryComponent implements AfterViewInit {
     if(this.tempZone){
       this.actZone=this.tempZone['name'] as Zones
       this.openHistory(this.actZone)
-
     }
   }
 
