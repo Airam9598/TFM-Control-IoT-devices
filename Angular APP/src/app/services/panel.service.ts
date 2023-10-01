@@ -12,10 +12,10 @@ export class PanelService {
 
   baseUrl:string;
   // ApiKey ="yAIyErrGfRxVNdKiCrQcwVXxu085X1yKbZIJ5AfDK4hWAK"
-  constructor(private http: HttpClient,private cookieService: CookieService, private authService:AccessService) { 
+  constructor(private http: HttpClient,private cookieService: CookieService, private authService:AccessService) {
     this.baseUrl=authService.baseUrl;
   }
- 
+
   //PANELS
   getPanels(): Observable<any> | null {
     let token=this.authService.getToken()
@@ -28,7 +28,7 @@ export class PanelService {
     let token=this.authService.getToken()
     if(token == null) return null
     const headers = new HttpHeaders().set('authorization', `Bearer ${token}`)
-    return this.http.post<any>(this.baseUrl+"panels",{ "name": name },{ "headers":headers })
+    return this.http.post<any>(this.baseUrl+"panels",{ "name": name, "diference_days":0 },{ "headers":headers })
   }
 
   editPanel(id:number,name:string,day:number): Observable<any> | null {
@@ -44,7 +44,7 @@ export class PanelService {
     const headers = new HttpHeaders().set('authorization', `Bearer ${token}`)
     return this.http.delete(`${this.baseUrl}panels/${id}`, { "headers":headers })
   }
-  /* 
+  /*
    getPanel(id:number) {
      let token=this.authService.getToken()
      if(token != null){
