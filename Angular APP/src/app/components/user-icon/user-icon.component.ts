@@ -13,21 +13,10 @@ import { SharedDataService } from 'src/app/shared/data-service';
 })
 export class UserIconComponent {
   actUser:Users
-  constructor(private loginservice:AccessService, private route: Router, private dataService:SharedDataService, private panelservice:PanelService){
-    this.actUser=loginservice.user
-    this.dataService.getUser().then((userData: Users) => {
-      this.actUser = userData
-    }).catch((error) => {
-    });
+  constructor(private loginservice:AccessService, private route: Router, protected dataService:SharedDataService, private panelservice:PanelService){
+    this.actUser=this.dataService.userData
   }
 
-  getUser(){
-    this.dataService.getUser().then((userData: Users) => {
-      this.actUser = userData
-    }).catch((error) => {
-    });
-  }
-  
   closeSes(){
     this.loginservice.logout()?.subscribe({
       next:(response)=>{
@@ -36,7 +25,7 @@ export class UserIconComponent {
       },
       error:(error)=>{
         this.route.navigate(['/'])
-      } 
+      }
     });
   }
 }

@@ -2,7 +2,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel"><span *ngIf="this.actDev.id>0">Editar </span><span *ngIf="this.actDev.id<=0">Crear </span> Dispositivo <span *ngIf="this.actDev.id>0">{{this.actDev.name}}</span></h5>
+          <h5 class="modal-title" id="exampleModalLabel"><span *ngIf="this.dataService.actDev.id>0">Editar </span><span *ngIf="this.dataService.actDev.id<=0">Crear </span> Dispositivo <span *ngIf="this.dataService.actDev.id>0">{{this.dataService.actDev.name}}</span></h5>
           <button (click)="close()" type="button" class="btn-close" data-bs-dismiss="modal" id="closeEditDev" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -33,7 +33,7 @@
                 <p *ngIf="error" class="error" id="error" [innerHTML]="errorMessage"></p>
                 <input class="btn" type="submit" [value]="button" [disabled]="!devform.valid">
             </form>
-            <button *ngIf="this.actDev.id>0" class="btn red" (click)="DeleteDevice()"  >Eliminar dispositivo</button>
+            <button *ngIf="this.dataService.actDev.id>0" class="btn red" (click)="DeleteDevice()"  >Eliminar dispositivo</button>
         </div>
       </div>
     </div>

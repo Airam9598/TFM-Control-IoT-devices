@@ -9,11 +9,10 @@ import { AccessService } from './access-service.service';
 export class ZoneService {
 
   baseUrl:string;
-  // ApiKey ="yAIyErrGfRxVNdKiCrQcwVXxu085X1yKbZIJ5AfDK4hWAK"
-   constructor(private http: HttpClient, private authService:AccessService) { 
+   constructor(private http: HttpClient, private authService:AccessService) {
      this.baseUrl=authService.baseUrl;
    }
- 
+
    //ZONES
    getZones(idPanel:number):Observable<any> | null {
       let token=this.authService.getToken()
@@ -48,7 +47,7 @@ export class ZoneService {
     return this.http.get(`https://nominatim.openstreetmap.org/reverse.php?lat=${lat}&lon=${lng}&zoom=18&format=jsonv2`)
     //https://nominatim.openstreetmap.org/reverse.php?lat=40.13646&lon=-4.30664&zoom=18&format=jsonv2
   }
- 
+
   /* getZone(idPanel:number,id:number) {
      let token=this.authService.getToken()
      if(token != null){
@@ -59,7 +58,7 @@ export class ZoneService {
        }))
      }
    }
- 
+
    setZone(idPanel:number,info:any) {
      let token=this.authService.getToken()
      if(token != null){
@@ -70,7 +69,7 @@ export class ZoneService {
        }))
      }
    }
- 
+
    editZone(idPanel:number,id:number,info:any) {
      let token=this.authService.getToken()
      if(token != null){
@@ -81,7 +80,7 @@ export class ZoneService {
        }));
      }
    }
- 
+
    deleteZone(idPanel:number,id:number) {
      let token=this.authService.getToken()
      if(token != null){

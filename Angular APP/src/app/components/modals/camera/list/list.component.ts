@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Devices } from 'src/app/models/devices.model';
+import { SharedDataService } from 'src/app/shared/data-service';
 
 @Component({
   selector: 'modal-camera-list',
@@ -9,9 +10,9 @@ import { Devices } from 'src/app/models/devices.model';
 export class ListCameraComponent implements OnChanges {
   @Input() devices:Devices[]
   cameras:Devices[]
-  constructor(){
-    this.devices=[]
+  constructor(protected dataService:SharedDataService){
     this.cameras=[]
+    this.devices=[]
   }
   ngOnChanges(changes: SimpleChanges): void {
     this.cameras=[]

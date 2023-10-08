@@ -1,7 +1,7 @@
 
     <nav class="main-menu">
         <select id="panelsSelector" (change)="changePanel($event)">
-            <option *ngFor="let panel of pane" [value]="panel.id">{{panel.name}}</option>
+            <option *ngFor="let panel of this.dataService.panels" [value]="panel.id">{{panel.name}}</option>
         </select>
             <ul >
                 <li class="nav-item" routerLinkActive="active">
@@ -11,7 +11,7 @@
                            Inicio
                         </span>
                     </a>
-                  
+
                 </li>
                 <li class="nav-item" routerLinkActive="active">
                     <a [routerLink]='["/zones"]'>
@@ -20,7 +20,7 @@
                             Zonas de riego
                         </span>
                     </a>
-                    
+
                 </li>
                 <li *ngIf="isButtonVisible(['admin','history'])" class="nav-item" routerLinkActive="active">
                     <a [routerLink]='["/history"]'>
@@ -29,7 +29,7 @@
                             Historial
                         </span>
                     </a>
-                    
+
                 </li>
                 <li class="nav-item" routerLinkActive="active">
                     <a [routerLink]='["/config"]'>
@@ -38,7 +38,7 @@
                             Configuración
                         </span>
                     </a>
-                   
+
                 </li>
             </ul>
         </nav>

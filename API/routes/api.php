@@ -32,7 +32,12 @@ Route::group(['middleware' => 'auth:sanctum'],function(){
 
     Route::get('/me', [AuthController::class,'userDetails']);
     Route::get('/logout', [AuthController::class,'logout']);
+
     Route::get('/types', [TypeController::class,'index']);
+    /*Route::get('/types/{id}', [TypeController::class,'show']);
+    Route::post('/types', [TypeController::class,'store']);
+    Route::patch('/types/{id}',[TypeController::class,'update']);
+    Route::delete('/types/{id}',[TypeController::class,'destroy']);*/
 
     Route::get('/panels', [PanelController::class,'index']);
     Route::get('/panels/{id}', [PanelController::class,'show']);
@@ -48,23 +53,25 @@ Route::group(['middleware' => 'auth:sanctum'],function(){
     Route::patch('/users',[UserController::class,'update']);
     Route::delete('/panels/{id}/users/{id_user}',[UserController::class,'destroy']);
     Route::delete('/users',[UserController::class,'destroy']);
+    Route::get('/panels/{id}/device', [PanelController::class,'getDevices']);
+    Route::get('/panels/{id}/fulldevice', [PanelController::class,'getDeviceFull']);
 
     Route::get('/panels/{id}/zones', [ZoneController::class,'index']);
     Route::post('/panels/{id}/zones/{id_zone}-irrigate', [ZoneController::class,'irrigate']);
-    Route::get('/panels/{id}/{device}', [ZoneController::class,'index']);
     Route::get('/panels/{id}/zones/{id_zone}', [ZoneController::class,'show']);
     Route::post('/panels/{id}/zones', [ZoneController::class,'store']);
     Route::patch('/panels/{id}/zones/{id_zone}',[ZoneController::class,'update']);
     Route::delete('/panels/{id}/zones/{id_zone}',[ZoneController::class,'destroy']);
 
     Route::get('/panels/{id}/zones/{id_zone}/devices', [DeviceController::class,'index']);
-    Route::get('/panels/{id}/zones/{id_zone}/devices-{info}/', [DeviceController::class,'index']);
+    Route::get('/panels/{id}/zones/{id_zone}/devices-recent/', [DeviceController::class,'getAllRecent']);
+    Route::get('/panels/{id}/zones/{id_zone}/devices-history/', [DeviceController::class,'getAllHistory']);
     Route::get('/panels/{id}/zones/{id_zone}/devices/{device_id}', [DeviceController::class,'show']);
-    Route::get('/panels/{id}/zones/{id_zone}/devices/{device_id}/{info}', [DeviceController::class,'show']);
+    Route::get('/panels/{id}/zones/{id_zone}/devices/{device_id}/recent', [DeviceController::class,'showOneRecent']);
+    Route::get('/panels/{id}/zones/{id_zone}/devices/{device_id}/history', [DeviceController::class,'showOneHistory']);
     Route::get('/panels/{id}/zones/{id_zone}/devices/{device_id}', [DeviceController::class,'show']);
     Route::post('/panels/{id}/zones/{id_zone}/devices', [DeviceController::class,'store']);
     Route::patch('/panels/{id}/zones/{id_zone}/devices/{device_id}',[DeviceController::class,'update']);
-    Route::patch('/panels/{id}/zones/{id_zone}/devices/{device_id}/irrigate',[DeviceController::class,'irrigate']);
     Route::delete('/panels/{id}/zones/{id_zone}/devices/{device_id}',[DeviceController::class,'destroy']);
 
 });

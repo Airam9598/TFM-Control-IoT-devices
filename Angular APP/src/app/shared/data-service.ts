@@ -6,31 +6,46 @@ import { LoginComponent } from '../components/login/login.component';
 import { AccessService } from '../services/access-service.service';
 import { Zones } from '../models/zones.model';
 import { ZoneService } from '../services/zone.service';
+import { Devices } from '../models/devices.model';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SharedDataService {
-    private userData : Users
+    public userData : Users
     public actPanel !: Panels
     public panels !: Panels[]
     public zones!: Zones[]
+    public devices!: Devices[]
+    public actZone!: Zones
+    public actDev!: Devices
+
+    public loaded: Boolean
     cookieService:CookieService
     loginService:AccessService
     zoneService:ZoneService
-    constructor(cookieService:CookieService,loginService:AccessService,zoneService:ZoneService) { 
+    constructor(cookieService:CookieService,loginService:AccessService,zoneService:ZoneService) {
         this.cookieService=cookieService
         this.loginService=loginService
         this.userData=this.loginService.user
         this.zoneService=zoneService
+        this.actPanel=new Panels(-1,"",0,{})
+        this.actZone=new Zones(-1,"","",0,0,-1)
+        this.actDev=new Devices("",-1,"","",0,this.actZone,[],[])
+        this.panels=[]
+        this.zones=[]
+        this.devices=[]
+        this.loaded=false
+        this.getUser()
     }
 
     getUser(): Promise<Users>{
-        return new Promise<Users>((resolve, reject) => {
+        return new Promise<Users>( (resolve, reject) => {
             if (this.userData.id <0) {
                 this.loginService.isLoggedIn().subscribe({
                 next: (user) => {
-                    this.addUser(this.loginService.user)
+                   this.addUser(this.loginService.user)
                     resolve(this.userData);
                 },
                 error: (error2) => {
@@ -43,10 +58,10 @@ export class SharedDataService {
         });
     }
 
-    addUser(user:Users){
+    async addUser(user:Users){
         this.userData = user
         this.panels=this.userData.panels
-        this.updateActPanel()
+        await this.updateActPanel()
     }
 
     logout(){
@@ -54,6 +69,8 @@ export class SharedDataService {
         this.userData=new Users(-1,"","","",[],{})
         this.zones=[]
         this.actPanel=new Panels(-1,"",0,{})
+        this.actZone=new Zones(-1,"","",-1,-1,-1)
+        this.devices=[]
     }
 
     updatePanels(newPanels:Panels[]){
@@ -70,9 +87,11 @@ export class SharedDataService {
                 next: (zones) => {
                     this.zones=zones.data as Zones[]
                     resolve(this.zones);
+                    this.loaded=true;
                 },
                 error: (error2) => {
                     resolve([])
+                    this.loaded=true;
                 }
             });
         })

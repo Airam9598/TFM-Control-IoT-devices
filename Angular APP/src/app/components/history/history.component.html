@@ -11,7 +11,7 @@
                 <option  *ngFor="let country of countries " value="{{country}}">{{country}}</option>
             </select>
         </div>
-        
+
     </div>
     <div class="zone-box">
         <h3>Lista de zonas</h3>
@@ -23,12 +23,13 @@
                   </tr>
             </thead>
             <tbody>
-                <tr (click)="openHistory(zone)" *ngFor="let zone of zones">
+                <tr (click)="openHistory(zone)" *ngFor="let zone of backUpZones">
                     <td style="display: none;">{{zone.id}}</td>
                     <td>{{zone.name}}</td>
                     <td>{{zone.country}}</td>
                 </tr>
-                <tr class="noZone" *ngIf="zones.length==0">
+                <tr *ngIf="initialLoading"><td colspan="4" class="text-center"> <div class="spinner-border color-blue" role="status"></div></td></tr>
+                <tr class="noZone" *ngIf="this.dataService.zones.length==0 && !initialLoading">
                     <td colspan="4">No hay zonas</td>
                 </tr>
             </tbody>
@@ -38,4 +39,5 @@
     <div id="map3"></div>
 </div>
 
-<modal-history-show [devices]="devices" [zone]="actZone"></modal-history-show>
+<modal-history-show *ngIf="this.dataService.devices.length>0 && loadedDevices"></modal-history-show>
+<button class="new d-none" data-bs-toggle="modal" data-bs-target="#historyShow" id="historyShowbut"><i class="bi bi-plus-circle" ></i></button>

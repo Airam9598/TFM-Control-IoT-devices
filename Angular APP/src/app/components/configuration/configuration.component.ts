@@ -21,8 +21,6 @@ export class ConfigurationComponent implements AfterViewInit {
   activePanel:string;
   error:boolean
   errorMessage: string
-  actPanel:Panels
-  loginService:AccessService
   route:Router
   text:string="Panel"
   users:Users[]
@@ -34,29 +32,27 @@ export class ConfigurationComponent implements AfterViewInit {
     diference_days: new FormControl(0,[Validators.required,Validators.min(0)])
   });
 
-  constructor(private userService:UserService,private panelservice:PanelService,private route2:Router,private loginService2: AccessService,private dataService:SharedDataService , private cookieService:CookieService){
+  constructor(protected userService:UserService,protected panelservice:PanelService,protected route2:Router,protected loginService: AccessService,protected dataService:SharedDataService , protected cookieService:CookieService){
     this.error=false
     this.errorMessage=""
     this.activePanel="Panel"
-    this.loginService=loginService2
     this.route=route2
     this.users=[]
     this.actUser=new Users(-1,"","","",[],{})
     this.editedUser=new Users(-1,"","","",[],{})
-    this.actPanel=new Panels(-1, "",0,{})
     this.dataService.getUser().then((userData: Users) => {
-      this.actPanel=this.dataService.actPanel
       this.actUser = userData
-      this.panelform.patchValue({name: this.actPanel.name,diference_days:this.actPanel.diference_days});
-      if(this.isButtonVisible(['admin'])){
-        this.userService.getUsersPanel(this.actPanel.id)?.subscribe({
+
+      this.panelform.patchValue({name: this.dataService.actPanel.name,diference_days:this.dataService.actPanel.diference_days});
+      if(this.checkPerms(['admin'])){
+        this.userService.getUsersPanel(this.dataService.actPanel.id)?.subscribe({
           next:(response)=>{
             this.users=response.data as Users[]
           }
         })
       }
     }).catch((error) => {});
-    
+
     /*if(this.actPanel==undefined){
       this.logincheck()
     }else{
@@ -66,8 +62,9 @@ export class ConfigurationComponent implements AfterViewInit {
     }*/
   }
   ngAfterViewInit(): void {
-    if(!this.isButtonVisible(['admin'])){
-      (document.getElementById('UsersbutConfig') as HTMLLIElement).click()
+    if(!this.checkPerms(['admin'])){
+
+      (document.getElementById('UsersbutConfig') as HTMLLIElement)?.click()
     }
   }
 
@@ -85,10 +82,11 @@ export class ConfigurationComponent implements AfterViewInit {
 
 
   editPanel(){
-    const panelName = this.panelform.value.name;
-    const panelDays = this.panelform.value.diference_days! * parseInt((document.getElementById("dayMultiplier") as HTMLSelectElement).value);
-    if (panelName && panelDays ) {
-      this.panelservice.editPanel(parseInt(this.cookieService.get("panels")),panelName,panelDays)?.subscribe({
+
+    const panelName = this.panelform.value.name??this.dataService.actPanel.name;
+    const panelDays = (this.panelform.value.diference_days! * parseInt((document.getElementById("dayMultiplier") as HTMLSelectElement).value))??this.dataService.actPanel.diference_days;
+    if (this.panelform.valid ) {
+      this.panelservice.editPanel(this.dataService.actPanel.id,panelName,panelDays)?.subscribe({
         next:(response)=>{
           let Temppanel= response.data as Panels
           let Tempapnels= this.dataService.panels
@@ -100,6 +98,7 @@ export class ConfigurationComponent implements AfterViewInit {
           this.dataService.updatePanels(Tempapnels)
         },
         error:(error)=>{
+          console.log(error)
           //this.loading=false
           //this.error=true;
         /* if(error.error.message!=null){
@@ -111,9 +110,9 @@ export class ConfigurationComponent implements AfterViewInit {
               this.errorMessage = this.errorMessage + error.error[key][key2][error.error[key][key2].length - 1];
               })
             })
-            
+
           }*/
-        } 
+        }
       });
     }
   }
@@ -136,9 +135,9 @@ export class ConfigurationComponent implements AfterViewInit {
             this.errorMessage = this.errorMessage + error.error[key][key2][error.error[key][key2].length - 1];
             })
           })
-          
+
         }*/
-      } 
+      }
     });
   }
 
@@ -149,27 +148,26 @@ export class ConfigurationComponent implements AfterViewInit {
 
   logincheck() {
     if(!this.cookieService.check("token")) this.route.navigate(['/'])
-    
+
     this.loginService.isLoggedIn().subscribe((isLoggedIn) => {
       if (!isLoggedIn){
         this.loginService.deleteToken()
         this.route.navigate(['/'])
       }
       this.dataService.addUser(this.loginService.user)
-      this.actPanel=this.dataService.actPanel
       this.panelform.patchValue({
-        name: this.actPanel.name
+        name: this.dataService.actPanel.name
       });
     });
   }
 
   editPerms(info:any){
-    this.userService.editUserPanel(this.actPanel.id,this.editedUser.id,info)?.subscribe({
+    this.userService.editUserPanel(this.dataService.actPanel.id,this.editedUser.id,info)?.subscribe({
       next:(response)=>{
         this.users.forEach(ele=>{
           if(ele.id==(response.data as Users).id){
             ele=response.data as Users
-          }   
+          }
         })
       }
 
@@ -177,11 +175,12 @@ export class ConfigurationComponent implements AfterViewInit {
   }
 
   deleteUserPanel(user:Users){
-    this.userService.deleteUserPanel(this.actPanel.id,user.id)?.subscribe({
+    this.userService.deleteUserPanel(this.dataService.actPanel.id,user.id)?.subscribe({
       next:(reponse)=>{
         this.users=this.users.filter(elem=>elem.id!= (reponse.data as Users).id)
         if(this.actUser.id==user.id){
-          this.route.navigateByUrl('/')
+          this.dataService.updatePanels(this.dataService.panels.filter(elem=> elem.id != this.dataService.actPanel.id))
+          this.route.navigateByUrl('/home')
         }
       }
     })
@@ -191,7 +190,7 @@ export class ConfigurationComponent implements AfterViewInit {
     this.users.push(user)
   }
 
-  isButtonVisible(array:Array<string>):boolean{
+  checkPerms(array:Array<string>):boolean{
     let value=false;
     array.forEach(elem=>{
       let temp=this.actUser.panels.find(elem => elem.id === this.dataService.actPanel.id)

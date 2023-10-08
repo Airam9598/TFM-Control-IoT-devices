@@ -1,5 +1,5 @@
 <section>
-    <h2>{{zone.name}}</h2>
+    <h2>{{this.dataService.actZone.name}}</h2>
     <button *ngIf='isButtonVisible(["admin","zones"])' class="conf" data-bs-toggle="modal" data-bs-target="#EditZone"><i class="bi bi-gear-fill"></i>Configuración</button>
     <button class="close" (click)="closePanel()" >X</button>
     <div class="box">
@@ -14,7 +14,7 @@
                     <option *ngFor="let dev of this.devicesclasified['air temperature']" value="{{dev.id}}" >{{dev.name}}</option>
                 </select>
             </div>
-            <div class="orange2" *ngIf='this.devicesclasified["soil temperature"].length>0'>
+            <div class="orange2" *ngIf='this.devicesclasified["soil temperature"].length>0 && this.devicesclasified["soil temperature"][0].info'>
                 Temperatura del suelo
                 <div>
                     <img src="../../../assets/temp.png">
@@ -25,7 +25,7 @@
                 </select>
             </div>
 
-            <div class="blue3" *ngIf='this.devicesclasified["soil Moisture"].length>0'>
+            <div class="blue3" *ngIf='this.devicesclasified["soil Moisture"].length>0 && this.devicesclasified["soil Moisture"][0].info'>
                 Humedad del suelo
                 <div>
                     <img src="../../../assets/moisture.png">
@@ -48,7 +48,7 @@
             </div>
         </div>
         <div class="actions">
-            <button *ngIf="devices.length>0 && isButtonVisible(['admin','history'])" class="blue" [routerLink]='["/history"]' [state]="{ name:zone}"><img src="../../../assets/graph.png"> Historial</button>
+            <button (click)="this.dataService.devices=[]" *ngIf="this.dataService.devices.length>0 && isButtonVisible(['admin','history'])" class="blue" [routerLink]='["/history"]' [state]="{ name:this.dataService.actZone}"><img src="../../../assets/graph.png"> Historial</button>
             <button (click)="changeIrrigate()" *ngIf='devicesclasified["irrigate"].length>0 && !this.irrigate && isButtonVisible(["admin","irrigate"])' class="green"><img src="../../../assets/water.png"> Regar</button>
             <button (click)="changeIrrigate()" *ngIf='devicesclasified["irrigate"].length>0 && this.irrigate && isButtonVisible(["admin","irrigate"])' class="irrigate"><img src="../../../assets/water.png"> Regando...</button>
             <button *ngIf='devicesclasified["camera"].length>0 && isButtonVisible(["admin","camera"])' class="gray" data-bs-toggle="modal" data-bs-target="#listCamera"><img src="../../../assets/camera.png"> Cámaras</button>

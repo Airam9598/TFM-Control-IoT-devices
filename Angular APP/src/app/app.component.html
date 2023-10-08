@@ -1,8 +1,8 @@
 
-<app-navigation  *ngIf="showMenu==true"></app-navigation>
+<app-navigation  *ngIf="showMenu || (this.dataService.panels!= undefined && this.dataService.panels.length>0)"></app-navigation>
 <!--<app-notification [notify]="notify2"></app-notification>-->
 <router-outlet (activate)='onActivate()' (deactivate)="onDeactivate($event)"></router-outlet>
 
-<app-user-icon *ngIf="showMenu==true"></app-user-icon>
+<app-user-icon *ngIf="showMenu"></app-user-icon>
 
 <!--(notifypay)="setNotifyPay($event)" [user]="user2"-->

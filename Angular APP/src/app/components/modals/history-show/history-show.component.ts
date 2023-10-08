@@ -1,28 +1,27 @@
-import { AfterViewInit, Component, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import * as ApexCharts from 'apexcharts';
 import { ChartComponent } from 'ng-apexcharts';
 import { Devices } from 'src/app/models/devices.model';
 import { Zones } from 'src/app/models/zones.model';
 import * as moment from 'moment';
+import { SharedDataService } from 'src/app/shared/data-service';
 @Component({
   selector: 'modal-history-show',
   templateUrl: './history-show.component.html',
   styleUrls: ['./history-show.component.css']
 })
-export class HistoryShowComponent implements OnChanges {
-  @Input() devices:Devices[]
-  @Input() zone:Zones
+export class HistoryShowComponent implements OnInit {
   reloadChart:boolean
+  devices:Devices[]
   values:{[key:string]:{[key2:string]:Array<{[key:string]:number}>}}
   @ViewChild("chartdev") chartdev!: ChartComponent;
   @ViewChild("chartdevchart") chartdev2!: ChartComponent;
   public devchartOptions: Partial<any>;
-  constructor(){
-    this.devices=[]
+  constructor(protected dataService:SharedDataService){
+    this.devices=[...this.dataService.devices] as Devices[]
     this.values={}
-    this.zone=new Zones(-1,"","",0,0,0)
     this.reloadChart=true
-    
+
     this.devchartOptions = {
       series: [],
       chart: {
@@ -68,11 +67,17 @@ export class HistoryShowComponent implements OnChanges {
 
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  close(){
+    this.dataService.devices=[]
+    this.devices=[]
+    this.dataService.actZone=new Zones(-1,"","",-1,-1,-1)
+  }
+
+  ngOnInit() {
     this.values={}
     this.devchartOptions['series']=[]
     if(this.devices.length>0){
-      this.devices=this.devices.filter(elem=>elem.types[0].name!="irrigate" && elem.types[0].name!="camera" )
+      this.devices=this.dataService.devices.filter(elem=>elem.types[0].name!="irrigate" && elem.types[0].name!="camera" )
       this.devices.forEach(dev=>{
         if(Array.isArray(dev.info.data[dev.types[0].name])){
           dev.info.data[dev.types[0].name].sort((a:any, b:any) => {
@@ -96,7 +101,7 @@ export class HistoryShowComponent implements OnChanges {
       "soil temperature":'Temperatura del suelo',
       "air temperature":'Temperatura del aire',
       "soil Moisture":'Humedad del suelo'
-      
+
     }
 
     let i=0
@@ -104,12 +109,12 @@ export class HistoryShowComponent implements OnChanges {
       if(this.values[elem]!= undefined){
         this.multieject(elem,i,types)
         setTimeout(()=>{
-          (document.getElementById(elem) as HTMLSelectElement).value=Object.keys(this.values[elem])[0]
+          if((document.getElementById(elem) as HTMLSelectElement)) (document.getElementById(elem) as HTMLSelectElement).value=Object.keys(this.values[elem])[0]
         },500)
       }
       i++
     })
-  } 
+  }
 
   async multieject(elem:string,i:number,types:{[key:string]:string}){
       this.devchartOptions['series'].push({name: types[elem],data: []})
@@ -137,7 +142,7 @@ export class HistoryShowComponent implements OnChanges {
       setTimeout(()=>{
         this.reloadChart=true
       },50)
-      return 
+      return
     }
     this.devchartOptions['series'][Object.keys(this.values).findIndex(val=> elem.target.id==val)].name=types[(elem.target.options[elem.target.selectedIndex] as HTMLOptionElement).innerText.split("(")[1].split("/")[0].trim()]
     this.devchartOptions['series'][Object.keys(this.values).findIndex(val=> elem.target.id==val)].data=this.values[(elem.target.options[elem.target.selectedIndex] as HTMLOptionElement).innerText.split("(")[1].split("/")[0].trim()][elem.target.value]
@@ -151,7 +156,7 @@ export class HistoryShowComponent implements OnChanges {
     setTimeout(()=>{
       this.reloadChart=true
     },50)
-    
-    
+
+
   }
 }

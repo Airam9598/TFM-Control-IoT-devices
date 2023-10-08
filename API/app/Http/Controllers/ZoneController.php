@@ -1,91 +1,39 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Auth;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 use App\Models\DeviceMDB;
+use Exception;
 
 class ZoneController extends Controller
 {
-    private function databaseConfig(){
-        Config::set('database.default', 'mysql');
-        return $user = Auth::user();
-    }
 
-    private function getPanel(String $id){
-        $user=$this->databaseConfig();
-        $panel = $user->panels()->find($id);
-        return $panel;
-    }
-    
 
-    public function index(Request $request,String $id, $device=null)
+    public function index(Request $request,String $id)
     {
-        $user=$this->databaseConfig();
-        $query = $request->input('q');
-        if($query!=null){
-            $panel=$this->getPanel($id);
-            if($panel != null){
-                $zone = $panel->zones()->get()->where('name', 'like', '%'.$query.'%');
-            }else{
-                return trans('validation.custom.exist',['attribute' => 'El panel', 'error'],404);
-            }
-        }else if($device=="device"){
-            $panel=$this->getPanel($id);
-            if($panel != null){
-                $zone = $panel->zones()->with('devices','devices.zone', 'devices.types')->get()->pluck('devices')->flatten();
-                foreach ($zone as $device) {
-                    $mongoData = DeviceMDB::find($device->data_id);
-                    $latestEntry = ['_id' => $device->data_id, 'data' => []];
-            
-                    foreach ($mongoData['data'] as $field => $entries) {
-                        $mongo_info = $mongoData['data'][$field];
-                        foreach ($mongoData['data'] as $field => $entries) {
-                            $mongo_info = $mongoData['data'][$field];
-                            if(is_array($mongo_info))$latestEntry['data'][$field] = end($mongo_info);
-                            if(!is_array($mongo_info))$latestEntry['data'][$field] = $mongo_info;
-                        }
-                    }
-
-                    $device->info = $latestEntry;
-                }
-            }
-        }else if($device=="devicefull"){
-            $panel=$this->getPanel($id);
-            if($panel != null){
-                $zone = $panel->zones()->with('devices','devices.zone', 'devices.types')->get()->pluck('devices')->flatten();
-                foreach ($zone as $device) {
-                    $mongoData = DeviceMDB::find($device->data_id);
-                    $device["info"]=$mongoData;
-                }
-            }else{
-               return trans('validation.custom.exist',['attribute' => 'El panel', 'error'],404);
-            }
-
-        }else{
-            $panel=$this->getPanel($id);
-            if($panel != null){
-                $zone = $panel->zones()->get();
-            }else{
-               return trans('validation.custom.exist',['attribute' => 'El panel', 'error'],404);
-            }
-            
+        Try{
+            $this->databaseConfig();
+            $this->getPanel($id);
+            $zone = $this->panel->zones();
+            $zone = $this->filter($zone,["name" => "like"],$request);
+            return $this->correctResult($zone->get());
+        }catch(Exception){
+            return $this->error;
         }
-        return response()->json(['success' => true, 'data' => $zone],200);
     }
 
-   
+
     public function store(Request $request,$id)
     {
-        $user=$this->databaseConfig();
-        $panel=$this->getPanel($id);
-        if($panel->pivot->admin== true || $panel->pivot->zones==true){
+        Try{
+            $this->databaseConfig();
+            $this->getPanel($id);
+            $this->PermissionChecker(["admin","zones"]);
+
             $requestData = $request->all();
             $requestData['panel_id'] = $id;
-            $validator = Validator::make($requestData, [
+            $this->validate($requestData, [
                 'name' => ['required','string','min:2','max:50'],
                 'country' => ['required','string','min:2','max:50'],
                 'lat' => ['required','numeric'],
@@ -96,138 +44,114 @@ class ZoneController extends Controller
                 'min_soil_temp' => ['numeric','min:-1000', 'max:1000'],
                 'min_air_temp' => ['numeric','min:-1000', 'max:1000'],
                 'max_air_temp' => ['numeric','min:-1000', 'max:1000'],
-                'panel_id' =>['required','exists:panels,id'],
+                'panel_id' => ['required','exists:panels,id'],
             ]);
-
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()], 401);
-            }
 
             $zoneData=[
                 'name' => $request->name,
                 'country' => $request->country,
                 'lat' => $request->lat,
                 'lng' => $request->lng,
-                'panel_id'=> $id,
+                'panel_id' => $id,
+                'max_soil_moisture' => $request->max_soil_moisture ?? null,
+                'min_soil_moisture' => $request->min_soil_moisture ?? null,
+                'max_soil_temp' => $request->max_soil_temp ?? null,
+                'min_soil_temp' => $request->min_soil_temp ?? null,
+                'min_air_temp' => $request->min_air_temp ?? null,
+                'max_air_temp' => $request->max_air_temp ?? null,
             ];
-            if($request->max_soil_moisture){
-                $zoneData['max_soil_moisture']=$request->max_soil_moisture;
-            }
-            if($request->min_soil_moisture){
-                $zoneData['min_soil_moisture']=$request->min_soil_moisture;
-            }
-            if($request->max_soil_temp){
-                $zoneData['max_soil_temp']=$request->max_soil_temp;
-            }
-            if($request->min_soil_temp){
-                $zoneData['min_soil_temp']=$request->min_soil_temp;
-            }
-            if($request->min_air_temp){
-                $zoneData['min_air_temp']=$request->min_air_temp;
-            }
 
-            if($request->max_air_temp){
-                $zoneData['max_air_temp']=$request->max_air_temp;
-            }
-
-
-            $zone = Zone::create($zoneData);
-            return response()->json(['success' => true, 'data' => $zone], 200);
-        }else{
-            return response()->json(['error' => 'No tienes permisos'], 550);
+            $this->zone = Zone::create($zoneData);
+            return $this->correctResult($this->zone);
+        }catch(Exception){
+            return $this->error;
         }
-        
     }
 
- 
-    public function show(String $id_zone, $id)
+
+    public function show(String $id, $id_zone)
     {
-        $user=$this->databaseConfig();
-        $panel=$this->getPanel($id);
-        $zone = $panel->zones()->find($id_zone)->get();
-        if($zone != null)return response()->json(['data' => $zone]);
-        return trans('validation.custom.exist',['attribute' => 'La zona', 'error']);
+        Try{
+            $this->databaseConfig();
+            $this->getPanel($id);
+            $this->getZone($id_zone);
+            return $this->correctResult($this->zone);
+        }catch(Exception){
+            return $this->error;
+        }
     }
 
+    //REVISAR
     public function irrigate(Request $request, String $id, $id_zone)
     {
-        $user=$this->databaseConfig();
-        $panel=$this->getPanel($id);
-        if($panel != null && $request->value){
-
-            if($panel->pivot->admin== true || $panel->pivot->irrigate==true){
-                $zone = $panel->zones()->get()->find($id_zone);
-                if($zone==null){
-                    return trans('validation.custom.exist',['attribute' => 'La zona', 'error']);
-                }
-                $zone = $panel->zones()->with('devices','devices.zone', 'devices.types')->get()->pluck('devices')->flatten();
-                foreach ($zone as $device) {
-                    if ($device['types'][0]['name'] == "irrigate") {
-                        DeviceMDB::where('_id', $device->data_id)->update(['data.irrigate' => $request->value]);
-                    }
-                }
-                return response()->json(['success' => true, 'data' => $zone], 200);
-            }else{
-                return response()->json(['error' => 'No tienes permisos'], 550);
+        Try{
+            $this->databaseConfig();
+            $this->getPanel($id);
+            if(!$request->value){
+                return trans('validation.custom.exist',['attribute' => 'El panel', 'error'],404);
             }
 
+            $this->PermissionChecker(["admin","irrigate"]);
 
-        }else{
-           return trans('validation.custom.exist',['attribute' => 'El panel', 'error'],404);
+            $this->getZone($id_zone);
+            $this->zone = $this->panel->zones()->with('devices','devices.zone', 'devices.types')->get()->pluck('devices')->flatten();
+            foreach ($this->zone as $device) {
+                if ($device['types'][0]['name'] == "irrigate") {
+                    DeviceMDB::where('_id', $device->data_id)->update(['data.irrigate' => $request->value]);
+                }
+            }
+            return $this->correctResult($this->zone);
+        }catch(Exception){
+            return $this->error;
         }
-        
+
     }
 
 
     public function update(Request $request, String $id, $id_zone)
     {
-        $user=$this->databaseConfig();
-        $requestData = $request->all();
-        $requestData['panel_id'] = $id;
-        $validator = Validator::make($requestData, [
-            'name' => ['required','string','min:2','max:50'],
-            'country' => ['required','string','min:2','max:50'],
-            'lat' => ['required','numeric'],
-            'lng' => ['required','numeric'],
-            'max_soil_moisture' => ['numeric','min:-1000', 'max:1000'],
-            'min_soil_moisture' => ['numeric','min:-1000', 'max:1000'],
-            'max_soil_temp' => ['numeric','min:-1000', 'max:1000'],
-            'min_soil_temp' => ['numeric','min:-1000', 'max:1000'],
-            'min_air_temp' => ['numeric','min:-1000', 'max:1000'],
-            'max_air_temp' => ['numeric','min:-1000', 'max:1000'],
-            'panel_id' =>['required','exists:panels,id']
-        ]);
+        Try{
+            $this->databaseConfig();
+            $this->getPanel($id);
+            $requestData = $request->all();
+            $requestData['panel_id'] = $id;
+            $this->validate($requestData, [
+                'name' => ['required','string','min:2','max:50'],
+                'country' => ['required','string','min:2','max:50'],
+                'lat' => ['required','numeric'],
+                'lng' => ['required','numeric'],
+                'max_soil_moisture' => ['numeric','min:-1000', 'max:1000'],
+                'min_soil_moisture' => ['numeric','min:-1000', 'max:1000'],
+                'max_soil_temp' => ['numeric','min:-1000', 'max:1000'],
+                'min_soil_temp' => ['numeric','min:-1000', 'max:1000'],
+                'min_air_temp' => ['numeric','min:-1000', 'max:1000'],
+                'max_air_temp' => ['numeric','min:-1000', 'max:1000'],
+                'panel_id' =>['required','exists:panels,id']
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
-        }
-
-        $panel=$this->getPanel($id);
-        if($panel->pivot->admin== true || $panel->pivot->zones==true){
-            $zone = $panel->zones()->get()->find($id_zone);
-            if($zone==null){
-                return trans('validation.custom.exist',['attribute' => 'La zona', 'error']);
-            }
-            $zone->update($requestData);
-            $zone = $panel->zones()->get()->find($id_zone);
-            return response()->json(['success' => true, 'data' => $zone], 200);
-        }else{
-            return response()->json(['error' => 'No tienes permisos'], 550);
+            $this->PermissionChecker(["admin","zones"]);
+            $this->getZone($id_zone);
+            $this->zone->update($requestData);
+            $this->getZone($id_zone);
+            return $this->correctResult($this->zone);
+        }catch(Exception){
+            return $this->error;
         }
     }
 
 
     public function destroy(String $id, $id_zone)
     {
-        $user=$this->databaseConfig();
-        $panel=$this->getPanel($id);
-        if($panel->pivot->admin== true || $panel->pivot->zones==true){
-            $zone = $panel->zones()->find($id_zone);
-            if($zone==null)return trans('validation.custom.exist',['attribute' => 'La zona', 'error']);
-            $zone->delete();
-            return response()->json(['success' => true, 'data' => $zone], 200);
-        }else{
-            return response()->json(['error' => 'No tienes permisos'], 550);
+        Try{
+            $this->databaseConfig();
+            $this->getPanel($id);
+            $this->PermissionChecker(["admin","zones"]);
+            $this->getZone($id_zone);
+            $this->zone->delete();
+            return $this->correctResult($this->zone);
+        }catch(Exception){
+            return $this->error;
         }
     }
+
 }

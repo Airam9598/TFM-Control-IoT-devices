@@ -11,31 +11,22 @@ use DB;
 class AuthController extends Controller
 {
     public function __construct() {
-        DB::setDefaultConnection('mysql'); 
-    }
-
-    private function databaseConfig(){
-        Config::set('database.default', 'mysql');
+        DB::setDefaultConnection('mysql');
     }
 
     public function loginUser(Request $request): JsonResponse
     {
         $this->databaseConfig();
-        $validator = Validator::make($request->all(), [
+        $this->validate($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
         ]);
-   
-        if($validator->fails()){
 
-            return response()->json(['message' => $validator->errors()],401);
-        }
-   
         if(Auth::attempt($request->all())){
 
-            $user = Auth::user(); 
+            $user = Auth::user();
             $bytes = random_bytes(10);
-            $success =  $user->createToken($user->email.bin2hex($bytes))->plainTextToken; 
+            $success =  $user->createToken($user->email.bin2hex($bytes))->plainTextToken;
             return response()->json(['token' => $success],200);
         }
 
@@ -67,7 +58,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         $user->currentAccessToken()->delete();
-        
+
         return response()->json(['message' => 'Cierre de sesión correcto'],200);
     }
 }

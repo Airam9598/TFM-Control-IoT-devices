@@ -1,5 +1,5 @@
 <div class="main-box">
-    <module-zone-edit *ngIf="zones != undefined && isButtonVisible(['zone','admin'])" [actZone]="actZone" (dataEvent)="updateZone($event)"></module-zone-edit>
+    <module-zone-edit *ngIf="backUpZones != undefined && isButtonVisible(['admin','zones'])" (dataEvent)="updateZone($event)"></module-zone-edit>
     <div class="filter">
         <div>
             <p>Nombre de zona</p>
@@ -12,11 +12,11 @@
                 <option  *ngFor="let country of countries " value="{{country}}">{{country}}</option>
             </select>
         </div>
-        
+
     </div>
     <div class="zone-box">
         <h3>Lista de zonas</h3>
-        <button *ngIf="isButtonVisible(['zone','admin'])" class="btn" data-bs-toggle="modal" data-bs-target="#EditZone"><i class="bi bi-plus"></i>Crear Zona</button>
+        <button *ngIf="isButtonVisible(['zones','admin'])" class="btn" data-bs-toggle="modal" data-bs-target="#EditZone"><i class="bi bi-plus"></i>Crear Zona</button>
         <table class="table table-striped table-responsive">
             <thead>
                 <tr>
@@ -25,12 +25,13 @@
                   </tr>
             </thead>
             <tbody>
-                <tr (click)="openZonesInfo(zone)" *ngFor="let zone of zones">
+                <tr (click)="openZonesInfo(zone)" *ngFor="let zone of backUpZones">
                     <td style="display: none;">{{zone.id}}</td>
                     <td>{{zone.name}}</td>
                     <td>{{zone.country}}</td>
                 </tr>
-                <tr class="noZone" *ngIf="zones.length==0">
+                <tr *ngIf="initialLoading"><td colspan="4" class="text-center"> <div class="spinner-border color-blue" role="status"></div></td></tr>
+                <tr class="noZone" *ngIf="backUpZones.length==0 && !initialLoading">
                     <td colspan="4">No hay zonas</td>
                 </tr>
             </tbody>
@@ -38,9 +39,9 @@
         </table>
     </div>
     <div id="map"></div>
-    <app-zone-info [devices]="devices" (close)="resetZone()" [zone]="actZone" *ngIf="actZone.id>0"></app-zone-info>
-    <modal-adviselist [devices]="devices"></modal-adviselist>
-    <modal-devlist  (dataEvent)="changeDevice($event)" [devices]="devices"></modal-devlist>
-    <modal-createDev [actZone]="actZone" [actDev]="actDev" (delete)="deleteDevice($event)" (dataEvent2)="changeDevice($event)" (dataEvent)="addDevice($event)" ></modal-createDev>
-    <modal-camera-list [devices]="devices"></modal-camera-list>
+    <app-zone-info (close)="resetZone()" *ngIf="this.dataService.actZone.id>0 && this.loadedDevices "></app-zone-info>
+    <modal-adviselist *ngIf="this.dataService.actZone.id>0 && this.loadedDevices"></modal-adviselist>
+    <modal-devlist  (dataEvent)="changeDevice($event)"></modal-devlist>
+    <modal-createDev (delete)="deleteDevice($event)" (dataEvent2)="changeDevice($event)" (dataEvent)="addDevice($event)" ></modal-createDev>
+    <modal-camera-list [devices]="this.dataService.devices"></modal-camera-list>
 </div>

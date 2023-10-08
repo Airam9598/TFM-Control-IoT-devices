@@ -1,7 +1,7 @@
 
-<modal-createPanel (dataEvent)="reload()" *ngIf="panels.length==0"></modal-createPanel>
-<section *ngIf="panels.length==0 && user.id>0" class="container nopanel">
-    <h1 *ngIf="user.name != '' ">Bienvenido {{user.name}} <button (click)="closeSes()">Cerrar sesión</button></h1>
+<modal-createPanel (dataEvent)="reload()" *ngIf="this.dataService.panels.length==0"></modal-createPanel>
+<section *ngIf="this.dataService.panels.length==0 && this.dataService.userData.id>0" class="container nopanel">
+    <h1 *ngIf="this.dataService.userData.name != '' ">Bienvenido {{this.dataService.userData.name}} <button (click)="closeSes()">Cerrar sesión</button></h1>
     <button data-bs-toggle="modal" data-bs-target="#createPanel">Crea un panel</button>
     <button (click)="reloadPanels()">Buscar Paneles</button>
     <div *ngIf="loading" class="spinner-border" role="status"></div>
@@ -23,7 +23,7 @@
 
 
 
-<section *ngIf="panels.length>0 && user.id>0" class="container p-0">
+<section *ngIf="this.dataService.panels.length>0 && this.dataService.userData.id>0" class="container p-0">
     <div class="main-box">
         <div class="filter">
             <div>
@@ -33,12 +33,16 @@
                     <option  *ngFor="let country of countryKeys() " value="{{country}}">{{country}}</option>
                 </select>
             </div>
-            
+
         </div>
         <div class="multichartBox">
             <div class="chartBox" id="chartdev">
                 <h1>Dispositivos</h1>
-                <apx-chart
+                <div *ngIf="initialLoading" class="spinner-border color-blue" role="status"></div>
+                <div class="noDevice" *ngIf="backUpdevices.length==0 && !initialLoading">
+                  <td colspan="4" style="padding: 12px;font-size: 1.2em;border-radius: 7px">No hay dispositivos</td>
+                </div>
+                <apx-chart  *ngIf="backUpdevices.length>0"
                   [series]="devchartOptions['series']"
                   [chart]="devchartOptions['chart']"
                   [labels]="devchartOptions['labels']"
@@ -54,10 +58,11 @@
 
             <div class="chartBox" id="chartcountryzones">
                 <h1>Zonas de riego por país</h1>
-                <div class="noDevice" *ngIf="zones.length==0">
+                <div *ngIf="initialLoading" class="spinner-border color-blue" role="status"></div>
+                <div class="noDevice" *ngIf="backUpZones.length==0 && !initialLoading">
                     <td colspan="4" style="padding: 12px;font-size: 1.2em;border-radius: 7px">No hay zonas</td>
                 </div>
-                <apx-chart *ngIf="zones.length>0"
+                <apx-chart *ngIf="backUpdevices.length>0"
                 [title]="zonechartOptions['title']"
                   [series]="zonechartOptions['series']"
                   [chart]="zonechartOptions['chart']"
@@ -82,16 +87,17 @@
                       </tr>
                 </thead>
                 <tbody>
-                    <tr class="noDevice" *ngIf="devices.length==0">
+                  <tr *ngIf="initialLoading"><td colspan="4" class="text-center"> <div class="spinner-border color-blue" role="status"></div></td></tr>
+                    <tr class="noDevice" *ngIf="backUpdevices.length==0 && !initialLoading">
                         <td colspan="4">No hay dispositivos</td>
                     </tr>
-                    <tr style="cursor: pointer;" *ngFor="let dev of devices"  [routerLink]='["/zones"]' [state]="{ name:dev.zone}">
+                    <tr style="cursor: pointer;" *ngFor="let dev of backUpdevices"  [routerLink]='["/zones"]' [state]="{ name:dev.zone}">
                         <td>{{dev.name}}</td>
                         <td>{{dev.zone.name}}</td>
                         <td>{{dev.zone.country}}</td>
-                        <td *ngIf='dev.info.data[dev.types[0].name]!= undefined && dev.info.data[dev.types[0].name]!="camera" && dev.info.data[dev.types[0].name]!="irrigate"'>{{getDate2(dev.info.data[dev.types[0].name].date)
+                        <td *ngIf='dev.info && dev.info.data[dev.types[0].name]!= undefined && dev.info.data[dev.types[0].name]!="camera" && dev.info.data[dev.types[0].name]!="irrigate"'>{{getDate2(dev.info.data[dev.types[0].name].date)
                         }}</td>
-                        <td *ngIf='dev.info.data[dev.types[0].name]== undefined || dev.info.data[dev.types[0].name]=="camera"|| dev.info.data[dev.types[0].name]=="irrigate"'>Sin datos</td>
+                        <td *ngIf='!dev.info || dev.info.data[dev.types[0].name]== undefined || dev.info.data[dev.types[0].name]=="camera"|| dev.info.data[dev.types[0].name]=="irrigate"'>Sin datos</td>
                     </tr>
                 </tbody>
 

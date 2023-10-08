@@ -1,9 +1,8 @@
-<button class="new d-none" data-bs-toggle="modal" data-bs-target="#historyShow" id="historyShowbut"><i class="bi bi-plus-circle" ></i></button> 
 <div class="modal fade" id="historyShow" tabindex="-1" aria-labelledby="historyShow" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Historial de <p *ngIf="zone.id>0">{{zone.name}}</p></h5>
+          <h5 class="modal-title" id="exampleModalLabel">Historial de <p *ngIf="this.dataService.actZone.id>0">{{this.dataService.actZone.name}}</p></h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" id="closehistoryShow" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -30,7 +29,7 @@
                     <option value="{{dev.id}}" *ngFor="let dev of devices">{{dev.name +" ("+ dev.types[0].name}}<p *ngIf="dev.types[0].name=='soil Moisture'"> / m3m-3*100</p> <p *ngIf="dev.types[0].name.includes('temperature')"> / C</p> )</option>
                   </select>
                 </div>
-               
+
             </div>
                <!-- <p *ngIf="devices.length == 0"> No hay dispositivos</p>
                 <ul>

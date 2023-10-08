@@ -1,97 +1,150 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\DeviceMDB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Panel;
+use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use PhpParser\Node\Stmt\TryCatch;
 
 class PanelController extends Controller
 {
-    private function databaseConfig(){
-        Config::set('database.default', 'mysql');
-        return $user = Auth::user();
-    }
 
     public function index(Request $request)
     {
-        $user=$this->databaseConfig();
-        $query = $request->input('q');
-        if($query!=null){
-            $panel = $user->panels()->whereNull('deleted_at')->where('name', 'like', '%'.$query.'%');
-        }else{
-            $panel = $user->panels()->get();
-            foreach($panel as $pane){
-                if($pane->pivot->admin== true){
-                    $pane->with('users');
+        Try{
+            $this->databaseConfig();
+            $panels = $this->user->panels();
+            $panels= $this->filter($panels,["name" => "like"],$request);
+            $panels= $panels->get();
+            foreach($panels as $panel){
+                if($panel->pivot->admin == true){
+                    $panel->with('users');
                 }
             }
+            return $this->correctResult($panels);
+        }catch(Exception){
+            return $this->error;
         }
-        return response()->json(['success' => true, 'data' => $panel],200);
     }
 
-   
+
     public function store(Request $request)
     {
-        $user=$this->databaseConfig();
-        $validator = Validator::make($request->all(), [
-            'name' => ['required','string','min:2','max:50'],
-            'diference_days' => ['required','numeric','min:0']
-        ]);
+        Try{
+            $this->databaseConfig();
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
+            $this->validate($request->all(), [
+                'name' => ['required','string','min:2','max:50'],
+                'diference_days' => ['required','numeric','min:0']
+            ]);
+
+            $panelData=[
+                'name' => $request->name,
+                'diference_days' =>$request->diference_days,
+            ];
+            $this->panel = Panel::create($panelData);
+            $this->panel->users()->attach($this->user->id);
+            $this->getPanel($this->panel->id);
+            return $this->correctResult($this->panel);
+        }catch(Exception){
+            return $this->error;
         }
-
-        $panelData=[
-            'name' => $request->name,
-            'diference_days' =>$request->diference_days,
-        ];
-        $panel = Panel::create($panelData);
-        $panel->users()->attach($user->id);
-        return response()->json(['success' => true, 'data' => $panel], 200);
     }
 
- 
+
     public function show(String $id)
     {
-        $user=$this->databaseConfig();
-        $panel = $user->panels()->find($id);
-        
-        if($panel != null){
-            return response()->json(['data' => $panel]);
+        Try{
+            $this->databaseConfig();
+            $this->getPanel($id);
+            return $this->correctResult($this->panel);
+        }catch(Exception){
+            return $this->error;
         }
-        return trans('validation.custom.exist',['attribute' => 'El panel', 'error']);
+
     }
 
 
     public function update(Request $request, String $id)
     {
-        $user=$this->databaseConfig();
-        $validator = Validator::make($request->all(), [
-            'name' => ['sometimes','string','min:2','max:50'],
-            'diference_days' => ['sometimes','numeric','min:0']
-        ]);
+        Try{
+            $this->databaseConfig();
+            $this->validate($request->all(), [
+                'name' => ['sometimes','string','min:2','max:50'],
+                'diference_days' => ['sometimes','numeric','min:0']
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
+            $this->getPanel($id);
+            $this->panel->update($request->all());
+            $this->getPanel($id);
+            return $this->correctResult($this->panel);
+        }catch(Exception){
+            return $this->error;
         }
-
-        $panel = $user->panels()->find($id);
-        if($panel==null)return trans('validation.custom.exist',['attribute' => 'El panel', 'error']);
-        $panel->update($request->all());
-        $panel = $user->panels()->find($id);
-        return response()->json(['success' => true, 'data' => $panel], 200);
     }
 
 
     public function destroy(String $id)
     {
-        $user=$this->databaseConfig();
-        $panel = $user->panels()->find($id);
-        if($panel==null)return trans('validation.custom.exist',['attribute' => 'El panel', 'error']);
-        $panel->delete();
-        return response()->json(['success' => true, 'data' => $panel], 200);
+        Try{
+            $this->databaseConfig();
+            $this->getPanel($id);
+            $this->panel->delete();
+            return $this->correctResult($this->panel);
+        }catch(Exception){
+            return $this->error;
+        }
+    }
+
+
+    protected function getDevices(Request $request,String $id){
+        Try{
+            $this->databaseConfig();
+            $this->getPanel($id);
+            $zone = $this->panel->zones();
+            $zone = $this->filter($zone,["name" => "like"],$request);
+            $data=$zone->with('devices','devices.zone', 'devices.types')->get();
+            $devices=collect($data)->pluck('devices')->flatten() ;
+            foreach ($devices as $device) {
+                $mongoData = DeviceMDB::find($device->data_id);
+                $latestEntry = ['_id' => $device->data_id, 'data' => []];
+                foreach ($mongoData['data'] as $field => $entries) {
+                    $mongo_info = $mongoData['data'][$field];
+                    foreach ($mongoData['data'] as $field => $entries) {
+                        $mongo_info = $mongoData['data'][$field];
+                        if(is_array($mongo_info))$latestEntry['data'][$field] = end($mongo_info);
+                        if(!is_array($mongo_info))$latestEntry['data'][$field] = $mongo_info;
+                    }
+                }
+
+                $device->info = $latestEntry;
+            }
+            return $this->correctResult($devices);
+        }catch(Exception){
+            return $this->error;
+        }
+    }
+    protected function getDeviceFull(Request $request,String $id){
+        Try{
+            $this->databaseConfig();
+            $this->getPanel($id);
+            $zone = $this->panel->zones();
+            $zone = $this->filter($zone,["name" => "like"],$request);
+            $data=$zone->with('devices','devices.zone', 'devices.types')->get();
+            $devices=collect($data)->pluck('devices')->flatten() ;
+            foreach ($devices as $device) {
+                $mongoData = DeviceMDB::find($device->data_id);
+                $device["info"] = $mongoData;
+            }
+            return $this->correctResult($devices);
+        }catch(Exception){
+            return $this->error;
+        }
+
     }
 }

@@ -14,31 +14,27 @@ import { Router } from '@angular/router';
   styleUrls: ['./zones.component.css']
 })
 export class ZonesComponent implements AfterViewInit {
-
-  zones:Zones[]
-  devices:Devices[]
+  initialLoading:boolean
   backUpZones:Zones[]
   map:any
+  loadedDevices:boolean
   countries:Array<string>
-  actZone:Zones
-  actDev:Devices
   actUser:Users
   tempZone:any
-  constructor(public zoneService:ZoneService,public dataService:SharedDataService,public deviceService:DeviceService,public router:Router){
-    this.zones=[]
-    this.devices=[]
+  constructor(protected zoneService:ZoneService,protected dataService:SharedDataService,protected deviceService:DeviceService,protected router:Router){
     this.actUser=new Users(-1,"","","",[],{})
-    this.actZone=new Zones(-1,"","",0,0,-1)
-    this.actDev=new Devices("",-1,"","",0,this.actZone,[],[])
     this.backUpZones=[]
+    this.initialLoading=true
     this.countries=[]
+    this.loadedDevices=false
+    this.dataService.devices=[]
     this.tempZone=this.router.getCurrentNavigation()!.extras.state
   }
 
   ngAfterViewInit(): void {
     this.dataService.getUser().then((userData: Users) => {
       this.actUser=userData
-      this.zones=this.dataService.zones.sort((a, b) => {
+      this.backUpZones=[...this.dataService.zones.sort((a, b) => {
         if (a.country < b.country) {
           return -1;
         } else if (a.country > b.country) {
@@ -46,26 +42,13 @@ export class ZonesComponent implements AfterViewInit {
         } else {
           return 0;
         }
-      })
-      this.backUpZones=this.dataService.zones.sort((a, b) => {
-        if (a.country < b.country) {
-          return -1;
-        } else if (a.country > b.country) {
-          return 1;
-        } else {
-          return 0;
-        }
-      })
+      })] as Zones[]
 
-     this.backUpZones.filter(elem=>{
-        if(!this.countries.find(country=> elem.country==country)){
-          this.countries.push(elem.country)
-        }
-     })
-      /*let i=0;
-      while(this.zones.length<500){
-        this.zones.push(new Zones(-1,"Test"+i,"España",(Math.random()*(180 - -180)+-180),(Math.random()*(180 - -180)+-180),this.dataService.actPanel.id))
-      }*/
+      this.backUpZones.filter(elem=>{
+          if(!this.countries.find(country=> elem.country==country)){
+            this.countries.push(elem.country)
+          }
+      })
 
       let map = L.map("map",{scrollWheelZoom:true,minZoom: 2}).setView([27.96, -15.6], 3);
       let osm = L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -82,23 +65,23 @@ export class ZonesComponent implements AfterViewInit {
       L.control.layers(baseMaps,{}, {position: 'bottomleft'}).addTo(map);
       this.map=map;
       this.loaddata();
-
-    
     }).catch((error) => {});
 
     if(this.tempZone){
-      this.actZone=this.tempZone['name'] as Zones
-      this.openZonesInfo(this.actZone)
+      this.dataService.actZone=this.tempZone['name'] as Zones
+      this.openZonesInfo(this.dataService.actZone)
     }
   }
 
   openZonesInfo(zone:Zones){
-    this.actZone=zone;
-    this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.actZone.id)?.subscribe({
+    this.dataService.actZone=zone;
+    this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.dataService.actZone.id)?.subscribe({
       next:(result)=>{
-        this.devices=(result.data as Devices[])
+        this.dataService.devices=(result.data as Devices[])
+        this.loadedDevices=true
       },
       error: (err) => {
+        this.dataService.devices=[]
         console.error('Error al obtener los dispositivos:', err);
       }
     })
@@ -106,7 +89,7 @@ export class ZonesComponent implements AfterViewInit {
 
   loaddata(){
     let llatlngmark:any=[];
-    this.zones.forEach((zone:Zones)=>{
+    this.backUpZones.forEach((zone:Zones)=>{
       var basicBeachIcon = new L.Icon({ iconUrl: "../../../assets/pointer.png", iconAnchor: new L.Point(19, 20),iconSize: [35, 50] ,scrollWheelZoom:'center' });
         let markerOptions = {
           clickable: false,
@@ -118,32 +101,35 @@ export class ZonesComponent implements AfterViewInit {
         mark.on('mouseover',function(ev:any) {
           mark.openPopup();
         });
-              
+
         mark.on('mouseout',(ev:any)=> {
           this.map.closePopup();
         });
-       
+
         mark.on('click',()=> {
-          this.actZone=zone
-          this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.actZone.id)?.subscribe({
+          this.dataService.actZone=zone
+          this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.dataService.actZone.id)?.subscribe({
             next:(result)=>{
-              this.devices=(result.data as Devices[])
+              this.dataService.devices=(result.data as Devices[])
+              this.loadedDevices=true
             },
             error: (err) => {
+              this.dataService.devices=[]
               console.error('Error al obtener los dispositivos:', err);
             }
           })
-        });     
+        });
     });
+    this.initialLoading=false
   }
 
   updateZone(info:any){
-    if(this.actZone.id>0){
-      this.actZone=info as Zones
+    if(this.dataService.actZone.id>0){
+      this.dataService.actZone=info as Zones
     }
     this.dataService.zones=[]
     this.dataService.getZones().then((zones: Zones[]) => {
-    this.zones=zones
+      this.backUpZones=[...zones] as Zones[]
     try {
       this.map.off()
       this.map.remove()
@@ -163,40 +149,45 @@ export class ZonesComponent implements AfterViewInit {
       L.control.layers(baseMaps,{}, {position: 'bottomleft'}).addTo(map);
       this.map=map
       this.loaddata()
-    
+
     })
   }
 
   resetZone(){
-    this.actZone=new Zones(-1,"","",0,0,0)
+    this.dataService.actZone=new Zones(-1,"","",0,0,0)
+    this.loadedDevices=false
   }
 
   addDevice(device:Devices){
-    if(!this.devices.find(elem=>elem.id==device.id)){
-      this.devices.push(device)
+    if(!this.dataService.devices.find(elem=>elem.id==device.id)){
+      this.dataService.devices.push(device)
     }
-    this.actDev=device
-    this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.actZone.id)?.subscribe({
+    this.dataService.actDev=device
+    this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.dataService.actZone.id)?.subscribe({
       next:(result)=>{
-        this.devices=(result.data as Devices[])
+        this.dataService.devices=(result.data as Devices[])
+        this.loadedDevices=true
       },
       error: (err) => {
+        this.dataService.devices=[]
         console.error('Error al obtener los dispositivos:', err);
       }
     })
   }
 
   deleteDevice(dev:Devices){
-    this.devices = this.devices.filter(dev2 => dev2.id !== dev.id);
+    this.dataService.devices = this.dataService.devices.filter(dev2 => dev2.id !== dev.id);
   }
 
   changeDevice(device:Devices){
-    this.actDev=device
-    this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.actZone.id)?.subscribe({
+    this.dataService.actDev=device
+    this.deviceService.getDevicesRecent(this.dataService.actPanel.id,this.dataService.actZone.id)?.subscribe({
       next:(result)=>{
-        this.devices=(result.data as Devices[])
+        this.dataService.devices=(result.data as Devices[])
+        this.loadedDevices=true
       },
       error: (err) => {
+        this.dataService.devices=[]
         console.error('Error al obtener los dispositivos:', err);
       }
     })
@@ -204,7 +195,7 @@ export class ZonesComponent implements AfterViewInit {
 
   filter(elem:any){
     if(elem.target.value==""){
-      this.zones=this.backUpZones
+      this.backUpZones=[...this.dataService.zones] as Zones[]
       this.map.off();
       this.map.remove();
       let map = L.map("map",{scrollWheelZoom:true,minZoom: 2}).setView([27.96, -15.6], 3);
@@ -225,10 +216,10 @@ export class ZonesComponent implements AfterViewInit {
       return
     }
 
-   
-    
-    if(elem.target.id=="filtercountry") this.zones=this.backUpZones.filter(zone=>zone.country==elem.target.value)
-    if(elem.target.id=="filtername") this.zones=this.backUpZones.filter(zone=>zone.name.includes(elem.target.value))
+
+
+    if(elem.target.id=="filtercountry") this.backUpZones=this.dataService.zones.filter(zone=>zone.country==elem.target.value)
+    if(elem.target.id=="filtername") this.backUpZones=this.dataService.zones.filter(zone=>zone.name.toLowerCase().includes(elem.target.value.toLowerCase()))
     this.map.off();
     this.map.remove();
     let map = L.map("map",{scrollWheelZoom:true,minZoom: 2}).setView([27.96, -15.6], 3);
@@ -256,5 +247,5 @@ export class ZonesComponent implements AfterViewInit {
     })
     return (this.actUser.id >= 0 && value)
   }
-    
+
 }

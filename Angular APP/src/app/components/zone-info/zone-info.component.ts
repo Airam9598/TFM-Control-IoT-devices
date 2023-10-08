@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Devices } from 'src/app/models/devices.model';
 import { Users } from 'src/app/models/users.model';
 import { Zones } from 'src/app/models/zones.model';
@@ -11,20 +11,14 @@ import { SharedDataService } from 'src/app/shared/data-service';
   templateUrl: './zone-info.component.html',
   styleUrls: ['./zone-info.component.css']
 })
-export class ZoneInfoComponent implements OnChanges {
-  @Input() zone:Zones
-  @Input() devices:Devices[]
+export class ZoneInfoComponent implements OnInit {
   @Input() cameras:Devices[]
   @Output()close = new EventEmitter();
   irrigate:boolean
-  actUser:Users
   devicesclasified:{[key:string] : Devices[]}
   constructor(public dataService:SharedDataService,public deviceService:DeviceService,public zoneService:ZoneService){
-    this.zone=new Zones(-1,"","",0,0,-1)
-    this.devices=[]
     this.cameras=[]
     this.irrigate=false
-    this.actUser=new Users(-1,"","","",[],{})
     this.devicesclasified={
       "air temperature":[],
       "soil temperature":[],
@@ -33,9 +27,6 @@ export class ZoneInfoComponent implements OnChanges {
       "irrigate":[],
       "camera":[]
     }
-    this.dataService.getUser().then((userData: Users) => {
-      this.actUser=userData
-    })
   }
 
   closePanel(){
@@ -48,7 +39,7 @@ export class ZoneInfoComponent implements OnChanges {
   }
 
   getValue(value:string){
-    return this.devices.filter(dev=> dev.types[0].name===value )
+    return this.dataService.devices.filter(dev=> dev.types[0].name===value )
   }
 
   changeValue(info2:string,select:any){
@@ -63,7 +54,7 @@ export class ZoneInfoComponent implements OnChanges {
   }
 
   changeIrrigate(){
-    this.zoneService.irrigateZone(this.dataService.actPanel.id,this.zone.id,!this.irrigate+"")?.subscribe({
+    this.zoneService.irrigateZone(this.dataService.actPanel.id,this.dataService.actZone.id,!this.irrigate+"")?.subscribe({
       next:(result)=>{
         this.irrigate=!this.irrigate
       }
@@ -71,34 +62,25 @@ export class ZoneInfoComponent implements OnChanges {
 
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-      /*this.devices.forEach(dev=>{
-        this.deviceService.getDeviceRecent(this.dataService.actPanel.id,this.zone.id,dev.id)?.subscribe({
-          next:(reponse)=>{
-            this.devices[this.devices.findIndex(elem=>elem.id==(reponse as Devices).id)]=reponse.data as Devices
-            console.log(reponse.data as Devices)
-          }
-        })
-      })*/
+  ngOnInit() {
       this.devicesclasified["air temperature"]=this.getValue("air temperature")
       this.devicesclasified["soil temperature"]=this.getValue("soil temperature")
       this.devicesclasified["soil Moisture"]=this.getValue("soil Moisture")
       this.devicesclasified["precipitation"]=this.getValue("precipitation")
       this.devicesclasified["irrigate"]=this.getValue("irrigate")
       this.devicesclasified["camera"]=this.getValue("camera")
-
       this.devicesclasified["irrigate"].forEach(elem=>{
-        if(elem.info["data"]["irrigate"]=="true") this.irrigate=true
+        if(elem.info && elem.info["data"]["irrigate"]=="true") this.irrigate=true
       })
-  } 
+  }
 
   isButtonVisible(array:Array<string>):boolean{
     let value=false;
     array.forEach(elem=>{
-      let temp=this.actUser.panels.find(elem => elem.id === this.dataService.actPanel.id)
+      let temp=this.dataService.panels.find(elem => elem.id === this.dataService.actPanel.id)
       if(temp) if(!!+temp.pivot[elem]) value=true
     })
-    return (this.actUser.id >= 0 && value)
+    return (value)
   }
 }
 

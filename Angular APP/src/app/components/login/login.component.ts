@@ -15,7 +15,7 @@ import { SharedDataService } from 'src/app/shared/data-service';
 
 
 export class LoginComponent {
-  
+
   login = new FormGroup({
       email: new FormControl('',[Validators.required,Validators.email,Validators.minLength(5),Validators.maxLength(50)]),
       password: new FormControl('',Validators.required),
@@ -27,14 +27,30 @@ export class LoginComponent {
     this.error=false
     this.loading=false
     this.errorMessage=""
-    this.loginservice.isLoggedIn().subscribe((isLoggedIn) => {
+   /* this.loginservice.isLoggedIn().subscribe((isLoggedIn) => {
       if (isLoggedIn){
         this.dataService.addUser(this.loginservice.user)
-        this.route.navigate(['/home'])
+        const waitForLoad = () => {
+          return new Promise<void>((resolve) => {
+            const checkCondition = () => {
+              if (this.dataService.loaded) {
+                resolve();
+              } else {
+                setTimeout(checkCondition, 100);
+              }
+            };
+            checkCondition();
+          });
+        };
+
+        waitForLoad()
+          .then(() => {
+          this.route.navigate(['/home'])
+          });
       }else{
         this.loginservice.deleteToken()
       }
-    });
+    });*/
   }
 
   onSubmit() {
@@ -53,24 +69,24 @@ export class LoginComponent {
               }).catch((error) => {
               });
               this.loading=false
-             
+
             },
             error:(error2)=>{
               this.loading=false
               this.error=true;
               this.errorMessage = error2.error.message;
-            } 
+            }
           });
         },
         error:(error)=>{
           this.loading=false
           this.error=true;
           this.errorMessage = error.error.message;
-        } 
+        }
       });
 
     }else{
-        this.errorMessage="Existen campos vacíos" 
+        this.errorMessage="Existen campos vacíos"
           this.error=true;
     }
   }
@@ -79,5 +95,5 @@ export class LoginComponent {
     input.target.classList.remove(input.target.checkValidity()? 'is-invalid':'is-valid')
     input.target.classList.add(input.target.checkValidity()? 'is-valid':'is-invalid')
   }
-  
+
 }

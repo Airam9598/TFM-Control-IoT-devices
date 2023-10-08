@@ -12,11 +12,9 @@ import { SharedDataService } from 'src/app/shared/data-service';
 
 
 export class DevListComponent implements OnChanges {
-  @Input() devices:Devices[]
   @Output() dataEvent = new EventEmitter<any>();
   actUser:Users
-  constructor(private dataService:SharedDataService){
-    this.devices=[]
+  constructor(protected dataService:SharedDataService){
     this.actUser=new Users(-1,"","","",[],{})
     this.dataService.getUser().then((userData: Users) => {
       this.actUser=userData
@@ -24,13 +22,13 @@ export class DevListComponent implements OnChanges {
   }
 
   close(){
-    this.devices=[]
+    this.dataService.devices=[]
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(this.devices.length>0){
+    if(this.dataService.devices.length>0){
     }
-  } 
+  }
 
   setDevice(device:Devices){
     this.dataEvent.emit(device);

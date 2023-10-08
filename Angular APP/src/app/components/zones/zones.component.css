@@ -143,13 +143,18 @@ app-zone-info{
     align-items: center;
 }
 
+.color-blue{
+  color:var(--default-dark-blue);
+  margin-bottom: 0px;
+}
+
 @media (max-width: 1200px) and (min-height: 500px) {
 
     .main-box{
         flex-direction: column-reverse;
     }
 
-    #map{ 
+    #map{
         height: 60vh;
         width: 70vw;
     }
@@ -184,7 +189,7 @@ app-zone-info{
         margin: auto;
     }
 
-    #map{ 
+    #map{
         height: 60vh;
         width: 85vw;
     }
@@ -210,7 +215,7 @@ app-zone-info{
         margin: auto;
     }
 
-    #map{ 
+    #map{
         height: 60vh;
         width: 69vw;
     }
@@ -253,7 +258,7 @@ app-zone-info{
         margin: auto;
     }
 
-    #map{ 
+    #map{
         height: 60vh;
         width: 85vw;
     }

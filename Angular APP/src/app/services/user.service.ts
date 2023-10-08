@@ -10,8 +10,7 @@ import { Observable } from 'rxjs';
 export class UserService {
 
   baseUrl:string;
-  // ApiKey ="yAIyErrGfRxVNdKiCrQcwVXxu085X1yKbZIJ5AfDK4hWAK"
-  constructor(private http: HttpClient,private cookieService: CookieService, private authService:AccessService) { 
+  constructor(private http: HttpClient,private cookieService: CookieService, private authService:AccessService) {
     this.baseUrl=authService.baseUrl;
   }
 
@@ -84,7 +83,7 @@ export class UserService {
     if(token == null) return null
     const headers = new HttpHeaders().set('authorization', `Bearer ${token}`)
     return this.http.delete(`${this.baseUrl}/users`, { "headers":headers })
-  
+
   }
 
   deleteUserPanel(idPanel:number, id:number):Observable<any> | null  {

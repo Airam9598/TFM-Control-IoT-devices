@@ -14,11 +14,12 @@ export class AppComponent {
   showMenu=true;
   user2:Users;
   notify2:Array<string>;
-  constructor(private router: Router, private loginservice:AccessService, private dataService:SharedDataService) { 
+  constructor(private router: Router, private loginservice:AccessService, public dataService:SharedDataService) {
     this.user2=this.loginservice.user
     this.notify2=[]
     this.dataService.getUser().then((userData: Users) => {
       this.user2 = userData
+      this.dataService.addUser(userData)
       this.checkMenu()
     }).catch((error) => {});
   }
@@ -28,16 +29,13 @@ export class AppComponent {
   }
 
   checkMenu(){
-    if (this.router.url == "/login" || this.router.url == "/" || this.router.url == "/home" || this.router.url == "/registry"){
+    if (this.router.url == "/login" || this.router.url == "/" || (this.router.url == "/home" && (this.dataService.panels== undefined || this.dataService.panels.length<=0) ) || this.router.url == "/registry"){
       this.showMenu=false;
       this.notify2=[];
     }else{
       this.showMenu=true;
     }
 
-    if(this.router.url=="/home" && this.dataService.panels!= undefined && this.dataService.panels.length>0){
-      this.showMenu=true;
-    }
   }
   onDeactivate(event:any):void{
     this.notify2=[];
@@ -46,7 +44,7 @@ export class AppComponent {
         this.notify2=event.notify;
       }
     },200);
-    
+
   }
 
   setNotifyPay(event:Array<any>):any{

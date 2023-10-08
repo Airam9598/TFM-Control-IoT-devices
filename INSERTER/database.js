@@ -96,8 +96,11 @@ async function setDevice(name, dev_id, zone_id, type) {
 }
 
 async function setZone(name,country,lat,lng,panel){
+    let traductor={
+      "United States" :"Estados Unidos"
+    }
     const query = `INSERT INTO zones (name,country,lat,lng,panel_id) VALUES (?, ?, ?, ?,?);`;
-
+    country=traductor[country] ?? country 
     try {
       const result = await db_query(query, [name,country,lat,lng,panel]);
       return result.insertId;
