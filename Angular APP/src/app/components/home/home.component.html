@@ -1,8 +1,8 @@
 
-<modal-createPanel (dataEvent)="reload()" *ngIf="this.dataService.panels.length==0"></modal-createPanel>
+<app-general-form *ngIf="this.showPanel" (closeEvent)="this.showPanel=false" [elements]="panelElements" [formGroup]="panelFormGroup" [title]="'Crear panel'" [error]="errorMessage" (submited)="createPanel($event)"></app-general-form>
 <section *ngIf="this.dataService.panels.length==0 && this.dataService.userData.id>0" class="container nopanel">
     <h1 *ngIf="this.dataService.userData.name != '' ">Bienvenido {{this.dataService.userData.name}} <button (click)="closeSes()">Cerrar sesión</button></h1>
-    <button data-bs-toggle="modal" data-bs-target="#createPanel">Crea un panel</button>
+    <button (click)="this.showPanel=true">Crea un panel</button>
     <button (click)="reloadPanels()">Buscar Paneles</button>
     <div *ngIf="loading" class="spinner-border" role="status"></div>
     <p *ngIf="error" class="error" id="error">No se encontró ningún panel</p>

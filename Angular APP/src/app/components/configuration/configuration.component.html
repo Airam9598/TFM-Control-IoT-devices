@@ -5,7 +5,7 @@
     </ul>
 
     <section id="panel" *ngIf="activePanel=='Panel' && checkPerms(['admin'])">
-        <h3>Configuración del Panel <button data-bs-toggle="modal" data-bs-target="#deleteItem" class="remove"><i class="bi bi-trash-fill"></i> Eliminar</button></h3>
+        <h3>Configuración del Panel <button (click)="this.delete=true" class="remove"><i class="bi bi-trash-fill"></i> Eliminar</button></h3>
         <form novalidate [formGroup]="panelform" (ngSubmit)="editPanel()">
             <label for="name">
                 <p>Nombre</p>
@@ -31,7 +31,7 @@
 
     <section id="users" *ngIf="activePanel=='Usuarios'">
         <h3>Administrador de usuarios</h3>
-        <button *ngIf="checkPerms(['admin'])" class="btn2" data-bs-toggle="modal" data-bs-target="#AddUserPanel"><i class="bi bi-plus"></i>Añadir usuario</button>
+        <button *ngIf="checkPerms(['admin'])" class="btn2" (click)="this.showUser=true"><i class="bi bi-plus"></i>Añadir usuario</button>
         <table class="table table-striped table-responsive">
             <thead>
                 <tr>
@@ -48,27 +48,28 @@
                     <td *ngIf="user.pivot['admin']=='1'">Administrador</td>
                     <td *ngIf="user.pivot['admin']!='1'">Usuario</td>
                     <td>
-                        <button class="edited" (click)="changeEditedUser(user)" data-bs-toggle="modal" data-bs-target="#EditUserPermsPanel">Editar permisos</button>
-                        <button (click)="deleteUserPanel(user)" *ngIf="this.actUser.id!=user.id" class="delete">Quitar Usuario</button>
-                        <button (click)="deleteUserPanel(user)" *ngIf="this.actUser.id==user.id" class="delete">Salir del panel</button>
+                        <button class="edited" (click)="changeEditedUser(user)">Editar permisos</button>
+                        <button (click)="deleteUserPanel(user)" *ngIf="this.dataService.userData.id!=user.id" class="delete">Quitar Usuario</button>
+                        <button (click)="deleteUserPanel(user)" *ngIf="this.dataService.userData.id==user.id" class="delete">Salir del panel</button>
                     </td>
                 </tr>
             </tbody>
 
             <tbody *ngIf="!checkPerms(['admin'])">
                 <tr>
-                    <td>{{actUser.name}}</td>
-                    <td>{{actUser.email}}</td>
+                    <td>{{this.dataService.userData.name}}</td>
+                    <td>{{this.dataService.userData.email}}</td>
                     <td>Usuario</td>
                     <td>
-                        <button (click)="deleteUserPanel(actUser)" class="delete">Salir del panel</button>
+                        <button (click)="deleteUserPanel(this.dataService.userData)" class="delete">Salir del panel</button>
                     </td>
                 </tr>
             </tbody>
 
         </table>
     </section>
-    <modal-delete (activedelete)="deletePanel()" [item]="this.dataService.actPanel" [text]='text'></modal-delete>
-    <modals-edit-perms [editedUser]="editedUser" (dataEvent)="editPerms($event)"></modals-edit-perms>
-    <modal-add-panel (dataEvent)="addUserPanel($event)"></modal-add-panel>
+    <modal-delete  (closeEvent)="this.delete=false" *ngIf="this.delete" [item]="this.dataService.actPanel" [text]='text'></modal-delete>
+    <!--<modals-edit-perms [editedUser]="editedUser" (dataEvent)="editPerms($event)"></modals-edit-perms>-->
+    <app-general-form *ngIf="this.showUser" (closeEvent)="this.showUser=false" [elements]="userElements" [formGroup]="userFormGroup" [title]="'Crear panel'" [error]="errorMessage" (submited)="addUserPanel($event)"></app-general-form>
+    <app-general-form *ngIf="this.showPerms" (closeEvent)="this.showPerms=false" [elements]="permsElements" [formGroup]="permsFormGroup" [title]="'Editar permisos de'" [editedItem]="this.editedUser" [error]="errorMessage" (submited)="editPerms($event)"></app-general-form>
 </div>

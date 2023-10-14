@@ -27,7 +27,7 @@ body{
 app-root{
     min-height: 100vh;
     display: flex;
-    
+
 }
 
 app-home{
@@ -37,4 +37,53 @@ app-home{
 app-login{
     min-height: 100vh;
     display: block;
+}
+
+app-filter{
+  margin: auto;
+  width: 100%;
+  order: 0;
+}
+
+app-general-list{
+  position: absolute;
+  width: 100%;
+  height: calc(100% + 79px);
+  top:-79px;
+  left:0;
+  background-color: rgba(0, 0, 0, 0.438);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+app-general-form, modal-delete{
+  position: absolute;
+  width: 100%;
+  height: calc(100% + 79px);
+  top:-79px;
+  left:0;
+  background-color: rgba(0, 0, 0, 0.438);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+@media (max-width: 1200px) and (min-height: 500px) {
+  app-filter{
+      order: 1;
+  }
+
+}
+@media (max-width: 1000px) and (max-height: 500px) {
+  app-filter{
+      order: 1;
+  }
+
 }

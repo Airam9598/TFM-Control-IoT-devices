@@ -1,0 +1,35 @@
+<div class="main-box">
+  <app-filter (filtered)="filter($event)"></app-filter>
+  <br>
+  <div class="zone-box">
+      <h3>Lista de zonas</h3>
+      <button *ngIf="isButtonVisible(['zones','admin']) && this.router.url=='/zones'" class="btn" (click)="this.showZone=true"><i class="bi bi-plus"></i>Crear Zona</button>
+      <table class="table table-striped table-responsive">
+          <thead>
+              <tr>
+                  <th>Nombre</th>
+                  <th>País</th>
+                </tr>
+          </thead>
+          <tbody>
+              <tr (click)="openZonesInfo(zone)" *ngFor="let zone of this.backUpZones">
+                  <td style="display: none;">{{zone.id}}</td>
+                  <td>{{zone.name}}</td>
+                  <td>{{zone.country}}</td>
+              </tr>
+              <tr *ngIf="initialLoading"><td colspan="4" class="text-center"> <div class="spinner-border color-blue" role="status"></div></td></tr>
+              <tr class="noZone" *ngIf="this.backUpZones.length==0 && !initialLoading">
+                  <td colspan="4">No hay zonas</td>
+              </tr>
+          </tbody>
+
+      </table>
+  </div>
+  <div id="map"></div>
+
+  <app-general-form *ngIf="this.showZone && isButtonVisible(['admin','zones']) && this.router.url=='/zones'" (closeEvent)="this.showZone=false" [elements]="zoneElements" [formGroup]="zoneFormGroup" [title]="'Crear Zona'" [error]="errorMessage"  [editedItem]="this.dataService.actZone" (submited)="createZone($event)"></app-general-form>
+  <app-zone-info (deleteZone)="updateZone(null)" (editZone)="updateZone(this.dataService.actZone)" (close)="this.loadedDevices=false" *ngIf="this.dataService.actZone.id>0 && this.loadedDevices && this.router.url=='/zones'"></app-zone-info>
+  <modal-adviselist *ngIf="this.dataService.actZone.id>0 && this.loadedDevices && this.router.url=='/zones'"></modal-adviselist>
+  <modal-history-show *ngIf="this.dataService.devices.length>0 && loadedDevices && this.router.url=='/history'"></modal-history-show>
+  <button class="new d-none" data-bs-toggle="modal" data-bs-target="#historyShow" id="historyShowbut"  *ngIf="this.router.url=='/history'"><i class="bi bi-plus-circle" ></i></button>
+</div>

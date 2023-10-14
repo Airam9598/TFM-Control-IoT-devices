@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Devices } from 'src/app/models/devices.model';
+import { GeneralForm } from 'src/app/models/generalform.model';
 import { Users } from 'src/app/models/users.model';
 import { Zones } from 'src/app/models/zones.model';
 import { DeviceService } from 'src/app/services/device.service';
@@ -14,11 +16,36 @@ import { SharedDataService } from 'src/app/shared/data-service';
 export class ZoneInfoComponent implements OnInit {
   @Input() cameras:Devices[]
   @Output()close = new EventEmitter();
+  @Output()editZone = new EventEmitter();
+  @Output()deleteZone = new EventEmitter();
   irrigate:boolean
+  showDevices:boolean
+  showCameras:boolean
+  showZone:boolean
   devicesclasified:{[key:string] : Devices[]}
+
+  zoneFormGroup = new FormGroup({
+    name: new FormControl('',[Validators.required,Validators.minLength(2),Validators.maxLength(50)]),
+    country: new FormControl('',[Validators.required]),
+    lat: new FormControl(0,[Validators.required]),
+    lng: new FormControl(0,[Validators.required]),
+    max_soil_temp: new FormControl(),
+    min_soil_temp: new FormControl(),
+    max_soil_moisture: new FormControl(),
+    min_soil_moisture: new FormControl(),
+    max_air_temp: new FormControl(),
+    min_air_temp: new FormControl(),
+  });
+  zoneElements=[new GeneralForm("name","text","Nombre",true),new GeneralForm("country","country","País",true)]
+
+  errorMessage:string
   constructor(public dataService:SharedDataService,public deviceService:DeviceService,public zoneService:ZoneService){
     this.cameras=[]
+    this.errorMessage=""
     this.irrigate=false
+    this.showZone=false
+    this.showDevices=false
+    this.showCameras=false
     this.devicesclasified={
       "air temperature":[],
       "soil temperature":[],
@@ -30,7 +57,7 @@ export class ZoneInfoComponent implements OnInit {
   }
 
   closePanel(){
-    this.close.emit()
+    this.dataService.actZone=new Zones(-1,"","",0,0,0)
   }
   updateZone(info:any){
     this.dataService.zones=[]
@@ -81,6 +108,67 @@ export class ZoneInfoComponent implements OnInit {
       if(temp) if(!!+temp.pivot[elem]) value=true
     })
     return (value)
+  }
+
+  createZone(info:any){
+      this.errorMessage=""
+      if(info){
+        for(let val of Object.keys(info)){
+          if (info[val as keyof typeof info] == undefined) {
+            delete info[val as keyof typeof info]
+          }
+        }
+      }
+      if (Object.keys(info).length>0) {
+        if(this.dataService.actZone.id>0){
+          this.zoneService.editZone(this.dataService.actPanel.id,this.dataService.actZone.id,info)?.subscribe({
+            next:(response)=>{
+              this.dataService.actZone=response.data as Zones
+              this.dataService.getZones();
+              this.showZone=false;
+              this.editZone.emit()
+             // this.restore()
+            },
+            error:(error)=>{
+              if(error.error.message!=null){
+                this.errorMessage = error.error.message
+              }else{
+                Object.keys(error.error).forEach((key: string) => {
+                  Object.keys(error.error[key]).forEach((key2: string) => {
+                  if(this.errorMessage.length>0) this.errorMessage+='<br><br>'
+                  this.errorMessage = this.errorMessage + error.error[key][key2][error.error[key][key2].length - 1];
+                  })
+                })
+
+              }
+            }
+          });
+
+        }else{
+          this.zoneService.setZone(this.dataService.actPanel.id,info)?.subscribe({
+            next:(response)=>{
+              this.dataService.getZones();
+              this.showZone=false
+              this.editZone.emit()
+              //this.restore()
+            },
+            error:(error)=>{
+              if(error.error.message!=null){
+                this.errorMessage = error.error.message
+              }else{
+                Object.keys(error.error).forEach((key: string) => {
+                  Object.keys(error.error[key]).forEach((key2: string) => {
+                  if(this.errorMessage.length>0) this.errorMessage+='<br><br>'
+                  this.errorMessage = this.errorMessage + error.error[key][key2][error.error[key][key2].length - 1];
+                  })
+                })
+
+              }
+            }
+          });
+
+        }
+      }
   }
 }
 

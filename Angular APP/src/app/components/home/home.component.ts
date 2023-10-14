@@ -19,6 +19,8 @@ import { Devices } from 'src/app/models/devices.model';
 import { SharedDataService } from 'src/app/shared/data-service';
 import { Zones } from 'src/app/models/zones.model';
 import { DeviceService } from 'src/app/services/device.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { GeneralForm } from 'src/app/models/generalform.model';
 
 
 export type ChartOptions = {
@@ -40,6 +42,14 @@ export type ChartOptions = {
 
 @Injectable()
 export class HomeComponent {
+  panelFormGroup=new FormGroup({
+    name: new FormControl('',[Validators.required,Validators.minLength(2),Validators.maxLength(50)])
+  })
+  panelElements=[new GeneralForm("name","text","Nombre",true)]
+  errorMessage:string
+  showPanel:boolean
+
+
   initialLoading:boolean
   backUpZones:Zones[]
   backUpdevices:Devices[]
@@ -55,7 +65,12 @@ export class HomeComponent {
   public devchartOptions: Partial<any>;
   public zonechartOptions: Partial<any>;
 
-  constructor(protected deviceService:DeviceService, protected panelservice:PanelService,protected loginservice:AccessService, protected dataService:SharedDataService, protected actRoute: ActivatedRoute, protected route: Router, protected cookieService:CookieService){
+  constructor(protected deviceService:DeviceService, protected panelService:PanelService,protected loginservice:AccessService, protected dataService:SharedDataService, protected actRoute: ActivatedRoute, protected route: Router, protected cookieService:CookieService){
+    if(dataService.userData.id<=0){
+      this.route.navigate(['/loading'])
+    }
+    this.showPanel=false;
+    this.errorMessage=""
     this.loading=false
     this.initialLoading=true
     this.error=false
@@ -78,12 +93,12 @@ export class HomeComponent {
               var res = new Date();
               res.setDate(res.getDate() - this.dataService.actPanel.diference_days);
               if(this.devchartOptions['labels'][config["selectedDataPoints"][0]]=="Inactivos"){
-                this.dataService.devices=this.backUpdevices.filter(dev=> dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && dev.info && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong)
+                this.backUpdevices=this.dataService.devices.filter(dev=> dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && dev.info && dev.info.data[dev.types[0].name].date && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong)
               }else{
-                this.dataService.devices=this.backUpdevices.filter(dev=> dev.types[0].name=="camera" || dev.types[0].name=="irrigate" || !dev.info || res.valueOf()<=dev.info.data[dev.types[0].name].date!.$date.$numberLong)
+                this.backUpdevices=this.dataService.devices.filter(dev=> dev.types[0].name=="camera" || dev.types[0].name=="irrigate" || !dev.info || !dev.info.data[dev.types[0].name].date || res.valueOf()<=dev.info.data[dev.types[0].name].date!.$date.$numberLong)
               }
             }else{
-              this.dataService.devices=this.backUpdevices
+              this.backUpdevices=this.dataService.devices
             }
           }
         },
@@ -203,21 +218,6 @@ export class HomeComponent {
   }
 
   loadInfo(): void {
-    const waitForLoad = () => {
-      return new Promise<void>((resolve) => {
-        const checkCondition = () => {
-          if (this.dataService.loaded) {
-            resolve();
-          } else {
-            setTimeout(checkCondition, 100);
-          }
-        };
-        checkCondition();
-      });
-    };
-
-    waitForLoad()
-      .then(() => {
         this.backUpZones=[...this.dataService.zones] as Zones[]
         for(let zone of this.dataService.zones){
           if(this.countries.has(zone.country)){
@@ -295,11 +295,6 @@ export class HomeComponent {
             }
         })
         this.initialLoading=false
-      })
-    .catch((error) => {
-      console.error("Ha ocurrido un error:", error);
-      this.initialLoading=false;
-    });
   }
 
 
@@ -378,7 +373,7 @@ export class HomeComponent {
   reloadPanels(){
     this.error=false
     this.loading=true
-    this.panelservice.getPanels()?.subscribe({
+    this.panelService.getPanels()?.subscribe({
       next:(response)=>{
         this.dataService.updatePanels(response.data as Panels[])
         this.loading=false
@@ -396,19 +391,30 @@ export class HomeComponent {
   }
 
   closeSes(){
-    this.loginservice.logout()?.subscribe({
-      next:(response)=>{
-        this.route.navigate(['/'])
-      },
-      error:(error)=>{
-        this.route.navigate(['/'])
-      }
-    });
+    this.loginservice.logout()
+    this.route.navigate(['/'])
   }
 
-  reload(){
-    this.route.navigateByUrl('/', { skipLocationChange: true }).then(() =>
-    this.route.navigate(["/home"]))
+  createPanel($elements:any){
+    this.panelService.setPanel($elements.name)?.subscribe({
+      next:(response)=>{
+        this.route.navigate(["/loading"])
+      },
+      error:(error)=>{
+        this.errorMessage=""
+        if(error.error.message!=null){
+          this.errorMessage = error.error.message
+        }else{
+          Object.keys(error.error).forEach((key: string) => {
+            Object.keys(error.error[key]).forEach((key2: string) => {
+            if(this.errorMessage.length>0) this.errorMessage+='<br><br>'
+            this.errorMessage = this.errorMessage + error.error[key][key2][error.error[key][key2].length - 1];
+            })
+          })
+
+        }
+      }
+    });
   }
 
 }

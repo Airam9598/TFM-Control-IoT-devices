@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Route, Router } from '@angular/router';
 import { data } from 'jquery';
 import { CookieService } from 'ngx-cookie-service';
+import { GeneralForm } from 'src/app/models/generalform.model';
 import { Panels } from 'src/app/models/panels.model';
 import { Users } from 'src/app/models/users.model';
 import { AccessService } from 'src/app/services/access-service.service';
@@ -17,15 +18,30 @@ import { SharedDataService } from 'src/app/shared/data-service';
 })
 
 export class ConfigurationComponent implements AfterViewInit {
+  userFormGroup=new FormGroup({
+    email: new FormControl('',[Validators.required, Validators.email]),
+  })
+  userElements=[new GeneralForm("email","email","Correo electrónico",true)]
 
+  permsFormGroup = new FormGroup({
+    admin: new FormControl(true,[Validators.required]),
+    history: new FormControl(true,[Validators.required]),
+    camera: new FormControl(true,[Validators.required]),
+    devices: new FormControl(true,[Validators.required]),
+    zones: new FormControl(true,[Validators.required]),
+    irrigate: new FormControl(true,[Validators.required]),
+  });
+  permsElements=[new GeneralForm("perms","perms","Permisos",true)]
+
+  errorMessage:string
+  showUser:boolean
+  showPerms:boolean
   activePanel:string;
   error:boolean
-  errorMessage: string
-  route:Router
-  text:string="Panel"
+  text:string="panel"
   users:Users[]
   editedUser:Users
-  actUser:Users
+  delete:boolean
 
   panelform = new FormGroup({
     name: new FormControl('',[Validators.required,Validators.minLength(2),Validators.maxLength(50)]),
@@ -33,34 +49,21 @@ export class ConfigurationComponent implements AfterViewInit {
   });
 
   constructor(protected userService:UserService,protected panelservice:PanelService,protected route2:Router,protected loginService: AccessService,protected dataService:SharedDataService , protected cookieService:CookieService){
+    if(dataService.userData.id<=0){
+      this.route2.navigate(['/loading'])
+    }
+    this.delete=false;
+    this.showPerms=false
+    this.showUser=false
     this.error=false
     this.errorMessage=""
     this.activePanel="Panel"
-    this.route=route2
     this.users=[]
-    this.actUser=new Users(-1,"","","",[],{})
     this.editedUser=new Users(-1,"","","",[],{})
-    this.dataService.getUser().then((userData: Users) => {
-      this.actUser = userData
-
-      this.panelform.patchValue({name: this.dataService.actPanel.name,diference_days:this.dataService.actPanel.diference_days});
-      if(this.checkPerms(['admin'])){
-        this.userService.getUsersPanel(this.dataService.actPanel.id)?.subscribe({
-          next:(response)=>{
-            this.users=response.data as Users[]
-          }
-        })
-      }
-    }).catch((error) => {});
-
-    /*if(this.actPanel==undefined){
-      this.logincheck()
-    }else{
-      this.panelform.patchValue({
-        name: this.actPanel.name
-      });
-    }*/
+    this.panelform.patchValue({name: this.dataService.actPanel.name,diference_days:this.dataService.actPanel.diference_days});
+    this.updatePanels()
   }
+
   ngAfterViewInit(): void {
     if(!this.checkPerms(['admin'])){
 
@@ -68,10 +71,21 @@ export class ConfigurationComponent implements AfterViewInit {
     }
   }
 
+  updatePanels(){
+    if(this.checkPerms(['admin'])){
+      this.userService.getUsersPanel(this.dataService.actPanel.id)?.subscribe({
+        next:(response)=>{
+          this.users=response.data as Users[]
+        }
+      })
+    }
+  }
 
   changeEditedUser(user:Users){
     this.editedUser=user
+    this.showPerms=true
   }
+
   changePanel(elem:any){
     (document.querySelectorAll(`.menu li`)).forEach(element => {
       element.classList.remove("active")
@@ -82,7 +96,6 @@ export class ConfigurationComponent implements AfterViewInit {
 
 
   editPanel(){
-
     const panelName = this.panelform.value.name??this.dataService.actPanel.name;
     const panelDays = (this.panelform.value.diference_days! * parseInt((document.getElementById("dayMultiplier") as HTMLSelectElement).value))??this.dataService.actPanel.diference_days;
     if (this.panelform.valid ) {
@@ -117,42 +130,18 @@ export class ConfigurationComponent implements AfterViewInit {
     }
   }
 
-  deletePanel(){
-    this.panelservice.deletePanel(this.dataService.actPanel.id)?.subscribe({
-      next:(response)=>{
-        this.dataService.updatePanels(this.dataService.panels.filter(elem=> elem.id != this.dataService.actPanel.id))
-        this.route.navigate(['/home'])
-      },
-      error:(error)=>{
-        //this.loading=false
-        //this.error=true;
-      /* if(error.error.message!=null){
-          this.errorMessage = error.error.message
-        }else{
-          Object.keys(error.error).forEach((key: string) => {
-            Object.keys(error.error[key]).forEach((key2: string) => {
-            if(this.errorMessage.length>0) this.errorMessage+='<br><br>'
-            this.errorMessage = this.errorMessage + error.error[key][key2][error.error[key][key2].length - 1];
-            })
-          })
-
-        }*/
-      }
-    });
-  }
-
   checkvalid(input:any){
     input.target.classList.remove(input.target.checkValidity()? 'is-invalid':'is-valid')
     input.target.classList.add(input.target.checkValidity()? 'is-valid':'is-invalid')
   }
 
   logincheck() {
-    if(!this.cookieService.check("token")) this.route.navigate(['/'])
+    if(!this.cookieService.check("token")) this.route2.navigate(['/'])
 
     this.loginService.isLoggedIn().subscribe((isLoggedIn) => {
       if (!isLoggedIn){
         this.loginService.deleteToken()
-        this.route.navigate(['/'])
+        this.route2.navigate(['/'])
       }
       this.dataService.addUser(this.loginService.user)
       this.panelform.patchValue({
@@ -164,11 +153,8 @@ export class ConfigurationComponent implements AfterViewInit {
   editPerms(info:any){
     this.userService.editUserPanel(this.dataService.actPanel.id,this.editedUser.id,info)?.subscribe({
       next:(response)=>{
-        this.users.forEach(ele=>{
-          if(ele.id==(response.data as Users).id){
-            ele=response.data as Users
-          }
-        })
+        this.updatePanels()
+        this.showPerms=false
       }
 
     })
@@ -178,24 +164,42 @@ export class ConfigurationComponent implements AfterViewInit {
     this.userService.deleteUserPanel(this.dataService.actPanel.id,user.id)?.subscribe({
       next:(reponse)=>{
         this.users=this.users.filter(elem=>elem.id!= (reponse.data as Users).id)
-        if(this.actUser.id==user.id){
+        if(this.dataService.userData.id==user.id){
           this.dataService.updatePanels(this.dataService.panels.filter(elem=> elem.id != this.dataService.actPanel.id))
-          this.route.navigateByUrl('/home')
+          this.route2.navigateByUrl('/home')
         }
       }
     })
   }
 
-  addUserPanel(user:Users){
-    this.users.push(user)
+  addUserPanel(info:any){
+    this.userService.setUserPanel(this.dataService.actPanel.id,info)?.subscribe({
+      next:(response)=>{
+        (document.getElementById("closegeneralForm") as HTMLButtonElement).click()
+        this.users.push(response.data as Users)
+      },
+      error:(error)=>{
+        if(error.error.message!=null){
+          this.errorMessage = error.error.message
+        }else{
+          Object.keys(error.error).forEach((key: string) => {
+            Object.keys(error.error[key]).forEach((key2: string) => {
+            if(this.errorMessage.length>0) this.errorMessage+='<br><br>'
+            this.errorMessage = this.errorMessage + error.error[key][key2][error.error[key][key2].length - 1];
+            })
+          })
+
+        }
+      }
+    })
   }
 
   checkPerms(array:Array<string>):boolean{
     let value=false;
     array.forEach(elem=>{
-      let temp=this.actUser.panels.find(elem => elem.id === this.dataService.actPanel.id)
+      let temp=this.dataService.userData.panels.find(elem => elem.id === this.dataService.actPanel.id)
       if(temp) if(!!+temp.pivot[elem]) value=true
     })
-    return (this.actUser.id >= 0 && value)
+    return (this.dataService.userData.id >= 0 && value)
   }
 }

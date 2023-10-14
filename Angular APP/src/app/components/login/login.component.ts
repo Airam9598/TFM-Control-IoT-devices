@@ -27,30 +27,9 @@ export class LoginComponent {
     this.error=false
     this.loading=false
     this.errorMessage=""
-   /* this.loginservice.isLoggedIn().subscribe((isLoggedIn) => {
-      if (isLoggedIn){
-        this.dataService.addUser(this.loginservice.user)
-        const waitForLoad = () => {
-          return new Promise<void>((resolve) => {
-            const checkCondition = () => {
-              if (this.dataService.loaded) {
-                resolve();
-              } else {
-                setTimeout(checkCondition, 100);
-              }
-            };
-            checkCondition();
-          });
-        };
-
-        waitForLoad()
-          .then(() => {
-          this.route.navigate(['/home'])
-          });
-      }else{
-        this.loginservice.deleteToken()
-      }
-    });*/
+    if(dataService.userData.id>=0){
+      this.route.navigate(['/loading'])
+    }
   }
 
   onSubmit() {
@@ -63,13 +42,8 @@ export class LoginComponent {
           this.loginservice.isLoggedIn().subscribe({
             next:(user)=>{
               this.loginservice.setToken(token.token);
-              this.dataService.addUser(this.loginservice.user)
-              this.dataService.getUser().then((userData: Users) => {
-               this.route.navigate(['/home'])
-              }).catch((error) => {
-              });
+              this.route.navigate(['/home'])
               this.loading=false
-
             },
             error:(error2)=>{
               this.loading=false

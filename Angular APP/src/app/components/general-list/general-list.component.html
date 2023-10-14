@@ -1,0 +1,42 @@
+<div class="container">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{title}}</h5>
+        <button type="button" class="btn-close close" (click)="closePanel()">X</button>
+        <div class="menu" *ngIf="isButtonVisible(['admin','devices']) && type=='device'">
+          <button  class="new" (click)="this.showDevice=true"><i class="bi bi-plus-circle" ></i> Nuevo dispositivo</button>
+        </div>
+      </div>
+      <div class="modal-body">
+          <div class="adviseBox" *ngIf="type=='device'">
+              <p class="noone" *ngIf="this.dataService.devices.length == 0"> No hay dispositivos</p>
+              <ul *ngIf="isButtonVisible(['admin','devices'])">
+                 <li (click)="setDevice(device)" *ngFor="let device of this.dataService.devices">
+                  <img src="{{setImage(device.types)}}">
+                  <p>{{device.name}}</p>
+                 </li>
+              </ul>
+              <ul *ngIf="!isButtonVisible(['admin','devices'])">
+                <li *ngFor="let device of this.dataService.devices">
+                 <img src="{{setImage(device.types)}}">
+                 <p>{{device.name}}</p>
+                </li>
+             </ul>
+          </div>
+          <div class="adviseBox" *ngIf="type=='camera'">
+            <p class="noone" *ngIf="cameras.length == 0"> No hay dispositivos</p>
+            <ul>
+               <li (click)="open(camera)"  *ngFor="let camera of cameras">
+                <img src="../../../../assets/camera.png">
+                <p>{{camera.name}}</p>
+               </li>
+            </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-general-form *ngIf="this.showDevice && type=='device'" (closeEvent)="unsetDevice()" [elements]="devElements" [formGroup]="devFormGroup" [title]="'Crear Dispositivo'" [error]="errorMessage" [editedItem]="this.dataService.actDev" (submited)="createDevice($event)"></app-general-form>
+

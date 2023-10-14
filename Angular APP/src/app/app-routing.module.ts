@@ -3,19 +3,20 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegistryComponent } from './components/registry/registry.component';
-import { ZonesComponent } from './components/zones/zones.component';
 import { ErrorComponent } from './components/error/error.component';
 import { ConfigurationComponent } from './components/configuration/configuration.component';
-import { HistoryComponent } from './components/history/history.component';
+import { LoadingComponent } from './components/loading/loading.component';
+import { ZonesPageComponent } from './components/zones-page/zones-page.component';
 
 const routes: Routes = [
-  {path:'', component:LoginComponent},
+  {path:'', component:LoadingComponent},
   {path:'home', component:HomeComponent},
   {path:'login', component:LoginComponent},
   {path:'registry', component:RegistryComponent},
-  {path:'zones', component:ZonesComponent},
+  {path:'zones', component:ZonesPageComponent},
   {path:'config', component:ConfigurationComponent},
-  {path:'history', component:HistoryComponent},
+  {path:'history', component:ZonesPageComponent},
+  {path:'loading', component:LoadingComponent},
   //{path:'admin', component:AdministratorComponent,canActivate:[AuthGuard]},
 
   {path:'error', component:ErrorComponent},

@@ -65,6 +65,7 @@ export class SharedDataService {
     }
 
     logout(){
+        this.loginService.deleteToken()
         this.panels=[]
         this.userData=new Users(-1,"","","",[],{})
         this.zones=[]
@@ -122,6 +123,7 @@ export class SharedDataService {
                 }
             }else{
                 this.cookieService.delete("panels")
+                this.loaded=true
             }
         }else{
             if(this.panels.length>0){
@@ -129,6 +131,8 @@ export class SharedDataService {
                 this.zones=[]
                 this.getZones()
                 this.cookieService.set("panels",this.actPanel.id.toString())
+            }else{
+              this.loaded=true
             }
         }
         return true;

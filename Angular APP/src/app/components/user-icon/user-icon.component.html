@@ -4,14 +4,15 @@
         <div class=icon-box><i class="bi bi-person-fill"></i></div> {{this.dataService.userData.name}}
     </button>
     <ul class="dropdown-menu">
-      <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#EditUserPanel" ><i class="bi bi-person-fill"></i>Perfil</a></li>
-      <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#createPanel" ><i class="bi bi-plus-square-fill"></i>Crear panel</a></li>
+      <li><a class="dropdown-item" (click)="this.showUser=true" ><i class="bi bi-person-fill"></i>Perfil</a></li>
+      <li><a class="dropdown-item" (click)="this.showPanel=true" ><i class="bi bi-plus-square-fill"></i>Crear panel</a></li>
       <li><a class="dropdown-item" (click)="closeSes()"><i class="bi bi-box-arrow-left"></i>Cerrar Sesión</a></li>
     </ul>
 </div>
 
-<modal-createPanel ></modal-createPanel>
 
-<modal-editUser (dataEvent)="this.dataService.userData" ></modal-editUser>
+<app-general-form *ngIf="this.showPanel" (closeEvent)="this.showPanel=false" [elements]="panelElements" [formGroup]="panelFormGroup" [title]="'Crear panel'" [error]="errorMessage" (submited)="createPanel($event)"></app-general-form>
+<app-general-form *ngIf="this.showUser" (closeEvent)="this.showUser=false" [elements]="userElements" [formGroup]="userFormGroup" [title]="'Editar Usuario'" [error]="errorMessage" [editedItem]="this.dataService.userData" (submited)="editUser($event)"></app-general-form>
+
 
 

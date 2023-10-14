@@ -1,0 +1,100 @@
+<div class="container">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{title}}</h5>
+        <button type="button" class="btn-close close" id="closegeneralForm" (click)="closePanel()">X</button>
+      </div>
+      <div class="modal-body">
+          <form novalidate [formGroup]="formGroup" (ngSubmit)="submit()">
+              <label for="{{element['name']}}" *ngFor="let element of elements">
+                  <p>{{element['placeholder']}}</p>
+                  <input class="form-control" (keyup)="checkvalid($event)" type="{{element['type']}}" [name]="element['name']" [id]="element['name']" formControlName="{{element['name']}}" placeholder="{{element['placeholder']}}" [required]="element['required']">
+              </label>
+
+
+              <label for="type" *ngIf="this.device" style="flex-direction: column;align-items: flex-start;">
+                <p>Tipo de dispositivo</p>
+                <div class="form-check form-switch" *ngFor="let typew of types">
+                    <input (click)="editType($event)" class="form-check-input" type="checkbox" [value]="typew.id" [id]="typew.name">
+                    <label class="form-check-label" for="typew.name">{{tranlate(typew.name)}}</label>
+                </div>
+            </label>
+            <label for="camera" *ngIf="createdTypes.includes('5') && this.device">
+              <p>Url</p>
+              <input class="form-control" (keyup)="checkvalid($event)" type="url" minlength="2" maxlength="50" name="url" id="url" formControlName="url" placeholder="Url">
+            </label>
+              <p *ngIf="error.length>0" class="error" id="error">{{error}}</p>
+
+
+              <label for="country" *ngIf="this.zone">
+                <p>País</p>
+                <select (change)="changeCountry($event)" id="countrySelect" class="form-select" aria-label="country" formControlName="country">
+                    <option selected value="">Selecciona un país</option>
+                    <option *ngFor="let country of countries" values="country" >{{country}}</option>
+                  </select>
+
+            </label>
+            <label for="location" *ngIf="this.zone">
+                <p>Marca la ubicación de la zona de cultivo</p>
+                <div id="map3"></div>
+            </label>
+
+            <p *ngIf="this.zone" (click)="showExtra=!showExtra" class="expand">Opciones Extras<i *ngIf="!showExtra && this.zone" class="bi bi-caret-down-fill"></i><i *ngIf="showExtra && this.zone" class="bi bi-caret-up-fill"></i></p>
+            <p class="info" *ngIf="showExtra && this.zone">Estas opciones permiten que el panel te avise si alguno de los sensores de la zona sobrepasa o
+              recuce los niveles establecidos.</p>
+            <label for="soil_moisture" *ngIf="showExtra &&this.zone">
+              <p>Humedad del suelo</p>
+              <input class="form-control" (keyup)="checkvalid($event)" type="number" name="max_soil_moisture" id="max_soil_moisture" formControlName="max_soil_moisture" placeholder="Máxima">
+              <input class="form-control" (keyup)="checkvalid($event)" type="number" name="min_soil_moisture" id="min_soil_moisture" formControlName="min_soil_moisture" placeholder="Mínima">
+            </label>
+            <label for="soil_temp" *ngIf="showExtra && this.zone">
+              <p>Temperatura del suelo</p>
+              <input class="form-control" (keyup)="checkvalid($event)" type="number" name="max_soil_temp" id="max_soil_temp" formControlName="max_soil_temp" placeholder="Máxima">
+              <input class="form-control" (keyup)="checkvalid($event)" type="number" name="min_soil_temp" id="min_soil_temp" formControlName="min_soil_temp" placeholder="Mínima">
+            </label>
+            <label for="air_temp" *ngIf="showExtra && this.zone">
+              <p>Temperatura del aire</p>
+              <input class="form-control" (keyup)="checkvalid($event)" type="number" name="max_air_temp" id="max_air_temp" formControlName="max_air_temp" placeholder="Máxima">
+              <input class="form-control" (keyup)="checkvalid($event)" type="number" name="min_air_temp" id="min_air_temp" formControlName="min_air_temp" placeholder="Mínima">
+            </label>
+
+            <div class="form-check form-switch" *ngIf="this.perms" >
+              <label class="form-check-label" for="typew.name">Administrador</label>
+              <input class="form-check-input" (change)="checkAdmin($event)"  type="checkbox" name="admin" id="admin" formControlName="admin">
+          </div>
+
+          <div class="form-check form-switch" *ngIf="this.perms">
+              <label class="form-check-label" for="typew.name">Permiso de historial</label>
+              <input class="form-check-input"  type="checkbox" name="history" id="history" formControlName="history">
+          </div>
+
+          <div class="form-check form-switch" *ngIf="this.perms">
+              <label class="form-check-label" for="typew.name">Permiso de acceso a las cámaras</label>
+              <input class="form-check-input" type="checkbox" name="camera" id="camera" formControlName="camera">
+          </div>
+
+          <div class="form-check form-switch" *ngIf="this.perms">
+              <label class="form-check-label" for="typew.name">Permiso de dispositivos</label>
+              <input class="form-check-input" type="checkbox" name="devices" id="devices" formControlName="devices">
+          </div>
+
+          <div class="form-check form-switch" *ngIf="this.perms">
+              <label class="form-check-label" for="typew.name">Permiso de zonas</label>
+              <input class="form-check-input" type="checkbox" name="zones" id="zones" formControlName="zones">
+          </div>
+
+          <div class="form-check form-switch" *ngIf="this.perms">
+              <label class="form-check-label" for="typew.name">Permiso de riego</label>
+              <input class="form-check-input" type="checkbox" name="irrigate" id="irrigate" formControlName="irrigate">
+          </div>
+
+            <input class="btn" type="submit" value="{{button}}" [disabled]="!formGroup.valid">
+          </form>
+          <button class="btn red" *ngIf="this.editedItem &&this.editedItem.id>0" (click)="this.delete=true">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<modal-delete (closeEvent)="closeDelete()" *ngIf="this.delete" [item]="this.editedItem" [text]='this.text'></modal-delete>

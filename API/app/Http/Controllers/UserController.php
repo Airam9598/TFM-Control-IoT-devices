@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Validation\Rules\Password;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Exception;
-use Hash;
 
 class UserController extends Controller
 {
@@ -104,14 +104,13 @@ class UserController extends Controller
         Try{
             $this->databaseConfig();
             if(!$this->user){
-                return response()->json(['error' => 'No tienes permisos'], 550);
+                $this->error= $this->errorResult('No tienes permisos',550);
+            throw new Exception();
             }
 
             if($id!= null && $this->user->id==$id_user){
                 $this->getPanel($id);
-                if($this->panel->pivot->admin==false){
-                    return response()->json(['error' => 'No tienes permisos'], 550);
-                }
+                $this->PermissionChecker(["admin"]);
 
                 $this->validate($request->all(), [
                     'admin' => ['required','boolean'],
@@ -164,15 +163,24 @@ class UserController extends Controller
                     'oldpassword' =>['sometimes','different:password']
                 ]);
 
-                if (Hash::check($request->oldpassword, $this->user->password)) {
-                    return response()->json(['error' => 'La contraseña es incorrecta'], 401);
+                if($request->oldpassword && $request->password){
+                    if (!Hash::check($request->oldpassword, $this->user->password)) {
+                        return $this->errorResult('La contraseña antigua no coincide',401);
+                    }
                 }
-                $this->user->update($request->all());
+                $userData=[
+                    'name' => $request->name??null,
+                    'email' => $request->email??null,
+                    'password' => $request->password? Hash::make($request->password):null
+                ];
+                $userData=array_filter($userData, fn($value) => !is_null($value) && $value !== '');
+                $this->user->update($userData);
                 $user = User::with('panels')->find($this->user->id);
                 return $this->correctResult($user);
             }
 
-            return response()->json(['error' => 'No tienes permisos'], 550);
+            $this->error= $this->errorResult('No tienes permisos',550);
+            throw new Exception();
 
         }catch(Exception){
             return $this->error;

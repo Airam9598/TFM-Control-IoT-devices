@@ -7,8 +7,6 @@ import { NavigationComponent } from './components/navigation/navigation.componen
 import { LoginComponent } from './components/login/login.component';
 import { RegistryComponent } from './components/registry/registry.component';
 import { HomeComponent } from './components/home/home.component';
-import { ZonesComponent } from './components/zones/zones.component';
-import { HistoryComponent } from './components/history/history.component';
 import { ConfigurationComponent } from './components/configuration/configuration.component';
 import { ZoneInfoComponent } from './components/zone-info/zone-info.component';
 import { DevicesComponent } from './components/devices/devices.component';
@@ -16,22 +14,19 @@ import { ErrorComponent } from './components/error/error.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { CreateComponent } from './components/modals/panel/create/create.component';
 import { UserIconComponent } from './components/user-icon/user-icon.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { AdvisorComponent } from './components/advisor/advisor.component';
 import { SharedDataService } from './shared/data-service';
 import { DeleteComponent } from './components/modals/delete/delete.component';
-import { EditComponent } from './components/modals/user/edit/edit.component';
-import { EditZoneComponent } from './components/modals/zone/edit/edit.component';
-import { ListCameraComponent } from './components/modals/camera/list/list.component';
 import { AdviseList } from './components/modals/advise/list/list.component';
-import { DevListComponent } from './components/modals/device/list/list.component';
-import { CreateDevComponent } from './components/modals/device/create/create.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { HistoryShowComponent } from './components/modals/history-show/history-show.component';
-import { EditPermsComponent } from './components/modals/user/edit-perms/edit-perms.component';
-import { AddPanelComponent } from './components/modals/user/add-panel/add-panel.component';
+import { LoadingComponent } from './components/loading/loading.component';
+import { FilterComponent } from './components/filter/filter.component';
+import { ZonesPageComponent } from './components/zones-page/zones-page.component';
+import { GeneralFormComponent } from './components/general-form/general-form.component';
+import { GeneralListComponent } from './components/general-list/general-list.component';
 
 
 
@@ -42,25 +37,20 @@ import { AddPanelComponent } from './components/modals/user/add-panel/add-panel.
     LoginComponent,
     RegistryComponent,
     HomeComponent,
-    ZonesComponent,
-    HistoryComponent,
     ConfigurationComponent,
     ZoneInfoComponent,
     DevicesComponent,
     ErrorComponent,
-    CreateComponent,
     UserIconComponent,
     AdvisorComponent,
     DeleteComponent,
-    EditComponent,
-    EditZoneComponent,
-    ListCameraComponent,
     AdviseList,
-    DevListComponent,
-    CreateDevComponent,
     HistoryShowComponent,
-    EditPermsComponent,
-    AddPanelComponent
+    LoadingComponent,
+    FilterComponent,
+    ZonesPageComponent,
+    GeneralFormComponent,
+    GeneralListComponent
   ],
   imports: [
     BrowserModule,

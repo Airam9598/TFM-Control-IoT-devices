@@ -1,5 +1,5 @@
 
-<app-navigation  *ngIf="showMenu || (this.dataService.panels!= undefined && this.dataService.panels.length>0)"></app-navigation>
+<app-navigation  *ngIf="showMenu"></app-navigation>
 <!--<app-notification [notify]="notify2"></app-notification>-->
 <router-outlet (activate)='onActivate()' (deactivate)="onDeactivate($event)"></router-outlet>
 

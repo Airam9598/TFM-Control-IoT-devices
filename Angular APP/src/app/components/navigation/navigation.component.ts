@@ -21,12 +21,7 @@ export class NavigationComponent implements DoCheck  {
 
   panelUpdate:any
   Timer:any
-  actUser:Users
   constructor(private router:Router,private cookieService:CookieService,public dataService:SharedDataService, private panelService:PanelService){
-    this.actUser=new Users(-1,"","","",[],{})
-    this.dataService.getUser().then((userData: Users) => {
-      this.actUser=userData
-    })
   }
   ngDoCheck(): void {
     if(this.dataService.actPanel){
@@ -53,18 +48,17 @@ export class NavigationComponent implements DoCheck  {
 
     waitForLoad()
       .then(() => {
-      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() =>
-      this.router.navigate(["/home"]))
-      });
+      this.router.navigate(["/"])
+      })
   }
 
   isButtonVisible(array:Array<string>):boolean{
     let value=false;
     array.forEach(elem=>{
-      let temp=this.actUser.panels.find(elem => elem.id === this.dataService.actPanel.id)
+      let temp=this.dataService.userData.panels.find(elem => elem.id === this.dataService.actPanel.id)
       if(temp) if(!!+temp.pivot[elem]) value=true
     })
-    return (this.actUser.id >= 0 && value)
+    return (this.dataService.userData.id >= 0 && value)
   }
 
 
