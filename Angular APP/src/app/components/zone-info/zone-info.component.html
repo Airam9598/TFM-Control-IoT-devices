@@ -53,12 +53,13 @@
             <button (click)="changeIrrigate()" *ngIf='devicesclasified["irrigate"].length>0 && this.irrigate && isButtonVisible(["admin","irrigate"])' class="irrigate"><img src="../../../assets/water.png"> Regando...</button>
             <button *ngIf='devicesclasified["camera"].length>0 && isButtonVisible(["admin","camera"])' class="gray" (click)="this.showCameras=true"><img src="../../../assets/camera.png"> Cámaras</button>
             <button class="gray" (click)="this.showDevices=true"><img src="../../../assets/device.png"> Dispositivos</button>
-            <button class="yellow" data-bs-toggle="modal" data-bs-target="#listAdvise"><img src="../../../assets/settings.png"> Avisos</button>
+            <button class="yellow"(click)="showAdvise=true"><img src="../../../assets/settings.png"> Avisos</button>
         </div>
     </div>
 </section>
 
-<app-general-list (closeEvent)="this.showDevices=false" *ngIf="this.showDevices" [title]="'Dispositivos'" [type]="'device'"></app-general-list>
+<app-general-list (setDeviceEvent)="this.classify()" (closeEvent)="this.showDevices=false" *ngIf="this.showDevices" [title]="'Dispositivos'" [type]="'device'"></app-general-list>
 <app-general-list (closeEvent)="this.showCameras=false" *ngIf="this.showCameras" [title]="'Cámaras'" [type]="'camera'"></app-general-list>
 
 <app-general-form (deleteEvent)="this.deleteZone.emit()" *ngIf="this.showZone && isButtonVisible(['admin','zones'])" (closeEvent)="this.showZone=false" [elements]="zoneElements" [formGroup]="zoneFormGroup" [title]="'Crear Zona'" [error]="errorMessage"  [editedItem]="this.dataService.actZone" (submited)="createZone($event)"></app-general-form>
+<app-advisor (closeEvent)="this.showAdvise=false" *ngIf="showAdvise"></app-advisor>

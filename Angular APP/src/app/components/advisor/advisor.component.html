@@ -1,4 +1,4 @@
-<div class="adviseBox">
+<div class="adviseBox" *ngIf="this.router.url!='/zones'">
  <h3><i class="bi bi-exclamation-diamond"></i>Avisos</h3>
  <p *ngIf="advices.length == 0"> No hay avisos</p>
  <div>
@@ -6,5 +6,25 @@
       <li *ngFor="let advice of advices" [innerHTML]="advice"></li>
    </ul>
  </div>
- 
+
+</div>
+
+
+<div *ngIf="this.router.url=='/zones'" class="container" id="listAdvise" aria-labelledby="listAdvise" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+          <div class="adviseBox2">
+            <button type="button" class="btn-close"  id="closelistAdvise" (click)="closeEvent.emit()"></button>
+              <h3><i class="bi bi-exclamation-diamond"></i>Avisos</h3>
+              <p *ngIf="advices.length == 0"> No hay avisos</p>
+              <div>
+              <ul>
+                <li *ngFor="let advice of advices" [innerHTML]="advice"></li>
+              </ul>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
 </div>

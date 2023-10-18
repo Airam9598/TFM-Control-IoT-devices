@@ -130,19 +130,6 @@ tbody>tr>td{
   border: none;
 }
 
-app-zone-info{
-  position: absolute;
-  width: 100%;
-  height: calc(100% + 79px);
-  top:-79px;
-  left:0;
-  background-color: rgba(0, 0, 0, 0.438);
-  z-index: 1000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .color-blue{
 color:var(--default-dark-blue);
 margin-bottom: 0px;

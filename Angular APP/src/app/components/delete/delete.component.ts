@@ -9,7 +9,7 @@ import { ZoneService } from 'src/app/services/zone.service';
 import { SharedDataService } from 'src/app/shared/data-service';
 
 @Component({
-  selector: 'modal-delete',
+  selector: 'app-delete',
   templateUrl: './delete.component.html',
   styleUrls: ['./delete.component.css']
 })
@@ -34,17 +34,18 @@ export class DeleteComponent {
       case "device":
          this.deviceService.deleteDevice(this.dataService.actPanel.id,this.dataService.actZone.id,this.dataService.actDev.id)?.subscribe({
           next:()=>{
-            (document.getElementById("close") as HTMLButtonElement).click()
             this.dataService.devices=this.dataService.devices.filter(elem=>elem.id!=this.dataService.actDev.id)
             this.dataService.actDev=new Devices("",-1,"","",-1,this.dataService.actZone,[],[])
+            this.closeEvent.emit()
           }
         })
         break;
       case "panel":
         this.panelService.deletePanel(this.dataService.actPanel.id)?.subscribe({
           next:()=>{
-            this.closeEvent.emit()
+
             this.dataService.updatePanels(this.dataService.panels.filter(elem=> elem.id != this.dataService.actPanel.id))
+            this.closeEvent.emit()
             this.route.navigate(['/home'])
           }
         })
@@ -61,8 +62,8 @@ export class DeleteComponent {
       case "user":
         this.userService.deleteUser()?.subscribe({
           next:()=>{
-            this.closeEvent.emit()
             this.dataService.logout()
+            this.closeEvent.emit()
             this.route.navigate(['/'])
           }
         })

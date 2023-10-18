@@ -68,8 +68,7 @@
 
         </table>
     </section>
-    <modal-delete  (closeEvent)="this.delete=false" *ngIf="this.delete" [item]="this.dataService.actPanel" [text]='text'></modal-delete>
-    <!--<modals-edit-perms [editedUser]="editedUser" (dataEvent)="editPerms($event)"></modals-edit-perms>-->
+    <app-delete  (closeEvent)="this.delete=false" *ngIf="this.delete" [item]="this.dataService.actPanel" [text]='text'></app-delete>
     <app-general-form *ngIf="this.showUser" (closeEvent)="this.showUser=false" [elements]="userElements" [formGroup]="userFormGroup" [title]="'Crear panel'" [error]="errorMessage" (submited)="addUserPanel($event)"></app-general-form>
     <app-general-form *ngIf="this.showPerms" (closeEvent)="this.showPerms=false" [elements]="permsElements" [formGroup]="permsFormGroup" [title]="'Editar permisos de'" [editedItem]="this.editedUser" [error]="errorMessage" (submited)="editPerms($event)"></app-general-form>
 </div>

@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable, catchError, map, of, retry, throwError } from 'rxjs';
 import { Users } from '../models/users.model';
+import { SharedDataService } from '../shared/data-service';
 
 
 @Injectable({
@@ -10,7 +11,7 @@ import { Users } from '../models/users.model';
 })
 export class AccessService {
 
-  
+
   baseUrl="http://localhost:8000/api/"
 
   user:Users
@@ -30,7 +31,7 @@ export class AccessService {
   deleteToken(){
     return this.cookieService.delete('token');
   }
-  
+
   login(email: string, password: string) : Observable<any> {
     /*const saltRounds = 10;
     bcrypt.hash(password, saltRounds).then((hash) => {
@@ -63,7 +64,7 @@ export class AccessService {
           return true}),
         catchError((error) => {
           console.error('Error al realizar la solicitud:', error);
-          return of(false);  
+          return of(false);
         })
       );
     } else {
@@ -75,7 +76,7 @@ export class AccessService {
     return this.user;
   }
 /*
-    
+
     if(token != null){
       const headers = new HttpHeaders().set('authorization', `Bearer ${token}`)
       if (!this.isLoggedInt) {

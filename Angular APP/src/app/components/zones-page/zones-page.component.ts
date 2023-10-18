@@ -20,6 +20,7 @@ export class ZonesPageComponent  implements OnInit{
     map:any
     loadedDevices:boolean
     showZone:boolean
+    showHistory:boolean
     tempZone:any
     zoneFormGroup = new FormGroup({
       name: new FormControl('',[Validators.required,Validators.minLength(2),Validators.maxLength(50)]),
@@ -44,6 +45,7 @@ export class ZonesPageComponent  implements OnInit{
       this.errorMessage=""
       this.showZone=false
       this.initialLoading=true
+      this.showHistory=false
       this.loadedDevices=false
       this.dataService.devices=[]
       this.dataService.actZone=new Zones(-1,"","",-1,-1,-1)
@@ -77,9 +79,7 @@ export class ZonesPageComponent  implements OnInit{
           next:(result)=>{
             this.dataService.devices=(result.data as Devices[]);
             this.loadedDevices=true;
-            setTimeout(()=>{
-              (document.getElementById("historyShowbut") as HTMLButtonElement).click()
-            },500)
+            this.showHistory=true;
 
           },
           error: (err) => {

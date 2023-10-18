@@ -58,10 +58,11 @@ export class SharedDataService {
         });
     }
 
-    async addUser(user:Users){
+    addUser(user:Users){
         this.userData = user
         this.panels=this.userData.panels
-        await this.updateActPanel()
+        if(this.panels.length==0) this.loaded=true
+        this.updateActPanel()
     }
 
     logout(){
@@ -131,8 +132,6 @@ export class SharedDataService {
                 this.zones=[]
                 this.getZones()
                 this.cookieService.set("panels",this.actPanel.id.toString())
-            }else{
-              this.loaded=true
             }
         }
         return true;

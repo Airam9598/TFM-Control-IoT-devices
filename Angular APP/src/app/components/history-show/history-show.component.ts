@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Output, OnInit, SimpleChanges, ViewChild, EventEmitter } from '@angular/core';
 import * as ApexCharts from 'apexcharts';
 import { ChartComponent } from 'ng-apexcharts';
 import { Devices } from 'src/app/models/devices.model';
@@ -6,19 +6,18 @@ import { Zones } from 'src/app/models/zones.model';
 import * as moment from 'moment';
 import { SharedDataService } from 'src/app/shared/data-service';
 @Component({
-  selector: 'modal-history-show',
+  selector: 'app-history-show',
   templateUrl: './history-show.component.html',
   styleUrls: ['./history-show.component.css']
 })
 export class HistoryShowComponent implements OnInit {
+  @Output() closeEvent=new EventEmitter();
   reloadChart:boolean
-  devices:Devices[]
   values:{[key:string]:{[key2:string]:Array<{[key:string]:number}>}}
   @ViewChild("chartdev") chartdev!: ChartComponent;
   @ViewChild("chartdevchart") chartdev2!: ChartComponent;
   public devchartOptions: Partial<any>;
   constructor(protected dataService:SharedDataService){
-    this.devices=[...this.dataService.devices] as Devices[]
     this.values={}
     this.reloadChart=true
 
@@ -69,16 +68,16 @@ export class HistoryShowComponent implements OnInit {
 
   close(){
     this.dataService.devices=[]
-    this.devices=[]
     this.dataService.actZone=new Zones(-1,"","",-1,-1,-1)
+    this.closeEvent.emit();
   }
 
   ngOnInit() {
     this.values={}
     this.devchartOptions['series']=[]
-    if(this.devices.length>0){
-      this.devices=this.dataService.devices.filter(elem=>elem.types[0].name!="irrigate" && elem.types[0].name!="camera" )
-      this.devices.forEach(dev=>{
+    if(this.dataService.devices.length>0){
+      this.dataService.devices=this.dataService.devices.filter(elem=>elem.types[0].name!="irrigate" && elem.types[0].name!="camera" )
+      this.dataService.devices.forEach(dev=>{
         if(Array.isArray(dev.info.data[dev.types[0].name])){
           dev.info.data[dev.types[0].name].sort((a:any, b:any) => {
             const dateA = parseInt(a.date.$date.$numberLong);

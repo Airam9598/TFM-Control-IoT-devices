@@ -7,6 +7,8 @@ section{
     min-height: 50vh;
     padding: 15px;
     position: relative;
+    animation-name: backInUp;
+    animation-duration: 0.5s;
 }
 
 h2{
@@ -211,4 +213,17 @@ h2{
 .info img{
     width: 50px;
     filter: drop-shadow(2px 4px 6px #00000042);
+}
+
+app-advisor{
+  position: absolute;
+  width: 100%;
+  height: calc(100% + 79px);
+  top:-79px;
+  left:0;
+  background-color: rgba(0, 0, 0, 0.438);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

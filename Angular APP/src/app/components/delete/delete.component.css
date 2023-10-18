@@ -3,6 +3,8 @@
   width: max-content;
   border-radius: 10px;
   padding: 10px;
+  animation-name: backInUp;
+  animation-duration: 0.5s;
 }
 .btn{
     background-color: var(--default-dark-blue);

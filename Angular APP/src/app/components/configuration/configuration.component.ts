@@ -87,11 +87,14 @@ export class ConfigurationComponent implements AfterViewInit {
   }
 
   changePanel(elem:any){
-    (document.querySelectorAll(`.menu li`)).forEach(element => {
-      element.classList.remove("active")
-    })
-    elem.target.classList.add('active')
-    this.activePanel=elem.target.textContent
+    if(this.activePanel!=elem.target.textContent){
+      (document.querySelectorAll(`.menu li`)).forEach((element:any) => {
+        element.classList.remove("active")
+      })
+      elem.target.classList.add('active')
+      this.activePanel=elem.target.textContent
+    }
+
   }
 
 

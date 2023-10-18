@@ -20,6 +20,7 @@ export class ZoneInfoComponent implements OnInit {
   @Output()deleteZone = new EventEmitter();
   irrigate:boolean
   showDevices:boolean
+  showAdvise:boolean
   showCameras:boolean
   showZone:boolean
   devicesclasified:{[key:string] : Devices[]}
@@ -45,6 +46,7 @@ export class ZoneInfoComponent implements OnInit {
     this.irrigate=false
     this.showZone=false
     this.showDevices=false
+    this.showAdvise=false
     this.showCameras=false
     this.devicesclasified={
       "air temperature":[],
@@ -90,15 +92,27 @@ export class ZoneInfoComponent implements OnInit {
   }
 
   ngOnInit() {
-      this.devicesclasified["air temperature"]=this.getValue("air temperature")
-      this.devicesclasified["soil temperature"]=this.getValue("soil temperature")
-      this.devicesclasified["soil Moisture"]=this.getValue("soil Moisture")
-      this.devicesclasified["precipitation"]=this.getValue("precipitation")
-      this.devicesclasified["irrigate"]=this.getValue("irrigate")
-      this.devicesclasified["camera"]=this.getValue("camera")
-      this.devicesclasified["irrigate"].forEach(elem=>{
-        if(elem.info && elem.info["data"]["irrigate"]=="true") this.irrigate=true
-      })
+     this.classify()
+  }
+
+  classify(){
+    this.devicesclasified={
+      "air temperature":[],
+      "soil temperature":[],
+      "soil Moisture":[],
+      "precipitation":[],
+      "irrigate":[],
+      "camera":[]
+    }
+    this.devicesclasified["air temperature"]=this.getValue("air temperature")
+    this.devicesclasified["soil temperature"]=this.getValue("soil temperature")
+    this.devicesclasified["soil Moisture"]=this.getValue("soil Moisture")
+    this.devicesclasified["precipitation"]=this.getValue("precipitation")
+    this.devicesclasified["irrigate"]=this.getValue("irrigate")
+    this.devicesclasified["camera"]=this.getValue("camera")
+    this.devicesclasified["irrigate"].forEach(elem=>{
+      if(elem.info && elem.info["data"]["irrigate"]=="true") this.irrigate=true
+    })
   }
 
   isButtonVisible(array:Array<string>):boolean{

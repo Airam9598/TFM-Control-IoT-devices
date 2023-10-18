@@ -18,10 +18,9 @@ import { UserIconComponent } from './components/user-icon/user-icon.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { AdvisorComponent } from './components/advisor/advisor.component';
 import { SharedDataService } from './shared/data-service';
-import { DeleteComponent } from './components/modals/delete/delete.component';
-import { AdviseList } from './components/modals/advise/list/list.component';
+import { DeleteComponent } from './components/delete/delete.component';
 import { TranslateModule } from '@ngx-translate/core';
-import { HistoryShowComponent } from './components/modals/history-show/history-show.component';
+import { HistoryShowComponent } from './components/history-show/history-show.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { FilterComponent } from './components/filter/filter.component';
 import { ZonesPageComponent } from './components/zones-page/zones-page.component';
@@ -44,7 +43,6 @@ import { GeneralListComponent } from './components/general-list/general-list.com
     UserIconComponent,
     AdvisorComponent,
     DeleteComponent,
-    AdviseList,
     HistoryShowComponent,
     LoadingComponent,
     FilterComponent,

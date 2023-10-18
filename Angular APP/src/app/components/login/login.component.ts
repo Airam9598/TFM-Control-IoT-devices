@@ -39,18 +39,9 @@ export class LoginComponent {
     if(this.login.value.email != null && this.login.value.password != null){
       this.loginservice.login(this.login.value.email, this.login.value.password).subscribe({
         next:(token)=>{
-          this.loginservice.isLoggedIn().subscribe({
-            next:(user)=>{
-              this.loginservice.setToken(token.token);
-              this.route.navigate(['/home'])
-              this.loading=false
-            },
-            error:(error2)=>{
-              this.loading=false
-              this.error=true;
-              this.errorMessage = error2.error.message;
-            }
-          });
+          this.loginservice.setToken(token.token);
+          this.loading=false
+          this.route.navigate(['/loading'])
         },
         error:(error)=>{
           this.loading=false
@@ -61,7 +52,7 @@ export class LoginComponent {
 
     }else{
         this.errorMessage="Existen campos vacíos"
-          this.error=true;
+        this.error=true;
     }
   }
 

@@ -38,5 +38,5 @@
   </div>
 </div>
 
-<app-general-form *ngIf="this.showDevice && type=='device'" (closeEvent)="unsetDevice()" [elements]="devElements" [formGroup]="devFormGroup" [title]="'Crear Dispositivo'" [error]="errorMessage" [editedItem]="this.dataService.actDev" (submited)="createDevice($event)"></app-general-form>
+<app-general-form (deleteEvent)="deleteDev()" *ngIf="this.showDevice && type=='device'" (closeEvent)="unsetDevice()" [elements]="devElements" [formGroup]="devFormGroup" [title]="'Crear Dispositivo'" [error]="errorMessage" [editedItem]="this.dataService.actDev" (submited)="createDevice($event)"></app-general-form>
 

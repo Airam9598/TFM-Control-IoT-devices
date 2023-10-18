@@ -1,9 +1,9 @@
-<div class="modal fade" id="historyShow" tabindex="-1" aria-labelledby="historyShow" aria-hidden="true">
+<div class="container" id="historyShow" tabindex="-1" aria-labelledby="historyShow">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Historial de <p *ngIf="this.dataService.actZone.id>0">{{this.dataService.actZone.name}}</p></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" id="closehistoryShow" aria-label="Close"></button>
+          <button type="button" class="btn-close close" id="closehistoryShow" (click)="close()">X</button>
         </div>
         <div class="modal-body">
             <div class="adviseBox">
@@ -23,10 +23,10 @@
                   [legend]="devchartOptions['legend']"
                   [xaxis]="devchartOptions['xaxis']"
                 ></apx-chart>
-                <div class="selectordiv" *ngIf="this.devices.length>1">
+                <div class="selectordiv" *ngIf="this.dataService.devices.length>1">
                   <select *ngFor="let value of values | keyvalue" id="{{value.key}}" (change)="changeDevice($event)">
                     <option value="">Ninguno</option>
-                    <option value="{{dev.id}}" *ngFor="let dev of devices">{{dev.name +" ("+ dev.types[0].name}}<p *ngIf="dev.types[0].name=='soil Moisture'"> / m3m-3*100</p> <p *ngIf="dev.types[0].name.includes('temperature')"> / C</p> )</option>
+                    <option value="{{dev.id}}" *ngFor="let dev of this.dataService.devices">{{dev.name +" ("+ dev.types[0].name}}<p *ngIf="dev.types[0].name=='soil Moisture'"> / m3m-3*100</p> <p *ngIf="dev.types[0].name.includes('temperature')"> / C</p> )</option>
                   </select>
                 </div>
 

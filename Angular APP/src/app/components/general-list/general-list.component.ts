@@ -54,6 +54,11 @@ export class GeneralListComponent {
     this.showDevice=false
   }
 
+  deleteDev(){
+    this.unsetDevice()
+    this.setDeviceEvent.emit()
+  }
+
   setImage(type:Types[]):string{
     let images:{[key:string]:string}={
       'device':"../../../../assets/device.png",
@@ -101,7 +106,8 @@ export class GeneralListComponent {
         this.deviceService.editDevice(this.dataService.actPanel.id,this.dataService.actZone.id,this.dataService.actDev.id,info)?.subscribe({
           next:(response)=>{
             (document.getElementById("closegeneralForm") as HTMLButtonElement).click()
-            //this.dataEvent2.emit(response.data as Devices);
+            this.dataService.devices[this.dataService.devices.findIndex(elem=>elem.id=(response.data as Devices).id)] = response.data as Devices
+            this.setDeviceEvent.emit()
           },
           error:(error)=>{
             if(error.error.message!=null){
@@ -122,7 +128,8 @@ export class GeneralListComponent {
         this.deviceService.setDevice(this.dataService.actPanel.id,this.dataService.actZone.id,info)?.subscribe({
           next:(response)=>{
             (document.getElementById("closegeneralForm") as HTMLButtonElement).click()
-            //this.dataEvent.emit(response.data as Devices);
+            this.dataService.devices.push(response.data as Devices)
+            this.setDeviceEvent.emit()
           },
           error:(error)=>{
             if(error.error.message!=null){

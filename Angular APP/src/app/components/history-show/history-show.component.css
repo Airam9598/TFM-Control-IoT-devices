@@ -1,6 +1,19 @@
 
+.container{
+  background-color: var(--default-light-blue);
+  border-radius: 10px;
+  padding: 10px;
+  width: max-content;
+  animation-name: backInUp;
+  animation-duration: 0.5s;
+}
+
 .modal-content{
     background-color: var(--default-light-blue);
+}
+
+.modal-body{
+  min-width: 50vw;
 }
 
 .new{
@@ -123,4 +136,25 @@ apx-chart{
     font-size: 1.2em;
     border-radius: 6px;
     border: #9b9b9b 1.5px solid;
+}
+
+.close{
+  position: absolute;
+  top: 5px;
+  right: 0px;
+  font-size: 1.5em;
+  width: 35px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: transparent;
+  border: none;
+  font-weight: bold;
+  font-family: cursive;
+}
+
+.close:hover{
+  color: rgb(248, 59, 59);
 }

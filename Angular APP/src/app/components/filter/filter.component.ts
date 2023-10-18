@@ -1,4 +1,4 @@
-import { Component, Input,Output ,OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
+import { Component, Input,Output ,OnChanges, SimpleChanges, EventEmitter, ElementRef, ViewChild } from '@angular/core';
 import { Zones } from 'src/app/models/zones.model';
 import { SharedDataService } from 'src/app/shared/data-service';
 
@@ -11,6 +11,8 @@ export class FilterComponent implements OnChanges {
   countries:Array<string>
   backUpZones:Zones[]
   @Output() filtered = new EventEmitter<Zones[]>();
+  @ViewChild("filtername") filterName: ElementRef | undefined;
+  @ViewChild("filtercountry") filterCountry: ElementRef | undefined;
   constructor(protected dataService:SharedDataService){
     this.countries=[]
     this.backUpZones=[]
@@ -18,13 +20,13 @@ export class FilterComponent implements OnChanges {
   }
 
   filter(elem:any){
-    if(elem.target.value==""){
-      this.backUpZones=[...this.dataService.zones] as Zones[]
-      this.filtered.emit(this.backUpZones)
-      return
+    this.backUpZones=[...this.dataService.zones] as Zones[]
+    if(this.filterCountry && this.filterCountry.nativeElement.value != ""){
+      this.backUpZones=this.backUpZones.filter(zone=>zone.country==this.filterCountry?.nativeElement.value)
     }
-    if(elem.target.id=="filtercountry") this.backUpZones=this.dataService.zones.filter(zone=>zone.country==elem.target.value)
-    if(elem.target.id=="filtername") this.backUpZones=this.dataService.zones.filter(zone=>zone.name.toLowerCase().includes(elem.target.value.toLowerCase()))
+    if(this.filterName && this.filterName.nativeElement.value != ""){
+      this.backUpZones=this.backUpZones.filter(zone=>zone.name.toLowerCase().includes(this.filterName?.nativeElement.value.toLowerCase()))
+    }
     this.filtered.emit(this.backUpZones)
   }
 

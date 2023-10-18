@@ -1,11 +1,11 @@
 <div class="filter">
   <div>
       <p>Nombre de zona</p>
-      <input id="filtername" type="text" min="0" max="50" (keyup)="filter($event)">
+      <input #filtername type="text" min="0" max="50" (keyup)="filter($event)">
   </div>
   <div>
       <p>País</p>
-      <select id="filtercountry" (change)="filter($event)">
+      <select #filtercountry (change)="filter($event)">
           <option value="">Selecciona un país</option>
           <option  *ngFor="let country of countries " value="{{country}}">{{country}}</option>
       </select>

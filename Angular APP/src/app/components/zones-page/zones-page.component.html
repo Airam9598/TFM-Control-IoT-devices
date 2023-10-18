@@ -29,7 +29,5 @@
 
   <app-general-form *ngIf="this.showZone && isButtonVisible(['admin','zones']) && this.router.url=='/zones'" (closeEvent)="this.showZone=false" [elements]="zoneElements" [formGroup]="zoneFormGroup" [title]="'Crear Zona'" [error]="errorMessage"  [editedItem]="this.dataService.actZone" (submited)="createZone($event)"></app-general-form>
   <app-zone-info (deleteZone)="updateZone(null)" (editZone)="updateZone(this.dataService.actZone)" (close)="this.loadedDevices=false" *ngIf="this.dataService.actZone.id>0 && this.loadedDevices && this.router.url=='/zones'"></app-zone-info>
-  <modal-adviselist *ngIf="this.dataService.actZone.id>0 && this.loadedDevices && this.router.url=='/zones'"></modal-adviselist>
-  <modal-history-show *ngIf="this.dataService.devices.length>0 && loadedDevices && this.router.url=='/history'"></modal-history-show>
-  <button class="new d-none" data-bs-toggle="modal" data-bs-target="#historyShow" id="historyShowbut"  *ngIf="this.router.url=='/history'"><i class="bi bi-plus-circle" ></i></button>
+  <app-history-show (closeEvent)="this.showHistory=false" *ngIf="this.dataService.devices.length>0 && loadedDevices && this.router.url=='/history' && this.showHistory"></app-history-show>
 </div>

@@ -58,6 +58,16 @@ li{
     flex-direction: column;
 }
 
+.container{
+  background-color: white;
+  width: max-content;
+  border-radius: 10px;
+  padding: 2px;
+  animation-name: backInUp;
+  animation-duration: 0.5s;
+}
+
+
 
 @media (max-width: 750px) and (min-height: 500px) {
     .adviseBox{
@@ -75,4 +85,62 @@ li{
     .adviseBox{
         height: calc(100vh - 180px);
     }
+}
+
+
+.adviseBox2{
+  border: solid #E48D0A 2px;
+  border-radius: 10px;
+  height: 50vh;
+  width: 26vw;
+  overflow: hidden;
+}
+
+.adviseBox2 >h3{
+  display: flex;
+  gap:5px;
+  color: var(--default-white);
+  background-color: #E48D0A;
+  padding: 10px 65px;
+  border-radius: 5px 5px 0 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.adviseBox2 >p{
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.adviseBox2>div{
+  height: 87%;
+  overflow-y: auto;
+}
+
+.btn-close{
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+
+
+
+@media (max-width: 750px) and (min-height: 500px) {
+  .adviseBox2{
+      position: unset;
+      width: 20p;
+      margin: auto;
+      width: 50vw;
+      margin-top: 40px;
+      height: 230px;
+  }
+}
+
+@media (max-height: 500px) {
+
+  .adviseBox2{
+      height: calc(100vh - 180px);
+  }
 }

@@ -1,8 +1,7 @@
-import { Component, ViewChild, OnInit,Injectable } from '@angular/core';
+import { Component, ViewChild,Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { Panels } from 'src/app/models/panels.model';
-import { Users } from 'src/app/models/users.model';
 import { AccessService } from 'src/app/services/access-service.service';
 import { PanelService } from 'src/app/services/panel.service';
 import { ChartComponent } from "ng-apexcharts";
@@ -13,7 +12,6 @@ import {
   ApexChart,
   ApexFill,
   ApexTitleSubtitle,
-  ApexOptions
 } from "ng-apexcharts";
 import { Devices } from 'src/app/models/devices.model';
 import { SharedDataService } from 'src/app/shared/data-service';
@@ -41,7 +39,7 @@ export type ChartOptions = {
 })
 
 @Injectable()
-export class HomeComponent {
+export class HomeComponent  {
   panelFormGroup=new FormGroup({
     name: new FormControl('',[Validators.required,Validators.minLength(2),Validators.maxLength(50)])
   })
@@ -53,7 +51,6 @@ export class HomeComponent {
   initialLoading:boolean
   backUpZones:Zones[]
   backUpdevices:Devices[]
-  advises:Array<string>
   countries:Map<string,number>
   activateddevices:Map<string,number>
   panelUpdate:any
@@ -74,7 +71,6 @@ export class HomeComponent {
     this.loading=false
     this.initialLoading=true
     this.error=false
-    this.advises=[]
     this.activateddevices=new Map
     this.activateddevices.set("Activos",0)
     this.activateddevices.set("Inactivos",0)
@@ -219,6 +215,10 @@ export class HomeComponent {
 
   loadInfo(): void {
         this.backUpZones=[...this.dataService.zones] as Zones[]
+        this.countries=new Map
+        this.activateddevices=new Map
+        this.activateddevices.set("Activos",0)
+        this.activateddevices.set("Inactivos",0)
         for(let zone of this.dataService.zones){
           if(this.countries.has(zone.country)){
             const count = this.countries.get(zone.country);
@@ -238,31 +238,6 @@ export class HomeComponent {
               if(result.data.length==0) return
               this.dataService.devices=result.data as Devices[]
               this.dataService.devices.forEach(dev=>{
-                if(dev.types[0].name=="air temperature"){
-                  if(dev.zone.max_air_temp){
-                    if(dev.info.data[dev.types[0].name].value> dev.zone.max_air_temp) this.advises.push("Se ha superado la temperatura del aire<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
-                  }
-                  if(dev.zone.min_air_temp){
-                    if(dev.info.data[dev.types[0].name].value< dev.zone.min_air_temp) this.advises.push("La temperatura del aire está por debajo del mínimo<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
-                  }
-
-                }else  if(dev.types[0].name=="soil temperature"){
-                  if(dev.zone.max_soil_temp){
-                    if(dev.info.data[dev.types[0].name].value> dev.zone.max_soil_temp) this.advises.push("Se ha superado la temperatura del suelo<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
-                  }
-                  if(dev.zone.min_soil_temp){
-                    if(dev.info.data[dev.types[0].name].value< dev.zone.min_soil_temp) this.advises.push("La temperatura del suelo está por debajo del mínimo<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
-                  }
-
-                }else  if(dev.types[0].name=="soil Moisture"){
-                  if(dev.zone.max_soil_moisture){
-                    if(parseFloat((dev.info.data[dev.types[0].name].value * 100).toFixed(2)) > dev.zone.max_soil_moisture) this.advises.push("Se ha superado la humedad del suelo<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
-                  }
-                  if(dev.zone.min_soil_moisture){
-                    if(parseFloat((dev.info.data[dev.types[0].name].value * 100).toFixed(2)) < dev.zone.min_soil_moisture) this.advises.push("La humedad del suelo está por debajo del mínimo<br><b>Zona:</b> "+dev.zone.name+"<br><b>Dispositivo:</b> "+dev.name+"<br><b>Fecha:</b> "+moment().format('DD/MM/YYYY HH:mm'))
-                  }
-
-                }
                 var res = new Date();
                 res.setDate(res.getDate() - this.dataService.actPanel.diference_days);
                 if(dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && dev.info && dev.info.data[dev.types[0].name].date && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong){
@@ -392,6 +367,7 @@ export class HomeComponent {
 
   closeSes(){
     this.loginservice.logout()
+    this.dataService.logout()
     this.route.navigate(['/'])
   }
 
