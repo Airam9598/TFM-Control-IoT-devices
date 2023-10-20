@@ -1,8 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Devices } from 'src/app/models/devices.model';
 import { GeneralForm } from 'src/app/models/generalform.model';
-import { Users } from 'src/app/models/users.model';
 import { Zones } from 'src/app/models/zones.model';
 import { DeviceService } from 'src/app/services/device.service';
 import { ZoneService } from 'src/app/services/zone.service';
@@ -24,7 +23,7 @@ export class ZoneInfoComponent implements OnInit {
   showCameras:boolean
   showZone:boolean
   devicesclasified:{[key:string] : Devices[]}
-
+  devicesTypes:{[key:string] : {[key:string]:string}}
   zoneFormGroup = new FormGroup({
     name: new FormControl('',[Validators.required,Validators.minLength(2),Validators.maxLength(50)]),
     country: new FormControl('',[Validators.required]),
@@ -56,6 +55,7 @@ export class ZoneInfoComponent implements OnInit {
       "irrigate":[],
       "camera":[]
     }
+    this.devicesTypes={}
   }
 
   closePanel(){
@@ -73,10 +73,29 @@ export class ZoneInfoComponent implements OnInit {
 
   changeValue(info2:string,select:any){
     let extra=""
-    if(info2.includes("temperature")){
-      extra=this.devicesclasified[info2].find(elem=>elem.id==select.target.value)!.info.data[info2].value +"°"
-    }else if(info2.includes("Moisture")){
-      extra=(this.devicesclasified[info2].find(elem=>elem.id==select.target.value)!.info.data[info2].value* 100).toFixed(2)
+
+    switch (info2){
+      case "air temperature" || "soil temperature":
+        if(this.devicesclasified[info2].find(elem=>elem.id==select.target.value)!.info.data[info2].value){
+          extra = this.devicesclasified[info2].find(elem=>elem.id==select.target.value)!.info.data[info2].value + "°"
+        }else{
+          extra = "Sin datos";
+        }
+        break;
+      case 'soil Moisture':
+        if(this.devicesclasified[info2].find(elem=>elem.id==select.target.value)!.info.data[info2].value){
+          extra = (this.devicesclasified[info2].find(elem=>elem.id==select.target.value)!.info.data[info2].value * 100).toFixed(2)
+        }else{
+          extra = "Sin datos";
+        }
+        break;
+      case "precipitation":
+        if(this.devicesclasified[info2].find(elem=>elem.id==select.target.value)!.info.data[info2].value){
+          extra= this.devicesclasified[info2].find(elem=>elem.id==select.target.value)!.info.data[info2].value + "mm"
+        }else{
+          extra= "Sin datos";
+        }
+        break;
     }
 
     (document.getElementById("Info "+info2) as HTMLParagraphElement).innerText=extra
@@ -113,6 +132,56 @@ export class ZoneInfoComponent implements OnInit {
     this.devicesclasified["irrigate"].forEach(elem=>{
       if(elem.info && elem.info["data"]["irrigate"]=="true") this.irrigate=true
     })
+    this.devicesTypes={
+      "air temperature":{
+        'title':'Temperatura del aire',
+        'img':'../../../assets/temp.png',
+        'value':(()=>{
+          if(this.devicesclasified["air temperature"][0]?.info.data["air temperature"].value){
+            return this.devicesclasified["air temperature"][0]?.info.data["air temperature"].value+"°"
+          }else{
+            return "Sin datos";
+          }
+        })(),
+        'class':"orange"
+      },
+      "soil temperature":{
+        'title':'Temperatura del suelo',
+        'img':'../../../assets/temp.png',
+        'value':(()=>{
+          if(this.devicesclasified["soil temperature"][0]?.info.data["soil temperature"].value){
+            return this.devicesclasified["soil temperature"][0]?.info.data["soil temperature"].value+"°"
+          }else{
+            return "Sin datos";
+          }
+        })(),
+        'class':"orange2"
+      },
+      "soil Moisture":{
+        'title':'Humedad del suelo',
+        'img':'../../../assets/moisture.png',
+        'value':(()=>{
+          if(this.devicesclasified["soil Moisture"][0]?.info.data["soil Moisture"].value){
+            return (this.devicesclasified["soil Moisture"][0]?.info.data["soil Moisture"].value * 100).toFixed(2)
+          }else{
+            return "Sin datos";
+          }
+        })(),
+        'class':"blue3"
+      },
+      "precipitation":{
+        'title':'Precipitación',
+        'img':'../../../assets/water.png',
+        'value':(()=>{
+          if(this.devicesclasified["precipitation"][0]?.info.data["precipitation"].value){
+            return this.devicesclasified["precipitation"][0]?.info.data["precipitation"].value+"mm"
+          }else{
+            return "Sin datos";
+          }
+        })(),
+        'class':"blue2"
+      },
+    }
   }
 
   isButtonVisible(array:Array<string>):boolean{

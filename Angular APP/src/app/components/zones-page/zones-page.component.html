@@ -12,7 +12,7 @@
                 </tr>
           </thead>
           <tbody>
-              <tr (click)="openZonesInfo(zone)" *ngFor="let zone of this.backUpZones">
+              <tr (click)="openZonesInfo(zone)" *ngFor="let zone of this.backUpZones | paginate: { itemsPerPage: 10, currentPage: pages }">
                   <td style="display: none;">{{zone.id}}</td>
                   <td>{{zone.name}}</td>
                   <td>{{zone.country}}</td>
@@ -24,6 +24,7 @@
           </tbody>
 
       </table>
+      <pagination-controls (pageChange)="pages = $event"></pagination-controls>
   </div>
   <div id="map"></div>
 

@@ -42,7 +42,7 @@
                   </tr>
             </thead>
             <tbody *ngIf="checkPerms(['admin'])">
-                <tr *ngFor="let user of users">
+                <tr *ngFor="let user of users | paginate: { itemsPerPage: 10, currentPage: pages }">
                     <td>{{user.name}}</td>
                     <td>{{user.email}}</td>
                     <td *ngIf="user.pivot['admin']=='1'">Administrador</td>
@@ -67,6 +67,7 @@
             </tbody>
 
         </table>
+        <pagination-controls (pageChange)="pages = $event"></pagination-controls>
     </section>
     <app-delete  (closeEvent)="this.delete=false" *ngIf="this.delete" [item]="this.dataService.actPanel" [text]='text'></app-delete>
     <app-general-form *ngIf="this.showUser" (closeEvent)="this.showUser=false" [elements]="userElements" [formGroup]="userFormGroup" [title]="'Crear panel'" [error]="errorMessage" (submited)="addUserPanel($event)"></app-general-form>

@@ -42,6 +42,7 @@ export class ConfigurationComponent implements AfterViewInit {
   users:Users[]
   editedUser:Users
   delete:boolean
+  pages: number = 1;
 
   panelform = new FormGroup({
     name: new FormControl('',[Validators.required,Validators.minLength(2),Validators.maxLength(50)]),

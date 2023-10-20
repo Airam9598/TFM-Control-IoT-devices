@@ -1,0 +1,15 @@
+.chartBox{
+  border-radius: 10px;
+  background-color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  box-shadow: #00000047 0px 4px 4px 0px;
+}
+
+.chartBox >h1{
+  margin-bottom: 25px;
+  margin-top: 10px;
+}

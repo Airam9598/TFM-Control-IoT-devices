@@ -63,6 +63,32 @@ app-general-form, app-delete, app-history-show,app-zone-info,app-general-list{
   overflow: hidden;
 }
 
+.ngx-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+.pagination-previous{
+  display:none !important;
+}
+.pagination-next{
+  display:none !important;
+}
+
+.ngx-pagination .current {
+  padding: 0.1875rem 0.625rem;
+  background: var(--default-blue) !important;
+  color: #fefefe;
+  cursor: default;
+  border-radius: 4px;
+}
+
+.ngx-pagination li:hover a {
+  border-radius: 4px;
+  background-color: #6982c063 !important;
+}
+
 
 @keyframes backInUp {
 

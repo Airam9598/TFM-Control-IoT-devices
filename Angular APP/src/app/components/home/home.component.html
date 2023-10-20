@@ -25,55 +25,10 @@
 
 <section *ngIf="this.dataService.panels.length>0 && this.dataService.userData.id>0" class="container p-0">
     <div class="main-box">
-        <div class="filter">
-            <div>
-                <p>País</p>
-                <select (change)="filter($event)">
-                    <option value="">Selecciona un país</option>
-                    <option  *ngFor="let country of countryKeys() " value="{{country}}">{{country}}</option>
-                </select>
-            </div>
-
-        </div>
         <div class="multichartBox">
-            <div class="chartBox" id="chartdev">
-                <h1>Dispositivos</h1>
-                <div *ngIf="initialLoading" class="spinner-border color-blue" role="status"></div>
-                <div class="noDevice" *ngIf="backUpdevices.length==0 && !initialLoading">
-                  <td colspan="4" style="padding: 12px;font-size: 1.2em;border-radius: 7px">No hay dispositivos</td>
-                </div>
-                <apx-chart  *ngIf="backUpdevices.length>0"
-                  [series]="devchartOptions['series']"
-                  [chart]="devchartOptions['chart']"
-                  [labels]="devchartOptions['labels']"
-                  [responsive]="devchartOptions['responsive']"
-                  [colors]="devchartOptions['colors']"
-                  [fill]="devchartOptions['fill']"
-                  [stroke]="devchartOptions['stroke']"
-                  [dataLabels]="devchartOptions['dataLabels']"
-                  [legend]="devchartOptions['legend']"
-                  [plotOptions]="devchartOptions"
-                ></apx-chart>
-            </div>
-
-            <div class="chartBox" id="chartcountryzones">
-                <h1>Zonas de riego por país</h1>
-                <div *ngIf="initialLoading" class="spinner-border color-blue" role="status"></div>
-                <div class="noDevice" *ngIf="backUpZones.length==0 && !initialLoading">
-                    <td colspan="4" style="padding: 12px;font-size: 1.2em;border-radius: 7px">No hay zonas</td>
-                </div>
-                <apx-chart *ngIf="backUpdevices.length>0"
-                [title]="zonechartOptions['title']"
-                  [series]="zonechartOptions['series']"
-                  [chart]="zonechartOptions['chart']"
-                  [labels]="zonechartOptions['labels']"
-                  [responsive]="zonechartOptions['responsive']"
-                  [fill]="devchartOptions['fill']"
-                  [stroke]="devchartOptions['stroke']"
-                  [dataLabels]="devchartOptions['dataLabels']"
-                  [legend]="devchartOptions['legend']"
-                ></apx-chart>
-            </div>
+          <app-filter (filtered)="filter($event)"></app-filter>
+            <app-charts [title]="'Dispositivos'" [action]="'dev'" [colors]='[ "#18cf75","#F44336"]' [elements]="this.backUpdevices" [labels]='["Activos", "Inactivos"]'></app-charts>
+            <app-charts [title]="'Zonas de riego por país'" [action]="'country'" [colors]='[]' [elements]="this.backUpZones" [labels]='[]'></app-charts>
         </div>
         <div class="chartBox adpatedchart">
             <h1>Lista de dispositivos</h1>
@@ -87,11 +42,10 @@
                       </tr>
                 </thead>
                 <tbody>
-                  <tr *ngIf="initialLoading"><td colspan="4" class="text-center"> <div class="spinner-border color-blue" role="status"></div></td></tr>
-                    <tr class="noDevice" *ngIf="backUpdevices.length==0 && !initialLoading">
+                    <tr class="noDevice" *ngIf="backUpdevices.length==0">
                         <td colspan="4">No hay dispositivos</td>
                     </tr>
-                    <tr style="cursor: pointer;" *ngFor="let dev of backUpdevices"  [routerLink]='["/zones"]' [state]="{ name:dev.zone}">
+                    <tr style="cursor: pointer;" *ngFor="let dev of backUpdevices | paginate: { itemsPerPage: 7, currentPage: pages }"  [routerLink]='["/zones"]' [state]="{ name:dev.zone}">
                         <td>{{dev.name}}</td>
                         <td>{{dev.zone.name}}</td>
                         <td>{{dev.zone.country}}</td>
@@ -100,7 +54,7 @@
                         <td *ngIf='!dev.info || dev.info.data[dev.types[0].name]== undefined || dev.info.data[dev.types[0].name]=="camera"|| dev.info.data[dev.types[0].name]=="irrigate"'>Sin datos</td>
                     </tr>
                 </tbody>
-
+                <pagination-controls (pageChange)="pages = $event"></pagination-controls>
             </table>
         </div>
         <app-advisor></app-advisor>

@@ -26,7 +26,8 @@ import { FilterComponent } from './components/filter/filter.component';
 import { ZonesPageComponent } from './components/zones-page/zones-page.component';
 import { GeneralFormComponent } from './components/general-form/general-form.component';
 import { GeneralListComponent } from './components/general-list/general-list.component';
-
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ChartsComponent } from './components/charts/charts.component';
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import { GeneralListComponent } from './components/general-list/general-list.com
     FilterComponent,
     ZonesPageComponent,
     GeneralFormComponent,
-    GeneralListComponent
+    GeneralListComponent,
+    ChartsComponent
   ],
   imports: [
     BrowserModule,
@@ -57,6 +59,7 @@ import { GeneralListComponent } from './components/general-list/general-list.com
     HttpClientModule,
     NgbModule,
     NgApexchartsModule,
+    NgxPaginationModule,
     TranslateModule.forRoot({
       defaultLanguage: 'es'
   })

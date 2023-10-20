@@ -164,9 +164,9 @@ h2{
     align-content: center;
 }
 
-.info>div{
+.info>div>div{
     width: 32%;
-    min-width: 195px;
+    min-width: 225px;
     height: max-content;
     display: flex;
     flex-direction: column;
@@ -181,7 +181,7 @@ h2{
     flex: 1;
 }
 
-.info>div>select{
+.info>div>div>select{
     border-radius: 5px;
     padding: 5px;
     background: transparent;
@@ -192,11 +192,11 @@ h2{
     font-size: 1.2em;
 }
 
-.info>div>select>option{
+.info>div>div>select>option{
     color: black;
 }
 
-.info>div>div{
+.info>div>div>div{
     display: flex;
     justify-content: center;
     align-items: center;

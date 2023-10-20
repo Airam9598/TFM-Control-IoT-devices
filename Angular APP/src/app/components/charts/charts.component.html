@@ -1,0 +1,18 @@
+<div class="chartBox">
+  <h1>{{this.title}}</h1>
+  <div class="noDevice" *ngIf="elements.length==0">
+    <td colspan="4" style="padding: 12px;font-size: 1.2em;border-radius: 7px">No hay datos</td>
+  </div>
+  <apx-chart  *ngIf="elements.length>0"
+    [series]="chartOptions['series']"
+    [chart]="chartOptions['chart']"
+    [labels]="chartOptions['labels']"
+    [responsive]="chartOptions['responsive']"
+    [colors]="chartOptions['colors']"
+    [fill]="chartOptions['fill']"
+    [stroke]="chartOptions['stroke']"
+    [dataLabels]="chartOptions['dataLabels']"
+    [legend]="chartOptions['legend']"
+    [plotOptions]="chartOptions"
+  ></apx-chart>
+</div>

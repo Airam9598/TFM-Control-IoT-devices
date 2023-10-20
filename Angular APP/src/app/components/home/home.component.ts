@@ -1,36 +1,16 @@
-import { Component, ViewChild,Injectable } from '@angular/core';
+import { Component,Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
 import { Panels } from 'src/app/models/panels.model';
 import { AccessService } from 'src/app/services/access-service.service';
 import { PanelService } from 'src/app/services/panel.service';
-import { ChartComponent } from "ng-apexcharts";
 import * as moment from 'moment';
-import {
-  ApexNonAxisChartSeries,
-  ApexResponsive,
-  ApexChart,
-  ApexFill,
-  ApexTitleSubtitle,
-} from "ng-apexcharts";
 import { Devices } from 'src/app/models/devices.model';
 import { SharedDataService } from 'src/app/shared/data-service';
 import { Zones } from 'src/app/models/zones.model';
 import { DeviceService } from 'src/app/services/device.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GeneralForm } from 'src/app/models/generalform.model';
-
-
-export type ChartOptions = {
-  series: ApexNonAxisChartSeries;
-  chart: ApexChart;
-  fill: ApexFill;
-  title:ApexTitleSubtitle;
-  responsive: ApexResponsive[];
-  labels: any;
-  events:any;
-  options:ChartOptions
-};
 
 @Component({
   selector: 'app-home',
@@ -39,7 +19,7 @@ export type ChartOptions = {
 })
 
 @Injectable()
-export class HomeComponent  {
+export class HomeComponent {
   panelFormGroup=new FormGroup({
     name: new FormControl('',[Validators.required,Validators.minLength(2),Validators.maxLength(50)])
   })
@@ -47,20 +27,12 @@ export class HomeComponent  {
   errorMessage:string
   showPanel:boolean
 
-
-  initialLoading:boolean
+  pages: number = 1;
   backUpZones:Zones[]
   backUpdevices:Devices[]
-  countries:Map<string,number>
-  activateddevices:Map<string,number>
   panelUpdate:any
   loading:boolean
   error:boolean
-  @ViewChild("chartdev") chartdev!: ChartComponent;
-  @ViewChild("chartcountryzones") chartzone!: ChartComponent;
-
-  public devchartOptions: Partial<any>;
-  public zonechartOptions: Partial<any>;
 
   constructor(protected deviceService:DeviceService, protected panelService:PanelService,protected loginservice:AccessService, protected dataService:SharedDataService, protected actRoute: ActivatedRoute, protected route: Router, protected cookieService:CookieService){
     if(dataService.userData.id<=0){
@@ -69,270 +41,28 @@ export class HomeComponent  {
     this.showPanel=false;
     this.errorMessage=""
     this.loading=false
-    this.initialLoading=true
     this.error=false
-    this.activateddevices=new Map
-    this.activateddevices.set("Activos",0)
-    this.activateddevices.set("Inactivos",0)
     this.backUpZones=[]
     this.backUpdevices=[]
-    this.countries=new Map
-
-    this.devchartOptions = {
-      series: [],
-      chart: {
-        width: 380,
-        type: "pie",
-        events: {
-          dataPointSelection: (event:any, chartContext:any, config:any) => {
-            if(this.devchartOptions['labels'][config["selectedDataPoints"][0]]){
-              var res = new Date();
-              res.setDate(res.getDate() - this.dataService.actPanel.diference_days);
-              if(this.devchartOptions['labels'][config["selectedDataPoints"][0]]=="Inactivos"){
-                this.backUpdevices=this.dataService.devices.filter(dev=> dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && dev.info && dev.info.data[dev.types[0].name].date && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong)
-              }else{
-                this.backUpdevices=this.dataService.devices.filter(dev=> dev.types[0].name=="camera" || dev.types[0].name=="irrigate" || !dev.info || !dev.info.data[dev.types[0].name].date || res.valueOf()<=dev.info.data[dev.types[0].name].date!.$date.$numberLong)
-              }
-            }else{
-              this.backUpdevices=this.dataService.devices
-            }
-          }
-        },
+    this.backUpZones=[...this.dataService.zones] as Zones[]
+    this.deviceService.getDevicesPanel(this.dataService.actPanel.id)?.subscribe({
+      next:(result)=>{
+        if(result.data.length==0) return
+        this.dataService.devices=result.data as Devices[]
+        this.backUpdevices= [...this.dataService.devices] as Devices[]
       },
-      dataLabels: {
-        enabled: true,
-        formatter: function (val:any, opts:any) {
-          return opts.w.config.series[opts.seriesIndex];
-        },
-        style: {
-          fontFamily: 'Arial, sans-serif',
-          fontSize: '15px',
-          fontWeight: 'bold',
-        }
-      },
-      legend: {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '14px',
-        fontWeight: 'bold',
-      },
-      stroke: {
-        curve: "smooth",
-        width: 0
-      },
-      fill: {
-        type: 'gradient',
-      },
-      labels: ["Activos", "Inactivos"],
-      colors: [ "#18cf75","#F44336"],
-      animations: {
-        enabled: true,
-        easing: 'easeinout',
-        speed: 1000,
-        animateGradually: {
-            enabled: true,
-            delay: 200
-        },
-        dynamicAnimation: {
-            enabled: true,
-            speed: 350
-        }
-      },
-      responsive: [
-        {
-          breakpoint: 520,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: "bottom"
-            }
-          }
-        }
-      ]
-    };
-
-    this.zonechartOptions = {
-      series: [44, 55, 13, 43, 22],
-      chart: {
-        width: 380,
-        type: "pie"
-      },
-      dataLabels: {
-        enabled: true,
-        formatter: function (val:any, opts:any) {
-          return opts.w.config.series[opts.seriesIndex];
-        },
-        style: {
-          fontFamily: 'Arial, sans-serif',
-          fontSize: '15px',
-          fontWeight: 'bold',
-        }
-      },
-      stroke: {
-        curve: "smooth",
-        width: 0
-      },
-      fill: {
-        type: 'gradient',
-      },
-      labels: ["Italia", "España", "Alemania", "Mexico","Francia"],
-      legend: {
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '14px',
-        fontWeight: 'bold',
-      },
-      animations: {
-        enabled: true,
-        easing: 'easeinout',
-        speed: 1000,
-        animateGradually: {
-            enabled: true,
-            delay: 200
-        },
-        dynamicAnimation: {
-            enabled: true,
-            speed: 350
-        }
-      },
-      responsive: [
-        {
-          breakpoint: 520,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: "bottom"
-            }
-          }
-        }
-      ]
-    };
-
-    this.loadInfo();
+      error: (err) => {
+        console.error('Error al obtener los dispositivos:', err);
+      }
+    })
   }
 
-  loadInfo(): void {
-        this.backUpZones=[...this.dataService.zones] as Zones[]
-        this.countries=new Map
-        this.activateddevices=new Map
-        this.activateddevices.set("Activos",0)
-        this.activateddevices.set("Inactivos",0)
-        for(let zone of this.dataService.zones){
-          if(this.countries.has(zone.country)){
-            const count = this.countries.get(zone.country);
-            if (count !== undefined) this.countries.set(zone.country, count + 1);
-          }else{
-            this.countries.set(zone.country,1)
-          }
-        }
-        this.countries=new Map([...this.countries.entries()].sort((a, b) => {
-          return b[1]- a[1] ;
-        }))
-        this.zonechartOptions['series']=Array.from(this.countries.values())
-        this.zonechartOptions['labels']=Array.from(this.countries.keys())
-
-        this.deviceService.getDevicesPanel(this.dataService.actPanel.id)?.subscribe({
-            next:(result)=>{
-              if(result.data.length==0) return
-              this.dataService.devices=result.data as Devices[]
-              this.dataService.devices.forEach(dev=>{
-                var res = new Date();
-                res.setDate(res.getDate() - this.dataService.actPanel.diference_days);
-                if(dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && dev.info && dev.info.data[dev.types[0].name].date && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong){
-                  if (this.activateddevices.has("Inactivos")) {
-                    this.activateddevices.set("Inactivos", this.activateddevices.get("Inactivos")! + 1);
-                  } else {
-                    this.activateddevices.set("Inactivos", 1);
-                  }
-                }else if(dev.types[0].name=="camera" || dev.types[0].name=="irrigate" || !dev.info || !dev.info.data[dev.types[0].name].date || res.valueOf()<=dev.info.data[dev.types[0].name].date!.$date.$numberLong){
-                  if (this.activateddevices.has("Activos")) {
-                    this.activateddevices.set("Activos", this.activateddevices.get("Activos")! + 1);
-                  } else {
-                    this.activateddevices.set("Activos", 1);
-                  }
-                }
-              })
-              this.devchartOptions['series']=Array.from(this.activateddevices.values())
-              this.devchartOptions['labels']=Array.from(this.activateddevices.keys())
-              this.devchartOptions['events'] = {
-                click: (event:any, chartContext:any, config:any) => {
-                  console.log("Data point selected:", chartContext, config);
-                }
-              };
-              this.backUpdevices= [...this.dataService.devices] as Devices[]
-              this.initialLoading=false;
-            },
-            error: (err) => {
-              console.error('Error al obtener los dispositivos:', err);
-              this.initialLoading=false;
-            }
-        })
-        this.initialLoading=false
-  }
 
 
   filter(elem:any){
-    this.activateddevices=new Map
-    this.activateddevices.set("Activos",0)
-    this.activateddevices.set("Inactivos",0)
-    if(elem.target.value==""){
-      this.backUpZones=this.dataService.zones
-      this.backUpdevices=this.dataService.devices
-      this.backUpdevices.forEach(dev=>{
-        var res = new Date();
-        res.setDate(res.getDate() - this.dataService.actPanel.diference_days);
-        if(dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong){
-          if (this.activateddevices.has("Inactivos")) {
-            this.activateddevices.set("Inactivos", this.activateddevices.get("Inactivos")! + 1);
-          } else {
-            this.activateddevices.set("Inactivos", 1);
-          }
-        }else if(dev.types[0].name=="camera" || dev.types[0].name=="irrigate" || res.valueOf()<=dev.info.data[dev.types[0].name].date!.$date.$numberLong){
-          if (this.activateddevices.has("Activos")) {
-            this.activateddevices.set("Activos", this.activateddevices.get("Activos")! + 1);
-          } else {
-            this.activateddevices.set("Activos", 1);
-          }
-        }
-      })
-      this.devchartOptions['series']=Array.from(this.activateddevices.values())
-      this.devchartOptions['labels']=Array.from(this.activateddevices.keys())
-      this.zonechartOptions['series']=Array.from(this.countries.values())
-      this.zonechartOptions['labels']=Array.from(this.countries.keys())
-      return
-    }
-
-    this.backUpZones=this.dataService.zones.filter(zone=>zone.country==elem.target.value)
-    this.backUpdevices=this.dataService.devices.filter(dev=>dev.zone.country==elem.target.value)
-
-    this.backUpdevices.forEach(dev=>{
-      var res = new Date();
-      res.setDate(res.getDate() - this.dataService.actPanel.diference_days);
-      if(dev.types[0].name!="camera" && dev.types[0].name!="irrigate" && res.valueOf()>dev.info.data[dev.types[0].name].date.$date.$numberLong){
-        if (this.activateddevices.has("Inactivos")) {
-          this.activateddevices.set("Inactivos", this.activateddevices.get("Inactivos")! + 1);
-        } else {
-          this.activateddevices.set("Inactivos", 1);
-        }
-      }else if(dev.types[0].name=="camera" || dev.types[0].name=="irrigate" || res.valueOf()<=dev.info.data[dev.types[0].name].date!.$date.$numberLong){
-        if (this.activateddevices.has("Activos")) {
-          this.activateddevices.set("Activos", this.activateddevices.get("Activos")! + 1);
-        } else {
-          this.activateddevices.set("Activos", 1);
-        }
-      }
-    })
-    this.devchartOptions['series']=Array.from(this.activateddevices.values())
-    this.devchartOptions['labels']=Array.from(this.activateddevices.keys())
-    this.zonechartOptions['series']=[this.backUpZones.length]
-    this.zonechartOptions['labels']=[elem.target.value]
-
-  }
-
-  countryKeys():Array<string>{
-    return Array.from(this.countries.keys())
+    this.backUpZones=elem
+    this.backUpdevices= [...this.dataService.devices] as Devices[]
+    this.backUpdevices=this.backUpdevices.filter(elem =>{return this.backUpZones.some(zone => zone.id === elem.zone.id)})
   }
 
   getDate2(date:any){

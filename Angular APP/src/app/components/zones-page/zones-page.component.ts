@@ -22,6 +22,7 @@ export class ZonesPageComponent  implements OnInit{
     showZone:boolean
     showHistory:boolean
     tempZone:any
+    pages: number = 1;
     zoneFormGroup = new FormGroup({
       name: new FormControl('',[Validators.required,Validators.minLength(2),Validators.maxLength(50)]),
       country: new FormControl('',[Validators.required]),

@@ -64,6 +64,8 @@ ul{
   gap: 20px;
   justify-content: left;
   align-items: center;
+  padding: 0;
+  margin: auto;
   margin-top: 35px;
   flex-wrap: wrap;
 }
