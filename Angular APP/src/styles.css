@@ -50,7 +50,7 @@ app-general-form, app-delete, app-history-show,app-zone-info,app-general-list{
   position: absolute;
   width: 100%;
   height: calc(100% + 79px);
-  top:-79px;
+  top:-4vh;
   left:0;
   background-color: rgba(0, 0, 0, 0.438);
   z-index: 1000;
@@ -113,11 +113,16 @@ app-general-form, app-delete, app-history-show,app-zone-info,app-general-list{
   app-filter{
       order: 1;
   }
+  app-charts{
+    order: 2;
+  }
 
 }
 @media (max-width: 1000px) and (max-height: 500px) {
   app-filter{
       order: 1;
   }
-
+  app-charts{
+    order: 2;
+  }
 }

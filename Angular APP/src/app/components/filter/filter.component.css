@@ -60,10 +60,26 @@ input[type="text"]:focus-visible,input[type="email"]:focus-visible,input[type="p
 
 }
 @media (max-width: 1000px) and (max-height: 500px) {
+
   .filter{
-      margin: auto;
-      margin-top: 0px;
-  }
+    margin: auto;
+    margin-top: 0px;
+    flex-wrap:wrap; 
+    gap:10px;
+    width: 58vw;
+}
+
+.filter >div> p{
+  font-size: 1em;
+}
+
+input[type="text"],input[type="email"],input[type="password"] {
+  font-size: 0.9em;
+}
+
+.filter >div >select{
+  font-size: 0.9em;
+}
 
 }
 
@@ -79,23 +95,46 @@ input[type="text"]:focus-visible,input[type="email"]:focus-visible,input[type="p
   .filter{
       margin: auto;
       margin-top: 20px;
+      min-width: 92%;
+      flex-wrap:wrap; 
+      gap:10px;
   }
 
+  .filter >div> p{
+    font-size: 1em;
+  }
+
+  input[type="text"],input[type="email"],input[type="password"] {
+    font-size: 0.9em;
+  }
+
+  .filter >div >select{
+    font-size: 0.9em;
+  }
 
 }
 
 @media (max-height: 500px) {
-  .filter {
-      margin: auto;
-      width: 78vw;
-      margin-top: 0px;
-  }
-}
-
-@media (max-width: 1000px) and (max-height: 500px) {
+  
   .filter{
-      margin: auto;
-      margin-top: 0px;
-  }
-
+    margin: auto;
+    margin-top: 0px;
+    flex-wrap:wrap; 
+    gap:10px;
+    width: 55vw;
+    min-width: unset;
 }
+
+.filter >div> p{
+  font-size: 1em;
+}
+
+input[type="text"],input[type="email"],input[type="password"] {
+  font-size: 0.9em;
+}
+
+.filter >div >select{
+  font-size: 0.9em;
+}
+}
+

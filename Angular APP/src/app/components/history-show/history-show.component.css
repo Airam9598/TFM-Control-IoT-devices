@@ -6,6 +6,7 @@
   width: max-content;
   animation-name: backInUp;
   animation-duration: 0.5s;
+  border: white 5px inset;
 }
 
 .modal-content{

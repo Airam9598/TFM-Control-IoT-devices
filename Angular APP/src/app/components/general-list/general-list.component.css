@@ -7,6 +7,7 @@
   min-width: 50vw;
   animation-name: backInUp;
   animation-duration: 0.5s;
+  border: white 5px inset;
 }
 .modal-content{
   background-color: var(--default-light-blue);

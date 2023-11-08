@@ -50,6 +50,7 @@ export class HomeComponent {
         if(result.data.length==0) return
         this.dataService.devices=result.data as Devices[]
         this.backUpdevices= [...this.dataService.devices] as Devices[]
+        this.backUpZones=[...this.dataService.zones] as Zones[]
       },
       error: (err) => {
         console.error('Error al obtener los dispositivos:', err);
